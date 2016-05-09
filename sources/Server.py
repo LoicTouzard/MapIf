@@ -40,10 +40,11 @@ def map():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != "nico":
-            error = 'Invalid username'
-        elif request.form['password'] != "nico":
-            error = 'Invalid password'
+        login = request.form['username']
+        mdp = request.form['password']
+        cur = g.db.execute('select id from users where email = ? and mdp = ?',(login,mdp,))
+        if(cur.fetchone() is None):
+            error = "Problème durant l'authentification !"
         else:
             session['logged_in'] = request.form['username']
             return redirect(url_for('list'))
