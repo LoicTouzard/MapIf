@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block body %}
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Map-IF</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="{{ url_for('map') }}">Carte</a></li>
+      <li><a href="{{ url_for('list') }}">Liste</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+	  {% if not session.logged_in %}
+      <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Connexion</a></li>
+      <li class="active"><a href="{{ url_for('inscrire') }}"><span class="glyphicon glyphicon-log-in"></span> S'inscrire</a></li>
+      {% else %}
+      <li><a href="{{ url_for('profil') }}">Profil</a></li>
+      <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-user"></span> Deconnexion</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+  <form action="{{ url_for('inscrire') }}" method=post>
+    <dl>
+      <dt>Username:
+      <dd><input type=text name=username>
+      <dt>Password:
+      <dd><input type=password name=password>
+      <dd><input type=submit value=Login>
+    </dl>
+  </form>
+
+
+{% endblock %}
