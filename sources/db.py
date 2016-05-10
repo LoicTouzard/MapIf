@@ -105,8 +105,7 @@ def update_user(new_firstname, new_lastname, new_email, new_password, new_promo)
 	session = _get_default_db_session()
 	old_ids = []
 	if _user_exist(session, new_firstname, new_lastname):
-		ag = session.query(User).filter(User.id == user.id)[0]
-		old_ids.append(ag.dataset)
+		print("")
 		#Ajouter ici des changements si voulu
 	else:
 		session.add(User( firstname = new_firstname,
@@ -131,3 +130,9 @@ def _user_exist(session, new_firstname, new_lastname):
 	for a in session.query(User).filter(User.firstname == new_firstname, User.lastname == new_lastname):
 		result.append(a)
 	return len(result) != 0
+	
+def _get_user_id(session, new_firstname, new_lastname):
+	result = []
+	for a in session.query(User).filter(User.firstname == new_firstname, User.lastname == new_lastname):
+		result.append(a)
+	return (result[0]).id

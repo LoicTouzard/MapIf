@@ -65,7 +65,7 @@ def profil():
 @app.route('/inscrire')
 def inscrire():
     error = None
-    db.update_user("Jean", "VALJEAN", "jean.valjan@plouc.com", "password", "1854")
+    db.update_user("Jean-François", "BOULI", "jeanfrancois@jf.fr", "password", "1950")
     return render_template('signup.html',error=error)
     
 # def connect_db():

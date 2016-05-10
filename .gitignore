@@ -71,3 +71,6 @@ db.sqlite3
 # project
 /media
 /pldjardin/databases.py
+
+#database
+/database/general.sqlite
