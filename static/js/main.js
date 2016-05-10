@@ -1,12 +1,12 @@
-$(function(){
-	SETTINGS = {
-		'MAPBOXTOKEN':'pk.eyJ1IjoibHRvdXphcmQiLCJhIjoiY2lvMGV5OTJhMDB2Y3dka2xrZHpycGlrZiJ9.70MUkG_bCx7MPyIOhwfcKA',
-		'GEOPOSITIONS':{
-			'INSALYON':[45.7832543, 4.8780048]
-		}
+SETTINGS = {
+	'MAPBOXTOKEN':'pk.eyJ1IjoibHRvdXphcmQiLCJhIjoiY2lvMGV5OTJhMDB2Y3dka2xrZHpycGlrZiJ9.70MUkG_bCx7MPyIOhwfcKA',
+	'GEOPOSITIONS':{
+		'INSALYON':[45.7832543, 4.8780048]
 	}
+}
 
-
+$(function(){
+	$.material.init();
 
 	var mymap = L.map('mapid').setView(SETTINGS.GEOPOSITIONS.INSALYON, 13);
 
@@ -17,4 +17,9 @@ $(function(){
 		id: 'ltouzard.0390bjno',
 		accessToken: SETTINGS.MAPBOXTOKEN
 	}).addTo(mymap);
+
+	// add marker to insa
+	L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
+	    .bindPopup('Bienvenu(e) à l\'INSA.')
+	    .openPopup();
 });
