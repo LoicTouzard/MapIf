@@ -11,11 +11,6 @@ Les objectif sont décrits dans le [cahier des charges](doc/cdc.md)
  * [Bootstrap Material Design](http://fezvrasta.github.io/bootstrap-material-design/)
 
 ### De quoi j'ai besoin ?
- * [Python 3.5+](https://www.python.org/downloads/) et l'installateur de package python `pip` correspondant
+ * [Python 3](https://www.python.org/downloads/) et l'installateur de package python `pip` correspondant
 
- Le framework back n'est pas encore défini.
-
- * [Django Python 1.9.5](https://www.djangoproject.com/)
-
- ou
  * [Flask](http://flask.pocoo.org/)

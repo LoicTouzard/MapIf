@@ -1,26 +1,34 @@
 html,
 body,
 #mapid,
-#main-content{
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin:0;
-    padding: 0;
+#page-content {
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin:0;
+	padding: 0;
 }
 
 #mapid {
-    background: #58B;
+	background: #58B;
 }
 
-#main-content{
-	position: absolute;
-	top:0;
-	left:0;
-	bottom: 0;
-	right:0;
+#page-content{
+	padding-top: 50px;
 }
+
+@media (min-width:1200px) {
+	#page-content{
+		padding-top: 60px;
+	}
+}
+
+
 
 .navbar{
 	margin-bottom: 0;
+	z-index: 2000;
+	width: 100%;
+	opacity: 0.9;
+	position: absolute;
 }
