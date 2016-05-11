@@ -18,13 +18,15 @@ app.config.from_object(__name__)
 
 @app.route('/')
 def list():
-    cur = g.db.execute('select nom, prenom, lat, lon from users')
     users = []
+    '''
+    cur = g.db.execute('select nom, prenom, lat, lon from users')
     for row in cur.fetchall():
         u = User.User(row[0],row[1],None,'nico',None,None)
         u.setLatLon(row[2],row[3])
         users.append(u)
-    return render_template('list.html', users=users)
+    '''
+    return render_template('map.html', users=users)
     
 @app.route('/map')
 def map():
@@ -90,4 +92,3 @@ def inscrire():
 def launch_server():
     db.init_db()
     app.run(host='0.0.0.0')
-    

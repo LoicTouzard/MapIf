@@ -1,16 +1,96 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <title>Map-IF</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<title>Map-IF</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{% block css %}
+	<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-3.3.6/css/bootstrap.min.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/bootstrap-material-design.min.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/ripples.min.css') }}">
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+	{% endblock %}
+
 </head>
 <body>
- 
-{% block body %}{% endblock %}
+	{% block body %}
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="javascript:void(0)">Map-IF</a>
+				</div>
+				<div class="navbar-collapse collapse navbar-inverse-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="javascript:void(0)">Carte</a></li>
+						<li><a href="javascript:void(0)">Liste</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><span class="glyphicon glyphicon-log-in"></span> Connexion</a></li>
+						<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal"><span class="glyphicon glyphicon-log-in"></span> S'inscrire</a></li>
+						<li><a href="javascript:void(0)">Profil</a></li>
+						<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Deconnexion</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
+		<div id="page-content">
+			<div id="mapid"></div>
+		</div>
+	{% endblock %}
+	<!-- connexion modal -->
+	<div class="modal fade" id="connexionModal" tabindex="-1" role="dialog" aria-labelledby="connexion">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="connexion">Connexion</h4>
+	      </div>
+	      <div class="modal-body">
+	        ...
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+	        <button type="button" class="btn btn-primary">Se connecter</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<!-- inscription modal -->
+	<div class="modal fade" id="inscriptionModal" tabindex="-1" role="dialog" aria-labelledby="inscription">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="inscription">Inscription</h4>
+	      </div>
+	      <div class="modal-body">
+	        ...
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+	        <button type="button" class="btn btn-primary">S'inscrire</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	{% block scripts %}
+		<!-- Javascript Libs -->
+		<script type="text/javascript" src="{{ url_for('static', filename='libs/jquery-2.2.3/jquery-2.2.3.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-3.3.6/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-material-design/js/material.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-material-design/js/ripples.min.js') }}"></script>
+		<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+		<!-- Personnal -->
+		<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+	{% endblock %}
 </body>
 </html>

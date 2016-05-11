@@ -23,11 +23,9 @@ body,
 	}
 }
 
-
-
 .navbar{
 	margin-bottom: 0;
-	z-index: 2000;
+	z-index: 1010;
 	width: 100%;
 	opacity: 0.9;
 	position: absolute;
