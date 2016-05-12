@@ -139,6 +139,6 @@ def get_user_id(email, pwd):
     for a in session.query(User).filter(User.email == email, User.pwd == pwd):
         result.append(a)
     if len(result) == 0:
-        return -1
+        return None
     else:
         return result[0].id
