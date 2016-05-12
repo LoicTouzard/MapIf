@@ -26,7 +26,7 @@
 
 ###Technos :
 - Back :
-         Python django. (Utilisation des User du Framework.)
+         Python flask
 
 - Front :
         jQuery et ses plugins

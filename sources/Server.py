@@ -44,7 +44,7 @@ def login():
     if request.method == 'POST':
         login = request.form['username']
         mdp = request.form['password']
-        cur = g.db.execute('select id from users where email = ? and mdp = ?',(login,mdp,))
+        cur = g.db.execute('select id from users where email = ? and mdp = ?',(login,mdp,))# QUOI DES MP EN CLAIR DANS LA BASE ??
         if(cur.fetchone() is None):
             error = "Problème durant l'authentification !"
         else:
