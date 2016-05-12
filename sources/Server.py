@@ -43,7 +43,7 @@ def root():
     return render_template('map.html')
 
 
-@app.route('/users', methods=['GET'])
+@app.route('/', methods=['GET'])
 def users():
     users = db.get_all_users()
     return render_template('map.html', users=users)
@@ -81,7 +81,7 @@ def signup():
         firstname = request.form['firstname'];
         lastname = request.form['lastname']; 
         email = request.form['email']; 
-        pwd = request.form['pwd']; 
+        pwd = request.form['password']; 
         promo = request.form['promo'];
         db.create_user(firstname, lastname, email, pwd, promo)
         load_user(session, email, pwd)
