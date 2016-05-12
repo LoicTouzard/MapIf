@@ -60,6 +60,9 @@ $(function(){
 	$('#form-connexion').on('submit', function(e) {
         e.preventDefault();
         $this = $(this);
+
+        // ajouter form verification
+
  		$.ajax({
 	        method: "POST",
 	        url: SETTINGS.SERVER_ADDR + "/login",
@@ -69,11 +72,49 @@ $(function(){
 	            console.log("AJAX OK");
 	            console.log(json);
 	            if(json.response.status == "ok"){
-	            	//refresh
-            		location.reload(true).
+	            	//refresh en etant connecté au server
+            		location.reload(true);
+	            }
+	            else if{
+	            	
 	            }
 	            else{
+					alert("authentification failed");
+	            }
+	        },
+	        error: function(json, statut, erreur){
+	            console.log("AJAX NOK");
+	            alert("Désolé ! Une erreur serveur est survenue, réessayez, sinon actualisez la page.");
+	        },
+	        complete: function(){
+	            console.log("AJAX DONE");
+	        }
+	    });
+    });
+
+    $('#form-inscription').on('submit', function(e) {
+        e.preventDefault();
+        $this = $(this);
+
+        //ajouter form verification
+
+ 		$.ajax({
+	        method: "POST",
+	        url: SETTINGS.SERVER_ADDR + "/signup",
+	        data: $this.serialize(),
+	        cache: false,
+	        success: function(json){
+	            console.log("AJAX OK");
+	            console.log(json);
+	            if(json.response.status == "ok"){
+	            	//refresh en etant connecté au server
+            		location.reload(true);
+	            }
+	            else if{
 	            	
+	            }
+	            else{
+					alert("authentification failed");
 	            }
 	        },
 	        error: function(json, statut, erreur){

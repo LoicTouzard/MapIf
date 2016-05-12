@@ -22,7 +22,7 @@ PASSWORD = 'default'
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-@app.route('/users', methods=['GET'])
+@app.route('/', methods=['GET'])
 def users():
     users = db.get_all_users()
     return render_template('map.html', users=users)
@@ -32,7 +32,7 @@ def login():
     status = None
     if request.method == 'POST':
         email = request.form['email']
-        pwd = request.form['pwd']
+        pwd = request.form['password']
         usr_id = db.get_user_id(email, pwd)
         if usr_id:
             session['connected'] = True
@@ -62,7 +62,7 @@ def inscrire():
         firstname = request.form['firstname'];
         lastname = request.form['lastname']; 
         email = request.form['email']; 
-        pwd = request.form['pwd']; 
+        pwd = request.form['password']; 
         promo = request.form['promo'];
         db.create_user(firstname, lastname, email, pwd, promo)
         status = 'ok'
