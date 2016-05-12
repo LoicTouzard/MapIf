@@ -10,6 +10,7 @@ from flask import abort
 from flask import render_template
 from flask import flash
 from flask import jsonify
+from flask.ext.session import Session
 from sources import db
 
 # configuration
@@ -19,8 +20,28 @@ USERNAME = 'admin'
 PASSWORD = 'default'
 
 # create our little application :)
+
 app = Flask(__name__)
+# Check Configuration section for more details
+SESSION_TYPE = 'redis'
 app.config.from_object(__name__)
+Session(app)
+
+
+def load_user(session, email, pwd):
+    usr = db.get_user(email, pwd)
+    if usr:
+        session['user'] = {
+            'firstname': usr.firstname,
+            'lastname': usr.lastname,
+            'email': usr.email,
+            'promo': usr.promo
+        }
+
+@app.route('/', methods=['GET'])
+def root():
+    return render_template('map.html')
+
 
 @app.route('/users', methods=['GET'])
 def users():
@@ -33,19 +54,17 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         pwd = request.form['pwd']
-        usr_id = db.get_user_id(email, pwd)
-        if usr_id:
-            session['connected'] = True
+        load_user(session, email, pwd)
+        if session['user']:
             status = 'ok'
         else:
-            session['connected'] = False
             status = 'ko'
     return jsonify(response={'status': status})
     
 @app.route('/logout')
 def logout():
-    if session['connected']:
-        session.pop('connected', None)
+    if session['user']:
+        session.pop('user', None)
     return redirect(url_for('/'))
     
 @app.route('/profil', methods=['GET', 'POST'])
@@ -56,7 +75,7 @@ def profil():
         return render_template('profil.html')
     
 @app.route('/signup', methods=['POST'])
-def inscrire():
+def signup():
     status = None
     if request.method == 'POST':
         firstname = request.form['firstname'];
@@ -65,10 +84,11 @@ def inscrire():
         pwd = request.form['pwd']; 
         promo = request.form['promo'];
         db.create_user(firstname, lastname, email, pwd, promo)
+        load_user(session, email, pwd)
         status = 'ok'
     else:
         status = 'ko'
-    return flask.jsonify(response={'status': status})
+    return jsonify(response={'status': status})
     
 
 def launch_server():

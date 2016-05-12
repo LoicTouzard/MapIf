@@ -27,6 +27,7 @@ _DBNAME_ = "general"
 
 # ----------------- OBJECTS
 
+
 class User(_BASE_):
     __tablename__ = 'user'
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
@@ -40,6 +41,7 @@ class User(_BASE_):
 
     def __repr__(self):
         return "<User(id='{0}',firstname='{1}',lastname='{2}',email='{3}',promo='{4}')>".format(self.id, self.firstname, self.lastname, self.email, self.promo)
+
 
 class Location(_BASE_):
     __tablename__ = 'location'
@@ -111,7 +113,7 @@ def _get_default_db_session():
 
 def create_user(firstname, lastname, email, pwd, promo):
     session = _get_default_db_session()
-    if not user_exist(firstname, lastname):
+    if not user_exist(email):
         session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd,promo=promo))       
         session.commit()
         session.close()
@@ -133,7 +135,7 @@ def user_exist(email):
         result.append(a)
     return len(result) != 0
     
-def get_user_id(email, pwd):
+def get_user(email, pwd):
     session = _get_default_db_session()
     result = []
     for a in session.query(User).filter(User.email == email, User.pwd == pwd):
@@ -141,4 +143,4 @@ def get_user_id(email, pwd):
     if len(result) == 0:
         return None
     else:
-        return result[0].id
+        return result[0]
