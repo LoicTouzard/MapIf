@@ -148,6 +148,14 @@
 
 	<!-- Personnal -->
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+	<script type="text/javascript">
+	  {% if not session.connected %}
+	  alert("pas connecte !");
+	  {% endif %}
+	  {% if session.connected %}
+	  alert("connecte !");
+	  {% endif %}
+	</script>
 	{% endblock %}
 </body>
 </html>

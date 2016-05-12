@@ -2,7 +2,8 @@ SETTINGS = {
 	'MAPBOXTOKEN':'pk.eyJ1IjoibHRvdXphcmQiLCJhIjoiY2lvMGV5OTJhMDB2Y3dka2xrZHpycGlrZiJ9.70MUkG_bCx7MPyIOhwfcKA',
 	'GEOPOSITIONS':{
 		'INSALYON':[45.7832543, 4.8780048]
-	}
+	},
+	'SERVER_ADDR':"http://localhost:5000"
 }
 
 $(function(){
@@ -55,4 +56,33 @@ $(function(){
 		updateError(checkSame());
 	});
 */
+	
+	$('#form-connexion').on('submit', function(e) {
+        e.preventDefault();
+        $this = $(this);
+ 		$.ajax({
+	        method: "POST",
+	        url: SETTINGS.SERVER_ADDR + "/login",
+	        data: $this.serialize(),
+	        cache: false,
+	        success: function(json){
+	            console.log("AJAX OK");
+	            console.log(json);
+	            if(json.response.status == "ok"){
+	            	//refresh
+            		location.reload(true).
+	            }
+	            else{
+	            	
+	            }
+	        },
+	        error: function(json, statut, erreur){
+	            console.log("AJAX NOK");
+	            alert("Désolé ! Une erreur serveur est survenue, réessayez, sinon actualisez la page.");
+	        },
+	        complete: function(){
+	            console.log("AJAX DONE");
+	        }
+	    });
+    });
 });
