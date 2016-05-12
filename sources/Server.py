@@ -1,9 +1,15 @@
 # all the imports
 import sqlite3
 from contextlib import closing
-from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash
-from sources import User
+from flask import Flask 
+from flask import request
+from flask import session
+from flask import redirect
+from flask import url_for
+from flask import abort
+from flask import render_template
+from flask import flash
+from flask import jsonify
 from sources import db
 
 # configuration
@@ -16,46 +22,31 @@ PASSWORD = 'default'
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-@app.route('/')
-def list():
-    users = []
-    '''
-    cur = g.db.execute('select nom, prenom, lat, lon from users')
-    for row in cur.fetchall():
-        u = User.User(row[0],row[1],None,'nico',None,None)
-        u.setLatLon(row[2],row[3])
-        users.append(u)
-    '''
-    return render_template('map.html', users=users)
-    
-@app.route('/map')
-def map():
-    cur = g.db.execute('select nom, prenom, lat, lon from users')
-    users = []
-    for row in cur.fetchall():
-        u = User.User(row[0],row[1],None,'nico',None,None)
-        u.setLatLon(row[2],row[3])
-        users.append(u)
+@app.route('/users', methods=['GET'])
+def users():
+    users = db.get_all_users()
     return render_template('map.html', users=users)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
-    error = None
+    status = None
     if request.method == 'POST':
-        login = request.form['username']
-        mdp = request.form['password']
-        cur = g.db.execute('select id from users where email = ? and mdp = ?',(login,mdp,))
-        if(cur.fetchone() is None):
-            error = "Problème durant l'authentification !"
+        email = request.form['email']
+        pwd = request.form['pwd']
+        usr_id = db.get_user_id(email, pwd)
+        if usr_id == -1:
+            session['connected'] = False
+            status = 'ko'
         else:
-            session['logged_in'] = request.form['username']
-            return redirect(url_for('list'))
-    return render_template('login.html',error=error)
+            session['connected'] = True
+            status = 'ok'
+    return jsonify(response={'status': status})
     
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
-    return redirect(url_for('list'))
+    if session['connected']:
+        session.pop('connected', None)
+    return redirect(url_for('/'))
     
 @app.route('/profil', methods=['GET', 'POST'])
 def profil():
@@ -64,11 +55,20 @@ def profil():
     elif request.method == 'GET':
         return render_template('profil.html')
     
-@app.route('/inscrire')
+@app.route('/signup', methods=['POST'])
 def inscrire():
-    error = None
-    db.update_user("Jean-François", "BOULI", "jeanfrancois@jf.fr", "password", "1950")
-    return render_template('signup.html',error=error)
+    status = None
+    if request.method == 'POST':
+        firstname = request.form['firstname'];
+        lastname = request.form['lastname']; 
+        email = request.form['email']; 
+        pwd = request.form['pwd']; 
+        promo = request.form['promo'];
+        db.create_user(firstname, lastname, email, pwd, promo)
+        status = 'ok'
+    else:
+        status = 'ko'
+    return flask.jsonify(response={'status': status})
     
 # def connect_db():
     # return sqlite3.connect(app.config['DATABASE'])
