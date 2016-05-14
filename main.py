@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -!- encoding:utf8 -!-
 
-from sources import Server
+from src import Server
 
 Server.launch_server()
