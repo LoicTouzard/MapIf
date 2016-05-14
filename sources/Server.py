@@ -10,7 +10,7 @@ from flask import abort
 from flask import render_template
 from flask import flash
 from flask import jsonify
-from flask import espace
+from flask import escape
 from sources.utils import db
 from sources.utils.response import Response
 from sources.utils import validator
