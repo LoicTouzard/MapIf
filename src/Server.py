@@ -13,9 +13,9 @@ from flask import escape
 from flask.ext.responses import json_response
 from flask.ext.responses import xml_response
 from flask.ext.responses import auto_response
-from sources.utils import db
-from sources.utils.response import Response
-from sources.utils import validator
+from src.utils import db
+from src.utils.response import Response
+from src.utils import validator
 from datetime import date
 import hashlib
 import binascii

@@ -82,20 +82,20 @@
 	<div class="modal fade" id="inscriptionModal" tabindex="-1" role="dialog" aria-labelledby="inscription">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<form>
+				<form id="form-inscription">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title" id="inscription">Inscription</h4>
 					</div>
 					<div class="modal-body">
 						<div class="form-group label-floating">
-							<label for="form-inscription-input-lastname" class="control-label">Nom</label>
-							<input class="form-control" id="form-inscription-input-lastname" name="lastname" required="required" type="text">
+							<label for="form-inscription-input-firstname" class="control-label">Prénom</label>
+							<input class="form-control" id="form-inscription-input-firstname" name="firstname" required="required" type="text">
 							<span class="help-block">Vous avez bien un nom ? non ?</span>
 						</div>
 						<div class="form-group label-floating">
-							<label for="form-inscription-input-firstname" class="control-label">Prénom</label>
-							<input class="form-control" id="form-inscription-input-firstname" name="firstname" required="required" type="text">
+							<label for="form-inscription-input-lastname" class="control-label">Nom</label>
+							<input class="form-control" id="form-inscription-input-lastname" name="lastname" required="required" type="text">
 							<span class="help-block">C'est bon, c'est bon, je demanderai pas le téléphone...</span>
 						</div>
 						<div class="form-group label-floating">
@@ -151,14 +151,17 @@
 		var users = [];
 		{% for user in users %}
 		users.push({
-			id: "{{ user.id }}",
-			firstname: "{{ user.firstname }}",
-			lastname: "{{ user.lastname }}",
-			promo: "{{ user.promo }}",
-			lat: "{{ user.lat }}",
-			lon: "{{ user.lon }}"
+			id: "{{ user.user.id }}",
+			firstname: "{{ user.user.firstname }}",
+			lastname: "{{ user.user.lastname }}",
+			promo: "{{ user.user.promo }}",
+			lat: "{{ user.location.lat }}",
+			lon: "{{ user.location.lon }}",
+
 		});
 		{% endfor %}
+		console.log(users);
+		console.log("connected : {{ session.user }}")
 	</script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
 	{% endblock %}

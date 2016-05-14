@@ -44,14 +44,13 @@ $(function(){
 	L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
 	    .bindPopup('Bienvenu(e) à l\'INSA.')
 	    .openPopup();
-	   /*
+
 	for (var i = users.length - 1; i >= 0; i--) {
-		L.marker([users[i].lat, users[i].lng]).addTo(mymap)
+		L.marker([users[i].lat, users[i].lon]).addTo(mymap)
 		    .bindPopup(users[i].firstname + " " + users[i].lastname);
 
 		// ajouter des binds ?
 	};
-		*/
 
 
 
@@ -62,11 +61,9 @@ $(function(){
 	var $p3_msg = $("#p3-msg").hide();
 
 	var addFieldError = function($el){
-		console.log("add error to :", $el);
 		$el.addClass("has-warning");
 	}
 	var removeFieldError = function($el){
-		console.log("remove error to :", $el);
 		$el.removeClass("has-warning");
 	}
 
@@ -129,6 +126,7 @@ $(function(){
 	
 	$('#form-connexion').on('submit', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         $this = $(this);
 
         // ajouter form verification
@@ -143,7 +141,8 @@ $(function(){
 	            console.log(json);
 	            if(json.response.status == "ok"){
 	            	//refresh en etant connecté au server
-            		location.reload(true);
+            		//location.reload(true);
+	            	console.log("CONNEXION");
 	            }
 	            else if(json.repsonse.status == "nok"){
 	            	// connexion refused
@@ -161,10 +160,12 @@ $(function(){
 	            console.log("AJAX DONE");
 	        }
 	    });
+		return false;
     });
 
     $('#form-inscription').on('submit', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         $this = $(this);
 
         //ajouter form verification
@@ -178,7 +179,8 @@ $(function(){
 	            console.log(json);
 	            if(json.response.status == "ok"){
 	            	//refresh en etant connecté au server
-            		location.reload(true);
+            		// location.reload(true);
+	            	console.log("REGISTERED");
 	            }
 	            else if(json.repsonse.status == "nok"){
 	            	$this.prepend(createAlert("Erreur à l'inscription"));
@@ -195,5 +197,6 @@ $(function(){
 	            console.log("AJAX DONE");
 	        }
 	    });
+		return false;
     });
 });
