@@ -5,7 +5,6 @@ from flask import Flask
 from flask import request
 from flask import session
 from flask import redirect
-from flask import url_for
 from flask import abort
 from flask import render_template
 from flask import flash
@@ -51,6 +50,11 @@ def load_user(session, email, pwd):
 def check_connected(session):
     return session.get('user', None)
 
+def hash_pwd(pwd_clear):
+    dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
+    return binascii.hexlify(dk)
+
+
 # --------------------------
 #   Handlers de l'API
 # --------------------------
@@ -71,8 +75,7 @@ def login():
         if request.method == 'POST':
             email = request.form['email']
             pwd_clear = request.form['password']
-            dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
-            pwd_hash = binascii.hexlify(dk)
+            pwd_hash = hash_pwd(pwd_clear)
             load_user(session, email, pwd_hash)
             if session['user']:
                 err = False
@@ -87,7 +90,7 @@ def logout():
         return json_response(Response(err, content).json(), status_code=403)
     else:
         session.pop('user', None)
-    return redirect(url_for('/'))
+    return redirect('/')
     
 @app.route('/profil', methods=['POST'])
 def profil():
@@ -125,8 +128,7 @@ def signup():
         if pwd_clear2 is not pwd_clear:
             content['password2'] = "Les deux mots de passe doivent être identiques !"
         # hash password
-        dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
-        pwd_hash = binascii.hexlify(dk)
+        pwd_hash = hash_pwd(pwd_clear)
         # realisation si pas d'erreur
         if len(content.keys()) is not 0:
             content = "Cette adresse email est déjà attribuée à un utilisateur."
@@ -144,7 +146,7 @@ def signup():
 @app.route('/locations', methods=['POST'])
 def locations():
     err = True
-    content = "Opération interdite, vous êtes déjà connecté !"
+    content = "Opération interdite, vous n'êtes pas connecté !"
     code = 403
     if check_connected(session):
         code = 200
@@ -162,16 +164,19 @@ def locations():
 @app.route('/addlocation', methods=['POST'])
 def addlocation():
     err = True
-    content = "Une erreur s'est produite, l'ajout de la localisation est annulée."
-    user = session['id']
-    city = request.form['city']
-    country = request.form['country'] 
-    lat = request.form['lat'] 
-    lon = request.form['lon']
-    db.create_location(user, city, country, lat, lon)
-    err = False
-    content = 'ok'
-    return jsonify(response=Response(err, content).json())
+    content = "Opération interdite, vous n'êtes pas connecté !"
+    code = 403
+    if check_connected(session):
+        code = 200
+        user = session['id']
+        city = request.form['city']
+        country = request.form['country'] 
+        lat = request.form['lat'] 
+        lon = request.form['lon']
+        db.create_location(user, city, country, lat, lon)
+        err = False
+        content = 'ok'
+    return json_response(Response(err, content).json(), status_code=code)
 
 
 # -----------------------
