@@ -137,7 +137,7 @@ def signup():
         # hash password
         pwd_hash = hash_pwd(pwd_clear)
         # realisation si pas d'erreur
-        if len(content.keys()) is not 0:
+        if len(content.keys()) is 0:
             content = "Cette adresse email est déjà attribuée à un utilisateur."
             # verification de l'existence de l'utilisateur
             if not db.user_exists(email):
