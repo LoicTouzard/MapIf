@@ -1,4 +1,6 @@
 flask
 sqlalchemy
 sqlalchemy_utils
-Flask-Responses
+flask-responses
+flask-cors
+

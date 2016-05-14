@@ -12,6 +12,7 @@ from flask import escape
 from flask.ext.responses import json_response
 from flask.ext.responses import xml_response
 from flask.ext.responses import auto_response
+from flask.ext.cors import CORS
 from src.utils import db
 from src.utils.response import Response
 from src.utils import validator
@@ -30,6 +31,8 @@ app = Flask(__name__)
 # Check Configuration section for more details
 app.config.from_object(__name__)
 app.secret_key = 'development_key'
+
+CORS(app, resources={r"/": {"origins": "*"}, r"/": {"supports_credentials": True}})
 
 # --------------------------
 #   Fonction utilitaires
