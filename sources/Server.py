@@ -153,11 +153,6 @@ def locations():
                 content = locations
     return json_response(Response(err, content).json(), status_code=code)
 
-# -----------------------
-#   Lancement du serveur
-# -----------------------
->>>>>>> 18c7b76d0bdbcd06f4ec4f519f93ec75146807ed
-
 @app.route('/addlocation', methods=['POST'])
 def addlocation():
     err = True
@@ -172,6 +167,11 @@ def addlocation():
         err = False
         content = 'ok'
     return jsonify(response=Response(err, content).json())
+
+
+# -----------------------
+#   Lancement du serveur
+# -----------------------
 
     
 def launch_server():
