@@ -17,6 +17,8 @@ from sources.utils import db
 from sources.utils.response import Response
 from sources.utils import validator
 from datetime import date
+import hashlib
+import binascii
 
 # configuration
 DEBUG = True
@@ -38,6 +40,7 @@ def load_user(session, email, pwd):
     usr = db.get_user(email, pwd)
     if usr:
         session['user'] = {
+            'id': usr.id,
             'firstname': usr.firstname,
             'lastname': usr.lastname,
             'email': usr.email,
@@ -106,7 +109,9 @@ def signup():
         firstname = escape(request.form['firstname'])
         lastname = escape(request.form['lastname'])
         email = request.form['email']
-        pwd = request.form['password']
+        pwd_clear = request.form['password']
+        dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
+        pwd_hash = binascii.hexlify(dk)
         promo = request.form['promo']
         # verification des champs
         if not validator.validate(email, 'email'):
