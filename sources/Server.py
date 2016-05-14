@@ -61,7 +61,7 @@ def login():
         if session['user']:
             err = False
             content = 'ok'
-    return jsonify(response=Response(err, content))
+    return jsonify(response=Response(err, content).json())
     
 @app.route('/logout')
 def logout():
@@ -78,19 +78,19 @@ def profil():
     
 @app.route('/signup', methods=['POST'])
 def signup():
-    status = None
+    err = True
+    content = "Une erreur s'est produite, l'inscription de l'utilisateur est annulée."
     if request.method == 'POST':
-        firstname = request.form['firstname'];
-        lastname = request.form['lastname']; 
-        email = request.form['email']; 
-        pwd = request.form['password']; 
-        promo = request.form['promo'];
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        email = request.form['email'] 
+        pwd = request.form['password'] 
+        promo = request.form['promo']
         db.create_user(firstname, lastname, email, pwd, promo)
         load_user(session, email, pwd)
-        status = 'ok'
-    else:
-        status = 'ko'
-    return jsonify(response={'status': status})
+        err = False
+        content = 'ok'
+    return jsonify(response=Response(err, content).json())
     
 
 def launch_server():
