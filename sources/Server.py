@@ -10,7 +10,6 @@ from flask import abort
 from flask import render_template
 from flask import flash
 from flask import jsonify
-from flask.ext.session import Session
 from sources import db
 
 # configuration
@@ -23,9 +22,8 @@ PASSWORD = 'default'
 
 app = Flask(__name__)
 # Check Configuration section for more details
-SESSION_TYPE = 'redis'
 app.config.from_object(__name__)
-Session(app)
+app.secret_key = 'development_'
 
 
 def load_user(session, email, pwd):
@@ -40,11 +38,6 @@ def load_user(session, email, pwd):
 
 @app.route('/', methods=['GET'])
 def root():
-    return render_template('map.html')
-
-
-@app.route('/', methods=['GET'])
-def users():
     users = db.get_all_users()
     return render_template('map.html', users=users)
 
