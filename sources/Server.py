@@ -10,7 +10,9 @@ from flask import abort
 from flask import render_template
 from flask import flash
 from flask import jsonify
-from sources import db
+from sources.utils import db
+from sources.utils import response
+from sources.utils import validator
 
 # configuration
 DEBUG = True
@@ -25,6 +27,9 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = 'development_'
 
+# --------------------------
+#   Fonction utilitaires
+# --------------------------
 
 def load_user(session, email, pwd):
     usr = db.get_user(email, pwd)
@@ -36,6 +41,10 @@ def load_user(session, email, pwd):
             'promo': usr.promo
         }
 
+# --------------------------
+#   Handlers de l'API
+# --------------------------
+
 @app.route('/', methods=['GET'])
 def root():
     users = db.get_all_users()
@@ -43,16 +52,16 @@ def root():
 
 @app.route('/login', methods=['POST'])
 def login():
-    status = None
+    err = True
+    content = "L'utilisateur et/ou le mot de passe est érroné."
     if request.method == 'POST':
         email = request.form['email']
         pwd = request.form['pwd']
         load_user(session, email, pwd)
         if session['user']:
-            status = 'ok'
-        else:
-            status = 'ko'
-    return jsonify(response={'status': status})
+            err = False
+            content = 'ok'
+    return jsonify(response=Response(err, content))
     
 @app.route('/logout')
 def logout():
