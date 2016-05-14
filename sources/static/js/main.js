@@ -10,7 +10,24 @@ $(function(){
 	// Material Init
 	$.material.init();
 
-	// Map init
+	// generate the promotions year
+	(function(){
+		var startYear = 1969;
+		var currentYear = new Date().getFullYear();
+		var lastYear = currentYear+4;
+		var $select = $("#form-inscription-input-promotion");
+		for (var i = startYear; i < lastYear; i++) {
+			var $option = $('<option value="'+i+'">'+i+'</option>');
+			if(i == currentYear){
+				$option.attr("selected", "selected");
+			}
+			$select.append($option);
+		};
+	})()
+
+
+	/********* MAP *********/
+
 	var mymap = L.map('mapid').setView(SETTINGS.GEOPOSITIONS.INSALYON, 13);
 
 	// different maps providers
@@ -25,46 +42,88 @@ $(function(){
 	L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
 	    .bindPopup('Bienvenu(e) à l\'INSA.')
 	    .openPopup();
-
+	   /*
 	for (var i = users.length - 1; i >= 0; i--) {
 		L.marker([users[i].lat, users[i].lng]).addTo(mymap)
 		    .bindPopup(users[i].firstname + " " + users[i].lastname);
 
 		// ajouter des binds ?
 	};
+		*/
 
 
 
-	// generate the promotions year
-	(function(){
-		var startYear = 1970;
-		var currentYear = new Date().getFullYear();
-		var lastYear = currentYear+4;
-		var $select = $("#form-inscription-input-promotion");
-		for (var i = startYear; i < lastYear; i++) {
-			var $option = $('<option value="'+i+'">'+i+'</option>');
-			if(i == currentYear){
-				$option.attr("selected", "selected");
+	/********* FORM VALIDATION *********/
+	var p3_trolled = false;
+	var p3_open = false;
+	var $p3_block = $("#p3-block").hide();
+	var $p3_msg = $("#p3-msg").hide();
+
+	var addFieldError = function($el){
+		console.log("add error to :", $el);
+		$el.addClass("has-warning");
+	}
+	var removeFieldError = function($el){
+		console.log("remove error to :", $el);
+		$el.removeClass("has-warning");
+	}
+
+	var checkPasswords = function(){
+		$p1 = $("#form-inscription-input-password1");
+		p1 = $p1.val();
+		$p2 = $("#form-inscription-input-password2");
+		p2 = $p2.val();
+		$p3 = $("#form-inscription-input-password3");
+		p3 = $p3.val();
+		if($p2.val() != ""){
+			// check similarity with p1
+			if(p1 != p2){
+				addFieldError($p2.closest(".form-group"));
 			}
-			$select.append($option);
-		};
-	})()
+			else{
+				removeFieldError($p2.closest(".form-group"));
+				if(!p3_open && !p3_trolled){
+					//activate the troll not finished
+					$p3_block.show(500);
+					p3_open = true;
+				}
+			}
+		}
+		else{
+			//addFieldError($p2.closest(".form-group"));
+		}
+		if(p3_open){
+			if(p3 != ""){
+				// check similarity with p1
+				if(p1 != p3){
+					addFieldError($p3.closest(".form-group"));
+				}
+				else{
+					removeFieldError($p3.closest(".form-group"));
+				}
+			}
+			else{
+				// addFieldError($p3.closest(".form-group"));
+			}
+		}
+		if(p1 != "" && p1 == p2 && p1 == p3){
+			//validé !
+			if(!p3_trolled){
+				//activate the troll not finished
+				$p3_block.hide(500);
+				$p3_msg.show(500);
+				p3_open = false;
+				p3_trolled = true;
+			}
+		}
+	}
 
-	// form validation
-	/*
-	function checkSame() {
-	   var passwordVal = $("#form-inscription-input-password1").val();
-	   var checkVal = $("#form-inscription-input-password2").val();
-	   if (passwordVal == checkVal) {
-	     return true;
-	   }
-	   return false;
-	};
-	$("#form-inscription-input-password1, #form-inscription-input-password2").keyup(function(){
-		var $this = $(this); 
-		updateError(checkSame());
+	$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
+		checkPasswords();
 	});
-*/
+
+	
+	/********* AJAX *********/
 	
 	$('#form-connexion').on('submit', function(e) {
         e.preventDefault();

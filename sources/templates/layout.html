@@ -113,17 +113,15 @@
 							<input class="form-control" id="form-inscription-input-password2" name="password2" required="required" type="password">
 							<span class="help-block">Mais s'en rappeler c'est mieux !</span>
 						</div>
-						<!--
-						<div class="form-group label-floating">
+						<div id="p3-block" class="form-group label-floating">
 							<label for="form-inscription-input-password3" class="control-label">Répetez encore le mot de passe</label>
 							<input class="form-control" id="form-inscription-input-password3" type="password">
 							<span class="help-block">On est jamais trop prudent !</span>
 						</div>
-						<div id="password3-msg" class="alert alert-dismissible alert-success">
+						<div id="p3-msg" class="alert alert-dismissible alert-success">
 						  <button type="button" class="close" data-dismiss="alert">×</button>
 						  <strong>Ouaiiiiiis !</strong> Bon par contre ça servait à rien ... Merci quand même !
 						</div>
-						-->
 						<div class="form-group">
 							<label for="form-inscription-input-promotion" class="control-label">Année <del>d'obtention du diplôme</del> de promotion</label>
 							<select class="form-control" id="form-inscription-input-promotion" name="promotion" required="required">
@@ -163,14 +161,6 @@
 		{% endfor %}
 	</script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
-	<script type="text/javascript">
-	  {% if not session.connected %}
-	  alert("pas connecte !");
-	  {% endif %}
-	  {% if session.connected %}
-	  alert("connecte !");
-	  {% endif %}
-	</script>
 	{% endblock %}
 </body>
 </html>
