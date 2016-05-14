@@ -25,7 +25,9 @@ $(function(){
 		};
 	})()
 
-
+	var createAlert = function(msg){
+		return $('<div class="alert alert-dismissible alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Bah alors ?!</strong> '+msg+'</div>');
+	}
 	/********* MAP *********/
 
 	var mymap = L.map('mapid').setView(SETTINGS.GEOPOSITIONS.INSALYON, 13);
@@ -145,10 +147,10 @@ $(function(){
 	            }
 	            else if(json.repsonse.status == "nok"){
 	            	// connexion refused
-	            	
+	            	$this.prepend(createAlert("Erreur à la connexion"));
 	            }
 	            else{
-					alert("server authentification failed");
+	            	$this.prepend(createAlert("Erreur à la connexion : réponse inconnue"));
 	            }
 	        },
 	        error: function(json, statut, erreur){
@@ -166,7 +168,6 @@ $(function(){
         $this = $(this);
 
         //ajouter form verification
-
  		$.ajax({
 	        method: "POST",
 	        url: SETTINGS.SERVER_ADDR + "/signup",
@@ -180,10 +181,10 @@ $(function(){
             		location.reload(true);
 	            }
 	            else if(json.repsonse.status == "nok"){
-	            	
+	            	$this.prepend(createAlert("Erreur à l'inscription"));
 	            }
 	            else{
-					alert("authentification failed");
+	            	$this.prepend(createAlert("Erreur à l'inscription : réponse inconnue"));
 	            }
 	        },
 	        error: function(json, statut, erreur){
