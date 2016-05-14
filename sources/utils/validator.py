@@ -6,7 +6,8 @@ VALIDATORS = {
     'alphanum': re.compile('^\w+$'),
     'num': re.compile('^\d+$'),
     'price': re.compile('^\d+(\.\d+)$'),
-    'phone': re.compile('^(\+\d{2}(\s)?\d|\d{2})(\s)?(\d{2}(\s)?){4}$')
+    'phone': re.compile('^(\+\d{2}(\s)?\d|\d{2})(\s)?(\d{2}(\s)?){4}$'),
+    'year': re.compile('^\d{4}$')
 }
 
 def validate(field, vtype=None):
