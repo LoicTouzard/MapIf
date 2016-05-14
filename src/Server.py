@@ -114,14 +114,18 @@ def signup():
         code = 200
         content = "Une erreur s'est produite, l'inscription de l'utilisateur est annulée."
         # recuperation du contenu de la requete
-        firstname = escape(request.form['firstname'])
-        lastname = escape(request.form['lastname'])
-        email = request.form['email']
+        firstname = escape(request.form['firstname'].strip())
+        lastname = escape(request.form['lastname'].strip())
+        email = request.form['email'].strip()
         pwd_clear = request.form['password1']
         pwd_clear2 = request.form['password2']
-        promo = request.form['promo']
+        promo = request.form['promo'].strip()
         # verification des champs
         content = {}
+        if validator.is_empty(firstname):
+            content['firstname'] = "Le champ prénom ne doit pas être vide !"
+        if validator.is_empty(lastname):
+            content['lastname'] = "Le champ nom ne doit pas être vide !"
         if not validator.validate(email, 'email'):
             content['email'] = "L'email ne respecte pas le format attendu !"
         if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
