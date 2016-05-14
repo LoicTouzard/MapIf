@@ -109,16 +109,23 @@ def signup():
         firstname = escape(request.form['firstname'])
         lastname = escape(request.form['lastname'])
         email = request.form['email']
-        pwd_clear = request.form['password']
+        pwd_clear = request.form['password1']
+        pwd_clear2 = request.form['password2']
         dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
         pwd_hash = binascii.hexlify(dk)
         promo = request.form['promo']
         # verification des champs
+        content = {}
         if not validator.validate(email, 'email'):
-            content = "L'email ne respecte pas le format attendu !"
-        elif not validator.validate(promo, 'year') and int(promo) <= date.today().year:
-            content = "La promo n'est pas une année correctement formaté"
-        else:
+            content['email'] = "L'email ne respecte pas le format attendu !"
+        if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+            content['promo'] = "La promo n'est pas une année correctement formaté !"
+        if len(pwd_clear) < 6:
+            content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
+        if pwd_clear2 is not pwd_clear:
+            content['password2'] = "Les deux mots de passe doivent être identiques !"
+        # realisation si pas d'erreur
+        if len(content.keys()) is not 0:
             # creation de l'utilisateur
             db.create_user(firstname, lastname, email, pwd, promo)
             # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
