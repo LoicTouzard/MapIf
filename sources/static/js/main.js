@@ -26,6 +26,15 @@ $(function(){
 	    .bindPopup('Bienvenu(e) à l\'INSA.')
 	    .openPopup();
 
+	for (var i = users.length - 1; i >= 0; i--) {
+		L.marker([users[i].lat, users[i].lng]).addTo(mymap)
+		    .bindPopup(users[i].firstname + " " + users[i].lastname);
+
+		// ajouter des binds ?
+	};
+
+
+
 	// generate the promotions year
 	(function(){
 		var startYear = 1970;
@@ -75,11 +84,12 @@ $(function(){
 	            	//refresh en etant connecté au server
             		location.reload(true);
 	            }
-	            else if{
+	            else if(json.repsonse.status == "nok"){
+	            	// connexion refused
 	            	
 	            }
 	            else{
-					alert("authentification failed");
+					alert("server authentification failed");
 	            }
 	        },
 	        error: function(json, statut, erreur){
@@ -110,7 +120,7 @@ $(function(){
 	            	//refresh en etant connecté au server
             		location.reload(true);
 	            }
-	            else if{
+	            else if(json.repsonse.status == "nok"){
 	            	
 	            }
 	            else{

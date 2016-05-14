@@ -49,6 +49,7 @@
 	<div class="modal fade" id="connexionModal" tabindex="-1" role="dialog" aria-labelledby="connexion">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
+
 				<form id="form-connexion">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -147,6 +148,20 @@
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 
 	<!-- Personnal -->
+	<script type="text/javascript">
+		//javascript data
+		var users = [];
+		{% for user in users %}
+		users.push({
+			id: "{{ user.id }}",
+			firstname: "{{ user.firstname }}",
+			lastname: "{{ user.lastname }}",
+			promo: "{{ user.promo }}",
+			lat: "{{ user.lat }}",
+			lon: "{{ user.lon }}"
+		});
+		{% endfor %}
+	</script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
 	<script type="text/javascript">
 	  {% if not session.connected %}
