@@ -61,10 +61,10 @@ $(function(){
 	var $p3_msg = $("#p3-msg").hide();
 
 	var addFieldError = function($el){
-		$el.addClass("has-warning");
+		return $el.addClass("has-warning");
 	}
 	var removeFieldError = function($el){
-		$el.removeClass("has-warning");
+		return $el.removeClass("has-warning");
 	}
 
 	var checkPasswords = function(){
@@ -139,7 +139,7 @@ $(function(){
 	        success: function(json){
 	            console.log("AJAX OK");
 	            console.log(json);
-	            if(!json.response.has_error){
+	            if(!json.has_error){
 	            	//refresh en etant connecté au server
 	            	console.log("CONNEXION");
             		location.reload(true);
@@ -173,13 +173,28 @@ $(function(){
 	        success: function(json){
 	            console.log("AJAX OK");
 	            console.log(json);
-	            if(json.response.has_error){
+	            if(json.has_error){
 	            	//refresh en etant connecté au server
 	            	console.log("REGISTERED");
             		location.reload(true);
 	            }
 	            else{
-	            	$this.prepend(createAlert("Erreur à l'inscription"));
+	            	console.log(typeof json.content);
+	            	console.log(typeof json.content == "string");
+	            	if(typeof json.content == "string"){
+	            		// single message
+	            		$this.find(".modal-body").prepend(createAlert(json.content));
+	            	}
+	            	else{
+	            		// error is array
+	            		for (var field in json.content){
+						    if (json.content.hasOwnProperty(field)) {
+						    	$fgroup = $("#form-inscription-input-"+field).closest(".form-group");
+						    	addFieldError($fgroup);
+						    	$fgroup.prepend(createAlert(json.content.field));
+						    }
+						}
+	            	}
 	            }
 	        },
 	        error: function(json, statut, erreur){
