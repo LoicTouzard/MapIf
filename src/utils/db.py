@@ -128,12 +128,12 @@ def get_all_users():
     session.close()
     return users
 
-def user_exist(email):
+def user_exists(email):
     session = _get_default_db_session()
     result = []
     for a in session.query(User).filter(User.email == email):
         result.append(a)
-    return len(result) != 0
+    return (len(result) is not 0)
     
 def get_user(email, pwd):
     session = _get_default_db_session()

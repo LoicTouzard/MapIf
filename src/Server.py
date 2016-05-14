@@ -13,9 +13,9 @@ from flask import escape
 from flask.ext.responses import json_response
 from flask.ext.responses import xml_response
 from flask.ext.responses import auto_response
-from sources.utils import db
-from sources.utils.response import Response
-from sources.utils import validator
+from src.utils import db
+from src.utils.response import Response
+from src.utils import validator
 from datetime import date
 import hashlib
 import binascii
@@ -104,7 +104,7 @@ def signup():
     err = True
     code = 403
     content = "Opération interdite, vous êtes déjà connecté !"
-    if check_connected(session):
+    if not check_connected(session):
         code = 200
         content = "Une erreur s'est produite, l'inscription de l'utilisateur est annulée."
         # recuperation du contenu de la requete
@@ -129,13 +129,16 @@ def signup():
         pwd_hash = binascii.hexlify(dk)
         # realisation si pas d'erreur
         if len(content.keys()) is not 0:
-            # creation de l'utilisateur
-            db.create_user(firstname, lastname, email, pwd_hash, promo)
-            # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
-            load_user(session, email, pwd_hash)
-            # mise à jour des variables de réponse 
-            err = False
-            content = 'ok'
+            content = "Cette adresse email est déjà attribuée à un utilisateur."
+            # verification de l'existence de l'utilisateur
+            if not db.user_exists(email):
+                # creation de l'utilisateur
+                db.create_user(firstname, lastname, email, pwd_hash, promo)
+                # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
+                load_user(session, email, pwd_hash)
+                # mise à jour des variables de réponse 
+                err = False
+                content = 'ok'
     return json_response(Response(err, content).json(), status_code=code)
 
 @app.route('/locations', methods=['POST'])
@@ -160,15 +163,14 @@ def locations():
 def addlocation():
     err = True
     content = "Une erreur s'est produite, l'ajout de la localisation est annulée."
-    if request.method == 'POST':
-        user = session['id']
-        city = request.form['city']
-        country = request.form['country'] 
-        lat = request.form['lat'] 
-        lon = request.form['lon']
-        db.create_location(user, city, country, lat, lon)
-        err = False
-        content = 'ok'
+    user = session['id']
+    city = request.form['city']
+    country = request.form['country'] 
+    lat = request.form['lat'] 
+    lon = request.form['lon']
+    db.create_location(user, city, country, lat, lon)
+    err = False
+    content = 'ok'
     return jsonify(response=Response(err, content).json())
 
 
