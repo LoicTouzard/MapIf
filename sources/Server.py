@@ -9,8 +9,10 @@ from flask import url_for
 from flask import abort
 from flask import render_template
 from flask import flash
-from flask import jsonify
 from flask import escape
+from flask.ext.responses import json_response
+from flask.ext.responses import xml_response
+from flask.ext.responses import auto_response
 from sources.utils import db
 from sources.utils.response import Response
 from sources.utils import validator
@@ -42,6 +44,10 @@ def load_user(session, email, pwd):
             'promo': usr.promo
         }
 
+
+def check_connected(session):
+    return session.get('user', None)
+
 # --------------------------
 #   Handlers de l'API
 # --------------------------
@@ -54,38 +60,53 @@ def root():
 @app.route('/login', methods=['POST'])
 def login():
     err = True
-    content = "L'utilisateur et/ou le mot de passe est érroné."
-    if request.method == 'POST':
-        email = request.form['email']
-        pwd = request.form['pwd']
-        load_user(session, email, pwd)
-        if session['user']:
-            err = False
-            content = 'ok'
-    return jsonify(response=Response(err, content).json())
+    content = "Opération interdite, vous êtes déjà connecté !"
+    code = 403
+    if not check_connected(session):
+        content = "L'utilisateur et/ou le mot de passe est érroné."
+        code = 200
+        if request.method == 'POST':
+            email = request.form['email']
+            pwd = request.form['pwd']
+            load_user(session, email, pwd)
+            if session['user']:
+                err = False
+                content = 'ok'
+    return json_response(Response(err, content).json(), status_code=code)
     
 @app.route('/logout')
 def logout():
-    if session['user']:
+    err = True
+    content = "Opération interdite, vous n'êtes pas connecté !"
+    if not check_connected(session):
+        return json_response(Response(err, content).json(), status_code=403)
+    else:
         session.pop('user', None)
     return redirect(url_for('/'))
     
-@app.route('/profil', methods=['GET', 'POST'])
+@app.route('/profil', methods=['POST'])
 def profil():
-    if request.method == 'POST':
-        pass # faire la modification de profil
-    elif request.method == 'GET':
+    err = True
+    content = "Opération interdite, vous n'êtes pas connecté !"
+    if not check_connected(session):
+        return json_response(Response(err, content).json(), status_code=403)
+    else:
+        pass # TODO modification profil utilisateur
         return render_template('profil.html')
     
 @app.route('/signup', methods=['POST'])
 def signup():
     err = True
-    content = "Une erreur s'est produite, l'inscription de l'utilisateur est annulée."
-    if request.method == 'POST':
+    code = 403
+    content = "Opération interdite, vous êtes déjà connecté !"
+    if check_connected(session):
+        code = 200
+        content = "Une erreur s'est produite, l'inscription de l'utilisateur est annulée."
+        # recuperation du contenu de la requete
         firstname = escape(request.form['firstname'])
         lastname = escape(request.form['lastname'])
         email = request.form['email']
-        pwd = request.form['password'] 
+        pwd = request.form['password']
         promo = request.form['promo']
         # verification des champs
         if not validator.validate(email, 'email'):
@@ -100,8 +121,29 @@ def signup():
             # mise à jour des variables de réponse 
             err = False
             content = 'ok'
-    return jsonify(response=Response(err, content).json())
-    
+    return json_response(Response(err, content).json(), status_code=code)
+
+@app.route('/locations', methods=['POST'])
+def locations():
+    err = True
+    content = "Opération interdite, vous êtes déjà connecté !"
+    code = 403
+    if check_connected(session):
+        code = 200
+        uid = request.form['uid']
+        content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
+        if validator.validate(uid, 'num'):
+            uid = int(uid)
+            locations = get_user_locations(uid)
+            content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
+            if locations:
+                err = False
+                content = locations
+    return json_response(Response(err, content).json(), status_code=code)
+
+# -----------------------
+#   Lancement du serveur
+# -----------------------
 
 def launch_server():
     db.init_db()
