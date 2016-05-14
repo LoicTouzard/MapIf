@@ -144,3 +144,34 @@ def get_user(email, pwd):
         return None
     else:
         return result[0]
+
+def create_location(user, city, country, lat, lon):
+    session = _get_default_db_session()
+    session.add(Location(user=user, city=city, country=country, lat=lat, lon=lon))       
+    session.commit()
+    session.close()
+
+def get_user_locations(user):
+    session = _get_default_db_session()
+    locations = []
+    for l in session.query(Location).filter(Location.user == user):
+        locations.append(l)
+    if len(locations) == 0 :
+        return None
+    else:
+        return locations
+
+def get_users_with_location():
+    users = get_all_users()
+    locations = []
+    for u in users:
+        location = get_last_location(u.id)
+        temp = [u, location]
+        locations.append(temp)
+    return locations
+
+def get_last_location(user):
+    session = _get_default_db_session()
+    location = session.query(Location).filter(Location.user == user) \
+        .order_by(Location.timestamp.desc())
+    return location.first()

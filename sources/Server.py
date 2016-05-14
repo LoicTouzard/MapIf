@@ -47,7 +47,7 @@ def load_user(session, email, pwd):
 
 @app.route('/', methods=['GET'])
 def root():
-    users = db.get_all_users()
+    users = db.get_users_with_location()
     return render_template('map.html', users=users)
 
 @app.route('/login', methods=['POST'])
@@ -91,8 +91,23 @@ def signup():
         err = False
         content = 'ok'
     return jsonify(response=Response(err, content).json())
-    
 
+@app.route('/addlocation', methods=['POST'])
+def addlocation():
+    err = True
+    content = "Une erreur s'est produite, l'ajout de la localisation est annulée."
+    if request.method == 'POST':
+        user = session['id']
+        city = request.form['city']
+        country = request.form['country'] 
+        lat = request.form['lat'] 
+        lon = request.form['lon']
+        db.create_location(user, city, country, lat, lon)
+        err = False
+        content = 'ok'
+    return jsonify(response=Response(err, content).json())
+
+    
 def launch_server():
     db.init_db()
     app.run(host='0.0.0.0')
