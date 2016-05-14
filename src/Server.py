@@ -70,7 +70,7 @@ def login():
         code = 200
         if request.method == 'POST':
             email = request.form['email']
-            pwd_clear = request.form['pwd']
+            pwd_clear = request.form['password']
             dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
             pwd_hash = binascii.hexlify(dk)
             load_user(session, email, pwd_hash)

@@ -166,7 +166,7 @@ def get_users_with_location():
     locations = []
     for u in users:
         location = get_last_location(u.id)
-        temp = [u, location]
+        temp = {'user':u,  'location':location}
         locations.append(temp)
     return locations
 
