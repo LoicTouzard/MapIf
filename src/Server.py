@@ -70,8 +70,10 @@ def login():
         code = 200
         if request.method == 'POST':
             email = request.form['email']
-            pwd = request.form['pwd']
-            load_user(session, email, pwd)
+            pwd_clear = request.form['pwd']
+            dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
+            pwd_hash = binascii.hexlify(dk)
+            load_user(session, email, pwd_hash)
             if session['user']:
                 err = False
                 content = 'ok'
@@ -111,8 +113,6 @@ def signup():
         email = request.form['email']
         pwd_clear = request.form['password1']
         pwd_clear2 = request.form['password2']
-        dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
-        pwd_hash = binascii.hexlify(dk)
         promo = request.form['promo']
         # verification des champs
         content = {}
@@ -124,12 +124,15 @@ def signup():
             content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
         if pwd_clear2 is not pwd_clear:
             content['password2'] = "Les deux mots de passe doivent être identiques !"
+        # hash password
+        dk = hashlib.pbkdf2_hmac('sha256', pwd_clear, b'dev_salt')
+        pwd_hash = binascii.hexlify(dk)
         # realisation si pas d'erreur
         if len(content.keys()) is not 0:
             # creation de l'utilisateur
-            db.create_user(firstname, lastname, email, pwd, promo)
+            db.create_user(firstname, lastname, email, pwd_hash, promo)
             # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
-            load_user(session, email, pwd)
+            load_user(session, email, pwd_hash)
             # mise à jour des variables de réponse 
             err = False
             content = 'ok'
