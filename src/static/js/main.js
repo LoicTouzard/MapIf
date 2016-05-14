@@ -15,7 +15,7 @@ $(function(){
 		var startYear = 1969;
 		var currentYear = new Date().getFullYear();
 		var lastYear = currentYear+4;
-		var $select = $("#form-inscription-input-promotion");
+		var $select = $("#form-inscription-input-promo");
 		for (var i = startYear; i < lastYear; i++) {
 			var $option = $('<option value="'+i+'">'+i+'</option>');
 			if(i == currentYear){
@@ -139,22 +139,18 @@ $(function(){
 	        success: function(json){
 	            console.log("AJAX OK");
 	            console.log(json);
-	            if(json.response.status == "ok"){
+	            if(!json.response.has_error){
 	            	//refresh en etant connecté au server
-            		//location.reload(true);
 	            	console.log("CONNEXION");
-	            }
-	            else if(json.repsonse.status == "nok"){
-	            	// connexion refused
-	            	$this.prepend(createAlert("Erreur à la connexion"));
+            		location.reload(true);
 	            }
 	            else{
-	            	$this.prepend(createAlert("Erreur à la connexion : réponse inconnue"));
+	            	$this.prepend(createAlert("Erreur à la connexion"));
 	            }
 	        },
 	        error: function(json, statut, erreur){
+	            $this.prepend(createAlert("Erreur "+statut+" à la connexion : réponse inconnue"));
 	            console.log("AJAX NOK");
-	            alert("Désolé ! Une erreur serveur est survenue, réessayez, sinon actualisez la page.");
 	        },
 	        complete: function(){
 	            console.log("AJAX DONE");
@@ -177,21 +173,18 @@ $(function(){
 	        success: function(json){
 	            console.log("AJAX OK");
 	            console.log(json);
-	            if(json.response.status == "ok"){
+	            if(json.response.has_error){
 	            	//refresh en etant connecté au server
-            		// location.reload(true);
 	            	console.log("REGISTERED");
-	            }
-	            else if(json.repsonse.status == "nok"){
-	            	$this.prepend(createAlert("Erreur à l'inscription"));
+            		location.reload(true);
 	            }
 	            else{
-	            	$this.prepend(createAlert("Erreur à l'inscription : réponse inconnue"));
+	            	$this.prepend(createAlert("Erreur à l'inscription"));
 	            }
 	        },
 	        error: function(json, statut, erreur){
 	            console.log("AJAX NOK");
-	            alert("Désolé ! Une erreur serveur est survenue, réessayez, sinon actualisez la page.");
+            	$this.prepend(createAlert("Erreur à l'inscription : réponse inconnue"));
 	        },
 	        complete: function(){
 	            console.log("AJAX DONE");

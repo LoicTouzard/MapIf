@@ -113,7 +113,7 @@ def _get_default_db_session():
 
 def create_user(firstname, lastname, email, pwd, promo):
     session = _get_default_db_session()
-    if not user_exist(email):
+    if not user_exists(email):
         session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd,promo=promo))       
         session.commit()
         session.close()

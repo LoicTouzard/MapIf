@@ -123,8 +123,8 @@
 						  <strong>Ouaiiiiiis !</strong> Bon par contre ça servait à rien ... Merci quand même !
 						</div>
 						<div class="form-group">
-							<label for="form-inscription-input-promotion" class="control-label">Année <del>d'obtention du diplôme</del> de promotion</label>
-							<select class="form-control" id="form-inscription-input-promotion" name="promotion" required="required">
+							<label for="form-inscription-input-promo" class="control-label">Année <del>d'obtention du diplôme</del> de promo</label>
+							<select class="form-control" id="form-inscription-input-promo" name="promo" required="required">
 	        		</select>
 	        		<span class="help-block">La fameuse 6IF... !</span>
 						</div>
@@ -150,15 +150,16 @@
 		//javascript data
 		var users = [];
 		{% for user in users %}
-		users.push({
-			id: "{{ user.user.id }}",
-			firstname: "{{ user.user.firstname }}",
-			lastname: "{{ user.user.lastname }}",
-			promo: "{{ user.user.promo }}",
-			lat: "{{ user.location.lat }}",
-			lon: "{{ user.location.lon }}",
-
-		});
+		{% if user.location %}
+			users.push({
+				id: "{{ user.user.id }}",
+				firstname: "{{ user.user.firstname }}",
+				lastname: "{{ user.user.lastname }}",
+				promo: "{{ user.user.promo }}",
+				lat: "{{ user.location.lat }}",
+				lon: "{{ user.location.lon }}"
+			});
+		{% endif %}
 		{% endfor %}
 		console.log(users);
 		console.log("connected : {{ session.user }}")
