@@ -17,6 +17,6 @@ def validate(field, vtype=None):
         return False
 
 def is_empty(field):
-    return len(field.strip()) is not 0
+    return len(field.strip()) is 0
 
 
