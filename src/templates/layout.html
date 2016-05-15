@@ -33,11 +33,11 @@
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 				{% if not session.user %}
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal"><span class="glyphicon glyphicon-log-in"></span> S'inscrire</a></li>
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><span class="glyphicon glyphicon-log-in"></span> Connexion</a></li>
+					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal"><!-- <span class="glyphicon glyphicon-log-in"></span> --> S'inscrire</a></li>
+					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><!-- <span class="glyphicon glyphicon-log-in"></span> --> Connexion</a></li>
 				{% else %}
-					<li><a href="javascript:void(0)">Profil</a></li>
-					<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Deconnexion</a></li>
+					<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Profil</a></li>
+					<li><a href="{{ url_for('logout') }}">Deconnexion</a></li>
 				{% endif %}
 				</ul>
 			</div>
@@ -153,14 +153,15 @@
 		//javascript data
 		var users = [];
 		{% for user in users %}
-		{% if user.location %}
+		console.log("{{ user }}");
+		{% if user.location.data %}
 			users.push({
 				id: "{{ user.user.id }}",
 				firstname: "{{ user.user.firstname }}",
 				lastname: "{{ user.user.lastname }}",
 				promo: "{{ user.user.promo }}",
-				lat: "{{ user.location.location.lat }}",
-				lon: "{{ user.location.location.lon }}"
+				lat: "{{ user.location.data.lat }}",
+				lon: "{{ user.location.data.lon }}"
 			});
 		{% endif %}
 		{% endfor %}
