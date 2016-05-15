@@ -183,11 +183,14 @@ def get_users_with_location():
     locations = []
     for u in users:
         location = get_last_location(u.id)
-        locations.append({'user':u,  'location':location})
+        if location:
+            locations.append({'user':u,  'location':location})
     return locations
 
 def get_last_location(uid):
     session = _get_default_db_session()
     ul = session.query(UserLocation).filter(UserLocation.uid == uid).order_by(UserLocation.timestamp.desc())
-    location = session.query(Location).filter(Location.id == ul.first().lid)
-    return {'timestamp': ul.timestamp, 'location': location}
+    if len(ul) != 0:
+        location = session.query(Location).filter(Location.id == ul.first().lid)
+        return {'timestamp': ul.timestamp, 'location': location}
+    return None
