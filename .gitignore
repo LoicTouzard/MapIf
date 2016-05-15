@@ -74,4 +74,4 @@ db.sqlite3
 /pldjardin/databases.py
 
 #database
-/database/general.sqlite
+*.sqlite

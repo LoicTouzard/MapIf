@@ -159,8 +159,8 @@
 				firstname: "{{ user.user.firstname }}",
 				lastname: "{{ user.user.lastname }}",
 				promo: "{{ user.user.promo }}",
-				lat: "{{ user.location.lat }}",
-				lon: "{{ user.location.lon }}"
+				lat: "{{ user.location.location.lat }}",
+				lon: "{{ user.location.location.lon }}"
 			});
 		{% endif %}
 		{% endfor %}
