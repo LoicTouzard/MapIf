@@ -174,14 +174,28 @@ def addlocation():
     code = 403
     if check_connected(session):
         code = 200
-        user = session['id']
-        city = request.form['city']
-        country = request.form['country'] 
-        lat = request.form['lat'] 
-        lon = request.form['lon']
-        db.create_location(user, city, country, lat, lon)
-        err = False
-        content = 'ok'
+        # recupération des données du post
+        uid = session['user'].id
+        city = escape(request.form['city'].strip())
+        country = escape(request.form['country'].strip())
+        lat = float(request.form['lat'].strip())
+        lon = float(request.form['lon'].strip())
+        # vérification des champs
+        content = {}
+        if validator.is_empty(city):
+            content['city'] = "Le champ ville ne doit pas être vide !"
+        if validator.is_empty(country):
+            content['country'] =  "Le champ pays ne doit pas être vide !"
+        if lat < -90.0 or lat > 90:
+            content['lat'] = "La latitude doit être comprise dans [-90.0, 90,0]"
+        if lon < -180.0 or lon > 180:
+            content['lat'] = "La longitude doit être comprise dans [-180.0, 180,0]"
+        if len(content.keys()) == 0:
+            # create user - location mapping record in db
+            db.add_user_location(uid, city, country, lat, lon)
+            # definition du message de retour
+            err = False
+            content = "La nouvelle localisation a été enregistrée."
     return json_response(Response(err, content).json(), status_code=code)
 
 

@@ -155,11 +155,20 @@ def get_user(email, pwd):
     else:
         return result[0]
 
-def create_user_location(uid, lid):
+def add_user_location(uid, city, country, lat, lon):
     session = _get_default_db_session()
-    session.add(UserLocation(uid=uid, lid=lid))
+    location = get_location(lat, lon)
+    if not location:
+        create_location(city, country, lat, lon)
+    location = get_location(lat, lon)
+    session.add(UserLocation(uid=uid, lid=location.id))
     session.commit()
     session.close()
+
+def get_location(lat, lon):
+    session = _get_default_db_session()
+    location = session.query(Location).filter(Location.lat == lat, Location.lon == lon)
+    return location.first()
 
 def create_location(city, country, lat, lon):
     session = _get_default_db_session()
@@ -173,10 +182,7 @@ def get_user_locations(uid):
     for ul in session.query(UserLocation).filter(UserLocation.uid == uid):
         l = session.query(Location).filter(Location.id == ul.lid)
         locations.append({'timestamp': ul.timestamp, 'location': l})
-    if len(locations) == 0 :
-        return None
-    else:
-        return locations
+    return locations
 
 def get_users_with_location():
     users = get_all_users()
