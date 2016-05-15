@@ -48,15 +48,25 @@ class Location(_BASE_):
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
 
     id = Column(Integer, primary_key=True, nullable=False)
-    user = Column(Integer, ForeignKey('user.id'))
-    timestamp = Column(DateTime, default=func.now())
     city = Column(String)
     country = Column(String)
     lat = Column(Float)
     lon = Column(Float)
 
     def __repr__(self):
-        return "<Location(id='{0}',timestamp='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(self.id, self.timestamp, self.city, self.country, self.lat, self.lon)
+        return "<Location(id='{0}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(self.id, self.city, self.country, self.lat, self.lon)
+
+class UserLocation(_BASE_):
+    __tablename__ = 'user_location'
+    __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    uid = Column(Integer, ForeignKey('user.id'))
+    lid = Column(Integer, ForeignKey('location.id'))
+    timestamp = Column(DateTime, default=func.now())
+
+    def __repr__(self):
+        return "<UserLocation(id='{0}',timestamp='{1}')>".format(self.id, self.timestamp)
 
 # ---------------------- FUNCTIONS
 
@@ -133,7 +143,7 @@ def user_exists(email):
     result = []
     for a in session.query(User).filter(User.email == email):
         result.append(a)
-    return (len(result) is not 0)
+    return len(result) != 0
     
 def get_user(email, pwd):
     session = _get_default_db_session()
@@ -145,17 +155,24 @@ def get_user(email, pwd):
     else:
         return result[0]
 
-def create_location(user, city, country, lat, lon):
+def create_user_location(uid, lid):
     session = _get_default_db_session()
-    session.add(Location(user=user, city=city, country=country, lat=lat, lon=lon))       
+    session.add(UserLocation(uid=uid, lid=lid))
     session.commit()
     session.close()
 
-def get_user_locations(user):
+def create_location(city, country, lat, lon):
+    session = _get_default_db_session()
+    session.add(Location(city=city, country=country, lat=lat, lon=lon))       
+    session.commit()
+    session.close()
+
+def get_user_locations(uid):
     session = _get_default_db_session()
     locations = []
-    for l in session.query(Location).filter(Location.user == user):
-        locations.append(l)
+    for ul in session.query(UserLocation).filter(UserLocation.uid == uid):
+        l = session.query(Location).filter(Location.id == ul.lid)
+        locations.append({'timestamp': ul.timestamp, 'location': l})
     if len(locations) == 0 :
         return None
     else:
@@ -166,12 +183,11 @@ def get_users_with_location():
     locations = []
     for u in users:
         location = get_last_location(u.id)
-        temp = {'user':u,  'location':location}
-        locations.append(temp)
+        locations.append({'user':u,  'location':location})
     return locations
 
-def get_last_location(user):
+def get_last_location(uid):
     session = _get_default_db_session()
-    location = session.query(Location).filter(Location.user == user) \
-        .order_by(Location.timestamp.desc())
-    return location.first()
+    ul = session.query(UserLocation).filter(UserLocation.uid == uid).order_by(UserLocation.timestamp.desc())
+    location = session.query(Location).filter(Location.id == ul.first().lid)
+    return {'timestamp': ul.timestamp, 'location': location}

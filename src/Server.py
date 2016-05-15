@@ -75,14 +75,13 @@ def login():
     if not check_connected(session):
         content = "L'utilisateur et/ou le mot de passe est érroné."
         code = 200
-        if request.method == 'POST':
-            email = request.form['email']
-            pwd_clear = request.form['password']
-            pwd_hash = hash_pwd(pwd_clear)
-            load_user(session, email, pwd_hash)
-            if session['user']:
-                err = False
-                content = 'ok'
+        email = request.form['email']
+        pwd_clear = request.form['password']
+        pwd_hash = hash_pwd(pwd_clear)
+        load_user(session, email, pwd_hash)
+        if check_connected(session):
+            err = False
+            content = 'ok'
     return json_response(Response(err, content).json(), status_code=code)
     
 @app.route('/logout')
@@ -132,12 +131,12 @@ def signup():
             content['promo'] = "La promo n'est pas une année correctement formaté !"
         if len(pwd_clear) < 6:
             content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
-        if pwd_clear2 is not pwd_clear:
+        if pwd_clear2 != pwd_clear:
             content['password2'] = "Les deux mots de passe doivent être identiques !"
         # hash password
         pwd_hash = hash_pwd(pwd_clear)
         # realisation si pas d'erreur
-        if len(content.keys()) is 0:
+        if len(content.keys()) == 0:
             content = "Cette adresse email est déjà attribuée à un utilisateur."
             # verification de l'existence de l'utilisateur
             if not db.user_exists(email):
