@@ -16,7 +16,7 @@
 </head>
 <body>
 	{% block body %}
-	<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse noselect">
 		<div class="container-fluid">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
@@ -32,10 +32,13 @@
 					<li><a href="javascript:void(0)">Liste</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><span class="glyphicon glyphicon-log-in"></span> Connexion</a></li>
+				{% if not session.user %}
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal"><span class="glyphicon glyphicon-log-in"></span> S'inscrire</a></li>
+					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><span class="glyphicon glyphicon-log-in"></span> Connexion</a></li>
+				{% else %}
 					<li><a href="javascript:void(0)">Profil</a></li>
 					<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Deconnexion</a></li>
+				{% endif %}
 				</ul>
 			</div>
 		</div>
