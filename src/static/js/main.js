@@ -10,6 +10,7 @@ $(function(){
 	// Material Init
 	$.material.init();
 
+	$("body").tooltip({ selector: '[data-toggle=tooltip]' });
 	// generate the promotions year
 	(function(){
 		var startYear = 1969;
@@ -143,7 +144,43 @@ $(function(){
 		checkPasswords();
 	});
 
-	
+
+	/********* LEFT PANEL *********/
+
+	var leftPanelOpen = function(){
+		$("#left-panel").removeClass("closePanel");
+			$("#left-panel .widget-pane-toggle-button-container .btn").focusout()
+				.attr('data-original-title', "Réduire le panneau latéral")
+				.find(".glyphicon").removeClass("glyphicon-triangle-right")
+				.addClass("glyphicon-triangle-left");
+	}
+
+	var leftPanelClose = function(){
+		$("#left-panel").addClass("closePanel");
+			$("#left-panel .widget-pane-toggle-button-container .btn").focusout()
+				.attr('data-original-title', "Étendre le panneau latéral")
+				.find(".glyphicon").removeClass("glyphicon-triangle-left")
+				.addClass("glyphicon-triangle-right");
+	}
+
+	var leftPanelIsOpen = function(){
+		return !$("#left-panel").hasClass("closePanel");
+	}
+
+	var leftPanelToggle = function(){
+		if(leftPanelIsOpen()){
+			leftPanelClose();
+		}
+		else{
+			leftPanelOpen();
+		}
+	}
+
+	$("#left-panel .widget-pane-toggle-button-container .btn").on("click",function(){
+		leftPanelToggle();
+	});
+
+
 	/********* AJAX *********/
 	
 	$('#form-connexion').on('submit', function(e) {
