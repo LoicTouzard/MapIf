@@ -63,6 +63,7 @@ $(function(){
 	var addFieldError = function($el){
 		return $el.addClass("has-warning");
 	}
+
 	var removeFieldError = function($el){
 		return $el.removeClass("has-warning");
 	}
@@ -117,6 +118,27 @@ $(function(){
 		}
 	}
 
+	var displayFormErrors = function(form, errors){
+        $form = $(form);
+		// remove the old errors
+    	$form.find(".alert.alert-danger").remove();
+    	removeFieldError($form.find(".has-warning"));
+    	if(typeof errors.content == "string"){
+    		// single message
+    		$form.find(".modal-body").prepend(createAlert(errors.content));
+    	}
+    	else{
+    		// error is array
+    		for (var field in errors.content){
+			    if (errors.content.hasOwnProperty(field)) {
+			    	$fgroup = $(form+"-input-"+field).closest(".form-group");
+			    	addFieldError($fgroup);
+			    	$fgroup.prepend(createAlert(errors.content[field]));
+			    }
+			}
+    	}
+	}
+
 	$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
 		checkPasswords();
 	});
@@ -145,11 +167,11 @@ $(function(){
             		location.reload(true);
 	            }
 	            else{
-	            	$this.prepend(createAlert("Erreur à la connexion"));
+	            	displayFormErrors("#form-connexion", json);
 	            }
 	        },
-	        error: function(json, statut, erreur){
-	            $this.prepend(createAlert("Erreur "+statut+" à la connexion : réponse inconnue"));
+	        error: function(resp, statut, erreur){
+    			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.status+" à la connexion : "+resp.statusText));
 	            console.log("AJAX NOK");
 	        },
 	        complete: function(){
@@ -179,30 +201,12 @@ $(function(){
             		location.reload(true);
 	            }
 	            else{
-	            	// remove the old errors
-	            	
-	            	$form = $("#form-inscription");
-	            	$form.find(".alert.alert-danger").remove();
-	            	removeFieldError($form.find(".has-warning"));
-	            	if(typeof json.content == "string"){
-	            		// single message
-	            		$this.find(".modal-body").prepend(createAlert(json.content));
-	            	}
-	            	else{
-	            		// error is array
-	            		for (var field in json.content){
-						    if (json.content.hasOwnProperty(field)) {
-						    	$fgroup = $("#form-inscription-input-"+field).closest(".form-group");
-						    	addFieldError($fgroup);
-						    	$fgroup.prepend(createAlert(json.content[field]));
-						    }
-						}
-	            	}
+	            	displayFormErrors("#form-inscription", json);
 	            }
 	        },
-	        error: function(json, statut, erreur){
+	        error: function(resp, statut, erreur){
 	            console.log("AJAX NOK");
-            	$this.prepend(createAlert("Erreur à l'inscription : réponse inconnue"));
+    			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.code+" à l'inscription : "+resp.statusText));
 	        },
 	        complete: function(){
 	            console.log("AJAX DONE");
