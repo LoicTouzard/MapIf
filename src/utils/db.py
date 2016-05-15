@@ -190,7 +190,7 @@ def get_users_with_location():
 def get_last_location(uid):
     session = _get_default_db_session()
     ul = session.query(UserLocation).filter(UserLocation.uid == uid).order_by(UserLocation.timestamp.desc())
-    if len(ul) != 0:
+    if ul.first():
         location = session.query(Location).filter(Location.id == ul.first().lid)
         return {'timestamp': ul.timestamp, 'location': location}
     return None
