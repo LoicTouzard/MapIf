@@ -173,14 +173,17 @@ $(function(){
 	        success: function(json){
 	            console.log("AJAX OK");
 	            console.log(json);
-	            if(json.has_error){
+	            if(!json.has_error){
 	            	//refresh en etant connecté au server
 	            	console.log("REGISTERED");
             		location.reload(true);
 	            }
 	            else{
-	            	console.log(typeof json.content);
-	            	console.log(typeof json.content == "string");
+	            	// remove the old errors
+	            	
+	            	$form = $("#form-inscription");
+	            	$form.find(".alert.alert-danger").remove();
+	            	removeFieldError($form.find(".has-warning"));
 	            	if(typeof json.content == "string"){
 	            		// single message
 	            		$this.find(".modal-body").prepend(createAlert(json.content));
@@ -191,7 +194,7 @@ $(function(){
 						    if (json.content.hasOwnProperty(field)) {
 						    	$fgroup = $("#form-inscription-input-"+field).closest(".form-group");
 						    	addFieldError($fgroup);
-						    	$fgroup.prepend(createAlert(json.content.field));
+						    	$fgroup.prepend(createAlert(json.content[field]));
 						    }
 						}
 	            	}
