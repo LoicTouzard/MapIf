@@ -3,4 +3,4 @@ sqlalchemy
 sqlalchemy_utils
 flask-responses
 flask-cors
-
+requests

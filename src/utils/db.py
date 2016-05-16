@@ -18,6 +18,7 @@ from sqlalchemy.sql import exists
 from sqlalchemy.schema import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 import config
+from src.utils import nominatim
 
 # ----------------- CONFIG
 
@@ -155,26 +156,33 @@ def get_user(email, pwd):
     else:
         return result[0]
 
-def add_user_location(uid, city, country, lat, lon):
+def add_user_location(uid, city, country):
     session = _get_default_db_session()
-    location = get_location(lat, lon)
+    location = get_location(city, country)
     if not location:
-        create_location(city, country, lat, lon)
+        if not create_location(city, country, lat, lon):
+            return False
     location = get_location(lat, lon)
     session.add(UserLocation(uid=uid, lid=location.id))
     session.commit()
     session.close()
+    return True
 
-def get_location(lat, lon):
+def get_location(city, country):
     session = _get_default_db_session()
-    location = session.query(Location).filter(Location.lat == lat, Location.lon == lon)
+    lat, lon, norm_city, norm_country = nominatim.location_for(city, country)
+    location = session.query(Location).filter(Location.lat == lat, Location.country == lon)
     return location.first()
 
-def create_location(city, country, lat, lon):
+def create_location(city, country):
     session = _get_default_db_session()
-    session.add(Location(city=city, country=country, lat=lat, lon=lon))       
+    lat, lon, norm_city, norm_country = nominatim.location_for(city, country)
+    if not lat or not lon or not norm_city or not norm_country:
+        return False
+    session.add(Location(city=norm_city, country=norm_country, lat=lat, lon=lon))       
     session.commit()
     session.close()
+    return True
 
 def get_user_locations(uid):
     session = _get_default_db_session()
