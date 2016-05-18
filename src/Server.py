@@ -175,7 +175,7 @@ def addlocation():
     if check_connected(session):
         code = 200
         # recupération des données du post
-        uid = session['user'].id
+        uid = session['user']["id"]
         osm_id = escape(request.form['osm_id'].strip())
         osm_type = escape(request.form['osm_type'].strip())
         # vérification des champs

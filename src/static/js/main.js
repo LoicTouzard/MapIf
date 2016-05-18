@@ -344,7 +344,7 @@ var ajaxSignup = function(e) {
 
 var ajaxAddLocation = function(osm_type, osm_id){
 	var $params = $.param({
-		'osm_id' : osm_type,
+		'osm_id' : osm_id,
 		'osm_type' : osm_type
 	});
 	$.ajax({
