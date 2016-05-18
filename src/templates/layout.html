@@ -189,8 +189,8 @@
 			{% for u in lu.users %}
 				{
 					firstname:"{{ u.firstname }}",
-					lastname:"{{ u.lastname }}"{% if not loop.last %},{% endif %}
-				}
+					lastname:"{{ u.lastname }}"
+				}{% if not loop.last %},{% endif %}
 			{% endfor %}
 			]
 		});

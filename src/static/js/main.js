@@ -426,14 +426,16 @@ $(function(){
 	    .openPopup();
 
 	// add markers for locations of users
-	for (var i = locations.length - 1; i >= 0; i--) {
+	for (var i = 0; i < locations.length; i++) {
+        console.log('HELLO FROM LVL 1');
 		var location = locations[i].location;
 		var users = locations[i].users;
 
 		var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
 			+" à "+location.city+" "+location.country.toUpperCase()+"</h4>";
 		for (var i = 0; i < users.length; i++) {
-			popupText += users[i].firstName + " "+users[i].lastName+"<br>";
+            console.log('HELLO FROM LVL 2');
+			popupText += users[i].firstname + " "+users[i].lastname+"<br>";
 		};
 		
 		L.marker([location.lat, location.lon]).addTo(mymap)

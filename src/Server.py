@@ -199,4 +199,4 @@ def addlocation():
     
 def launch():
     db.init_db()
-    app.run(host='0.0.0.0')
+    app.run(host='localhost')
