@@ -32,7 +32,7 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = 'development_key'
 
-CORS(app, resources={r"/": {"origins": "*"}, r"/": {"supports_credentials": True}})
+CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}})
 
 # --------------------------
 #   Fonction utilitaires
@@ -48,7 +48,6 @@ def load_user(session, email, pwd):
             'email': usr.email,
             'promo': usr.promo
         }
-
 
 def check_connected(session):
     return session.get('user', None)
@@ -198,6 +197,6 @@ def addlocation():
 #   Lancement du serveur
 # -----------------------
     
-def launch_server():
+def launch():
     db.init_db()
     app.run(host='0.0.0.0')

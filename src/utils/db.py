@@ -223,5 +223,5 @@ def get_last_location(uid):
     if ul.first():
         location = session.query(Location).filter(Location.id == ul.first().lid)
         timestamp = ul.first().timestamp
-    return {'timestamp': timestamp, 'data': location}
+    return {'timestamp': timestamp, 'data': location.first()}
 

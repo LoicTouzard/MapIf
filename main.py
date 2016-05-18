@@ -3,4 +3,4 @@
 
 from src import Server
 
-Server.launch_server()
+Server.launch()
