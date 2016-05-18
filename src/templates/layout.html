@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-3.3.6/css/bootstrap.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/bootstrap-material-design.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/ripples.min.css') }}">
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/leaflet/leaflet.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 	{% endblock %}
 
@@ -32,20 +32,39 @@
 					<li><a href="javascript:void(0)">Liste</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-				{% if not session.user %}
+					{% if not session.user %}
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal"><!-- <span class="glyphicon glyphicon-log-in"></span> --> S'inscrire</a></li>
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><!-- <span class="glyphicon glyphicon-log-in"></span> --> Connexion</a></li>
-				{% else %}
+					{% else %}
 					<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Profil</a></li>
 					<li><a href="{{ url_for('logout') }}">Deconnexion</a></li>
-				{% endif %}
+					{% endif %}
 				</ul>
 			</div>
 		</div>
 	</nav>
 
 	<div id="page-content" class="container-fluid">
+		<div id="page-wrapper">
 			<div id="left-panel" class="closePanel">
+				<div id="left-panel-form" class="row">
+					<div class="col-xs-12">
+						<div class="form-group label-floating">
+							<label class="control-label" for="addr-search-input-city">Ville</label>
+							<input class="form-control" id="addr-search-input-city" type="text">
+						</div>
+						<div class="form-group label-floating">
+							<label class="control-label" for="addr-search-input-country">Pays</label>
+							<input class="form-control" id="addr-search-input-country" type="text">
+						</div>
+						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab"><i class="material-icons"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></a>
+					</div>
+				</div>
+				<div id="left-panel-result" class="row">
+					<div class="col-xs-12">
+						<div id="search-results"></div>
+					</div>
+				</div>
 				<div class="widget-pane-toggle-button-container"><button type="button" class="btn btn-raised btn-xs" data-toggle="tooltip" data-placement="right" title="&Eacute;tendre le panneau latéral" data-original-title="Tooltip on right"><span class="glyphicon glyphicon-triangle-right"></span></button> </div>
 			</div>
 			<div id="mapid"></div>
@@ -126,14 +145,14 @@
 							<span class="help-block">On est jamais trop prudent !</span>
 						</div>
 						<div id="p3-msg" class="alert alert-dismissible alert-success">
-						  <button type="button" class="close" data-dismiss="alert">×</button>
-						  <strong>Ouaiiiiiis !</strong> Bon par contre ça servait à rien ... Merci quand même !
+							<button type="button" class="close" data-dismiss="alert">×</button>
+							<strong>Ouaiiiiiis !</strong> Bon par contre ça servait à rien ... Merci quand même !
 						</div>
 						<div class="form-group">
 							<label for="form-inscription-input-promo" class="control-label">Année <del>d'obtention du diplôme</del> de promo</label>
 							<select class="form-control" id="form-inscription-input-promo" name="promo" required="required">
-	        		</select>
-	        		<span class="help-block">La fameuse 6IF... !</span>
+							</select>
+							<span class="help-block">La fameuse 6IF... !</span>
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -150,7 +169,7 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-3.3.6/js/bootstrap.min.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-material-design/js/material.min.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-material-design/js/ripples.min.js') }}"></script>
-	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='libs/leaflet/leaflet.js') }}"></script>
 
 	<!-- Personnal -->
 	<script type="text/javascript">
@@ -159,14 +178,14 @@
 		{% for user in users %}
 		console.log("{{ user }}");
 		{% if user.location.data %}
-			users.push({
-				id: "{{ user.user.id }}",
-				firstname: "{{ user.user.firstname }}",
-				lastname: "{{ user.user.lastname }}",
-				promo: "{{ user.user.promo }}",
-				lat: "{{ user.location.data.lat }}",
-				lon: "{{ user.location.data.lon }}"
-			});
+		users.push({
+			id: "{{ user.user.id }}",
+			firstname: "{{ user.user.firstname }}",
+			lastname: "{{ user.user.lastname }}",
+			promo: "{{ user.user.promo }}",
+			lat: "{{ user.location.data.lat }}",
+			lon: "{{ user.location.data.lon }}"
+		});
 		{% endif %}
 		{% endfor %}
 		console.log(users);
