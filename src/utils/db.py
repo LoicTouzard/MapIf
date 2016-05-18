@@ -41,7 +41,8 @@ class User(_BASE_):
     promo = Column(Integer)
 
     def __repr__(self):
-        return "<User(id='{0}',firstname='{1}',lastname='{2}',email='{3}',promo='{4}')>".format(self.id, self.firstname, self.lastname, self.email, self.promo)
+        return "<User(id='{0}',firstname='{1}',lastname='{2}',email='{3}',promo='{4}')>".format(
+            self.id, self.firstname, self.lastname, self.email, self.promo)
 
 
 class Location(_BASE_):
@@ -49,13 +50,15 @@ class Location(_BASE_):
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
 
     id = Column(Integer, primary_key=True, nullable=False)
+    osm_id = Column(Integer)
     city = Column(String)
     country = Column(String)
     lat = Column(Float)
     lon = Column(Float)
 
     def __repr__(self):
-        return "<Location(id='{0}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(self.id, self.city, self.country, self.lat, self.lon)
+        return "<Location(id='{0}',osm_id='{2}',city='{3}',country='{4}',lat='{5}',lon='{6}')>".format(
+            self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
 
 class UserLocation(_BASE_):
     __tablename__ = 'user_location'
@@ -67,7 +70,8 @@ class UserLocation(_BASE_):
     timestamp = Column(DateTime, default=func.now())
 
     def __repr__(self):
-        return "<UserLocation(id='{0}',timestamp='{1}')>".format(self.id, self.timestamp)
+        return "<UserLocation(id='{0}',timestamp='{1}')>".format(
+            self.id, self.timestamp)
 
 # ---------------------- FUNCTIONS
 
@@ -156,30 +160,29 @@ def get_user(email, pwd):
     else:
         return result[0]
 
-def add_user_location(uid, city, country):
+def add_user_location(uid, osm_id, osm_type):
     session = _get_default_db_session()
-    location = get_location(city, country)
+    location = get_location(osm_id)
     if not location:
-        if not create_location(city, country, lat, lon):
+        if not create_location(osm_id, osm_type):
             return False
-    location = get_location(lat, lon)
+    location = get_location(osm_id)
     session.add(UserLocation(uid=uid, lid=location.id))
     session.commit()
     session.close()
     return True
 
-def get_location(city, country):
+def get_location(osm_id):
     session = _get_default_db_session()
-    lat, lon, norm_city, norm_country = nominatim.location_for(city, country)
-    location = session.query(Location).filter(Location.lat == lat, Location.country == lon)
+    location = session.query(Location).filter(Location.osm_id == osm_id)
     return location.first()
 
-def create_location(city, country):
+def create_location(osm_id, osm_type):
     session = _get_default_db_session()
-    lat, lon, norm_city, norm_country = nominatim.location_for(city, country)
-    if not lat or not lon or not norm_city or not norm_country:
+    lat, lon, city, country = nominatim.reverse_location_for(osm_id, osm_type)
+    if not lat or not lon or not city or not country:
         return False
-    session.add(Location(city=norm_city, country=norm_country, lat=lat, lon=lon))       
+    session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       
     session.commit()
     session.close()
     return True

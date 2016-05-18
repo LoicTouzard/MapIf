@@ -176,18 +176,18 @@ def addlocation():
         code = 200
         # recupération des données du post
         uid = session['user'].id
-        city = escape(request.form['city'].strip())
-        country = escape(request.form['country'].strip())
+        osm_id = escape(request.form['osm_id'].strip())
+        osm_type = escape(request.form['osm_type'].strip())
         # vérification des champs
         content = {}
-        if validator.is_empty(city):
-            content['city'] = "Le champ ville ne doit pas être vide !"
-        if validator.is_empty(country):
-            content['country'] =  "Le champ pays ne doit pas être vide !"
+        if validator.is_empty(osm_id):
+            content['osm_id'] = "Le champ osm_id ne doit pas être vide !"
+        if validator.is_empty(osm_type):
+            content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
         if len(content.keys()) == 0:
             # create user - location mapping record in db
             content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."
-            if db.add_user_location(uid, city, country):
+            if db.add_user_location(uid, osm_id, osm_type):
                 # definition du message de retour
                 err = False
                 content = "La nouvelle localisation a été enregistrée."
