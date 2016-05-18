@@ -425,9 +425,19 @@ $(function(){
 	    .bindPopup('Bienvenu(e) à l\'INSA.')
 	    .openPopup();
 
-	for (var i = users.length - 1; i >= 0; i--) {
-		L.marker([users[i].lat, users[i].lon]).addTo(mymap)
-		    .bindPopup(users[i].firstname + " " + users[i].lastname);
+	// add markers for locations of users
+	for (var i = locations.length - 1; i >= 0; i--) {
+		var location = locations[i].location;
+		var users = locations[i].users;
+
+		var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
+			+" à "+location.city+" "+location.country.toUpperCase()+"</h4>";
+		for (var i = 0; i < users.length; i++) {
+			popupText += users[i].firstName + " "+users[i].lastName+"<br>";
+		};
+		
+		L.marker([location.lat, location.lon]).addTo(mymap)
+		    .bindPopup(popupText);
 
 		// ajouter des binds ?
 	};
