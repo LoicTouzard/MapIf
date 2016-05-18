@@ -5,6 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	{% block css %}
+	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-3.3.6/css/bootstrap.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/bootstrap-material-design.min.css') }}">
@@ -59,7 +61,7 @@
 							<label class="control-label" for="addr-search-input-country">Pays</label>
 							<input class="form-control" id="addr-search-input-country" type="text">
 						</div>
-						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab"><i class="material-icons"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></a>
+						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab"><i class="material-icons">search</i></a>
 					</div>
 					<div id="left-panel-result">
 						<div id="search-results"></div>

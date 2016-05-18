@@ -62,21 +62,69 @@ var addrSearch = function () {
         	//if(val.type == "city" || val.type == "village" || val.type == "administrative"){
         	if(val.address.city && val.address.country){
 	            var bb = val.boundingbox;
-	            var item = '<div class="list-group-item place-result-item" onclick="chooseAddr(this,' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', \'' + val.osm_type + '\', ' + val.osm_id  +');return false;"><h4 class="list-group-item-heading">'+val.address.country+' '+val.address.city+' : '+val.address.postcode+'</h4>  <p class="list-group-item-text">' + val.display_name + '</p></div><hr>';
-	            var $item = $('<div></div>')
-	            	.addClass("list-group-item place-result-item")
-	            	.click(function(e){
-	            		e.preventDefault();
-	            		chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
-	            		return false;
-	            	}).append($("<h4></h4>")
-	            		.text(val.address.country+' '+val.address.city)
-	            		.addClass("list-group-item-heading")
-	            	).append($("<p></p>")
-	            		.text(val.display_name)
-	            		.addClass("list-group-item-text")
-	            	).after($("<hr>"));
+	            // var item = '<div class="list-group-item place-result-item" onclick="chooseAddr(this,' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', \'' + val.osm_type + '\', ' + val.osm_id  +');return false;"><h4 class="list-group-item-heading">'+val.address.country+' '+val.address.city+' : '+val.address.postcode+'</h4>  <p class="list-group-item-text">' + val.display_name + '</p></div><hr>';
+/*
+<div class="media">
+  <div class="media-left">
+    <a href="#">
+      <img class="media-object" src="..." alt="...">
+    </a>
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading">Media heading</h4>
+    ...
+  </div>
+</div>			
+*/
+				var $item;
+				if(connected){
+					// with button
+					var $item = $('<div></div>')
+		            	.addClass("list-group-item place-result-item media")
+		            	.click(function(e){
+		            		e.preventDefault();
+		            		chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+		            		return false;
+		            	}).append($("<div></div>")
+		            		.addClass("media-body")
+		            		.append($("<h4></h4>")
+			            		.text(val.address.city+' '+val.address.country.toUpperCase())
+			            		.addClass("list-group-item-heading")
+			            	)
+		            		.append($("<p></p>")
+			            		.text(val.display_name)
+			            		.addClass("list-group-item-text")
+			            	)
+		            	).append($("<div></div>")
+		            		.addClass("media-right media-middle")
+		            		.append($('<i></i>')
+		            			.addClass("material-icons")
+		            			.text("add")
+		            			.click(function(e){
+				            		e.preventDefault();
+				            		ajaxAddLocation(val.osm_type, val.osm_id);
+				            		return false;
+				            	})
+		            		)
+		            	);
+				}
+				else{
+		            var $item = $('<div></div>')
+		            	.addClass("list-group-item place-result-item")
+		            	.click(function(e){
+		            		e.preventDefault();
+		            		chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+		            		return false;
+		            	}).append($("<h4></h4>")
+		            		.text(val.address.city+' '+val.address.country.toUpperCase())
+		            		.addClass("list-group-item-heading")
+		            	).append($("<p></p>")
+		            		.text(val.display_name)
+		            		.addClass("list-group-item-text")
+		            	);
+				}
 	            items.push($item);
+	            items.push($("<hr>"));
         	}
         });
 
@@ -189,6 +237,7 @@ var displayFormErrors = function(form, errors){
 	}
 }
 
+
 /********* LEFT PANEL *********/
 
 var leftPanelOpen = function(){
@@ -264,12 +313,12 @@ var ajaxSignup = function(e) {
     $this = $(this);
 
     //ajouter form verification
-		$.ajax({
-        method: "POST",
-        url: SETTINGS.SERVER_ADDR + "/signup",
-        data: $this.serialize(),
-        cache: false,
-        success: function(json){
+	$.ajax({
+	    method: "POST",
+	    url: SETTINGS.SERVER_ADDR + "/signup",
+	    data: $this.serialize(),
+	    cache: false,
+	    success: function(json){
             console.log("AJAX OK");
             console.log(json);
             if(!json.has_error){
@@ -293,8 +342,38 @@ var ajaxSignup = function(e) {
 }
 
 
-
-
+var ajaxAddLocation = function(osm_type, osm_id){
+	var $params = $.param({
+		'osm_id' : osm_type,
+		'osm_type' : osm_type
+	});
+	$.ajax({
+        method: "POST",
+        url: SETTINGS.SERVER_ADDR + "/addlocation",
+        data: $params,
+        cache: false,
+        success: function(json){
+            console.log("AJAX OK");
+            console.log(json);
+            if(!json.has_error){
+            	//refresh en etant connecté au server
+            	console.log("ADDED");
+        		location.reload(true);
+            }
+            else{
+            	alert("une erreur est survenue has_error")
+            }
+        },
+        error: function(resp, statut, erreur){
+            console.log("AJAX NOK");
+            	alert("une erreur est survenue")
+        },
+        complete: function(){
+            console.log("AJAX DONE");
+        }
+    });
+	return false;
+}
 
 
 
