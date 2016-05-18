@@ -16,11 +16,16 @@ var createAlert = function(msg){
 /********* MAP *********/
 var mymap
 var feature;
+var selected_osm = 0;
 
-var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type) {
+var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type, osm_id) {
 	$el = $(element);
 	$el.closest(".list-group").find(".list-group-item").removeClass("selected");
 	$el.addClass("selected");
+
+	selected_osm = osm_id;
+
+
 	var loc1 = new L.LatLng(lat1, lng1);
 	var loc2 = new L.LatLng(lat2, lng2);
 	var bounds = new L.LatLngBounds(loc1, loc2);
@@ -40,6 +45,7 @@ var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type) {
 		mymap.fitBounds(bounds);
 		mymap.zoomOut();
 	}
+	return false;
 }
 
 var addrSearch = function () {
@@ -55,22 +61,35 @@ var addrSearch = function () {
         $.each(data, function(key, val) {
         	//if(val.type == "city" || val.type == "village" || val.type == "administrative"){
         	if(val.address.city && val.address.country){
-	            bb = val.boundingbox;
-	            item = '<div class="list-group-item place-result-item" onclick="chooseAddr(this,' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', \'' + val.osm_type + '\');return false;"><h4 class="list-group-item-heading">'+val.address.country+' '+val.address.city+' : '+val.address.postcode+'</h4>  <p class="list-group-item-text">' + val.display_name + '</p></div><hr>';
-	            items.push(item);
+	            var bb = val.boundingbox;
+	            var item = '<div class="list-group-item place-result-item" onclick="chooseAddr(this,' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', \'' + val.osm_type + '\', ' + val.osm_id  +');return false;"><h4 class="list-group-item-heading">'+val.address.country+' '+val.address.city+' : '+val.address.postcode+'</h4>  <p class="list-group-item-text">' + val.display_name + '</p></div><hr>';
+	            var $item = $('<div></div>')
+	            	.addClass("list-group-item place-result-item")
+	            	.click(function(e){
+	            		e.preventDefault();
+	            		chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+	            		return false;
+	            	}).append($("<h4></h4>")
+	            		.text(val.address.country+' '+val.address.city)
+	            		.addClass("list-group-item-heading")
+	            	).append($("<p></p>")
+	            		.text(val.display_name)
+	            		.addClass("list-group-item-text")
+	            	).after($("<hr>"));
+	            items.push($item);
         	}
         });
 
 		$('#search-results').empty();
         if (items.length != 0) {
-        	$('<h4>').text("Recherche de villes pour "+city.value+" "+country.value+" : ").appendTo('#search-results');
+        	$('<h4>').text("Recherche de villes pour \""+city.value+" "+country.value+"\" : ").appendTo('#search-results');
             $('<div></div>').addClass("list-group")
-            	.html(items.join(''))
+            	.append(items)
             	.appendTo('#search-results');
     		$.material.ripples('.place-result-item');
         } else {
         	if (num_search > 1) {
-            	$('<h4 class="no-result">').text("Pas de ville pour "+city.value+" "+country.value+"...").appendTo('#search-results');
+            	$('<h4 class="no-result">').text("Pas de ville pour \""+city.value+" "+country.value+"\"...").appendTo('#search-results');
         	}
         	else{
         		// let's try a more permissive search
@@ -88,8 +107,8 @@ var addrSearch = function () {
 /********* FORM VALIDATION *********/
 var p3_trolled = false;
 var p3_open = false;
-var $p3_block = $("#p3-block").hide();
-var $p3_msg = $("#p3-msg").hide();
+var $p3_block;
+var $p3_msg;
 
 var addFieldError = function($el){
 	return $el.addClass("has-warning");
@@ -202,6 +221,82 @@ var leftPanelToggle = function(){
 }
 
 
+/********* AJAX *********/
+
+var ajaxLogin = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $this = $(this);
+
+    // TODO (or not) add form verification
+
+		$.ajax({
+        method: "POST",
+        url: SETTINGS.SERVER_ADDR + "/login",
+        data: $this.serialize(),
+        cache: false,
+        success: function(json){
+            console.log("AJAX OK");
+            console.log(json);
+            if(!json.has_error){
+            	//refresh en etant connecté au server
+            	console.log("CONNEXION");
+        		location.reload(true);
+            }
+            else{
+            	displayFormErrors("#form-connexion", json);
+            }
+        },
+        error: function(resp, statut, erreur){
+			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.status+" à la connexion : "+resp.statusText));
+            console.log("AJAX NOK");
+        },
+        complete: function(){
+            console.log("AJAX DONE");
+        }
+    });
+	return false;
+}
+
+var ajaxSignup = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $this = $(this);
+
+    //ajouter form verification
+		$.ajax({
+        method: "POST",
+        url: SETTINGS.SERVER_ADDR + "/signup",
+        data: $this.serialize(),
+        cache: false,
+        success: function(json){
+            console.log("AJAX OK");
+            console.log(json);
+            if(!json.has_error){
+            	//refresh en etant connecté au server
+            	console.log("REGISTERED");
+        		location.reload(true);
+            }
+            else{
+            	displayFormErrors("#form-inscription", json);
+            }
+        },
+        error: function(resp, statut, erreur){
+            console.log("AJAX NOK");
+			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.code+" à l'inscription : "+resp.statusText));
+        },
+        complete: function(){
+            console.log("AJAX DONE");
+        }
+    });
+	return false;
+}
+
+
+
+
+
+
 
 
 /******* JQUERY ON LOAD - BINDS *******/
@@ -258,19 +353,16 @@ $(function(){
 		// ajouter des binds ?
 	};
 
-
-
-	$("#addr-search-submit").click(function(e){
-		e.preventDefault();
-		addrSearch();
-		console.log($(this));
-		// TODO focusout not working, need to find why
-		$(this).focusout().blur();
-		return false;
+	mymap.on('click', function(e) {
+	    console.log("CLICK : Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
 	});
 
 
+
 	/********* FORM VALIDATION *********/
+
+	$p3_block = $("#p3-block").hide();
+	$p3_msg = $("#p3-msg").hide();
 
 	$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
 		checkPasswords();
@@ -283,75 +375,24 @@ $(function(){
 		leftPanelToggle();
 	});
 
+	$("#addr-search-submit").click(function(e){
+		e.preventDefault();
+		addrSearch();
+		console.log($(this));
+		// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
+		$(this).focusout().blur();
+		return false;
+	});
+
+	$("#addr-search-input-city, #addr-search-input-country").keypress(function(e) {
+	    if(e.which == 13) {
+	        $("#addr-search-submit").click();
+	    }
+	});
 
 	/********* AJAX *********/
 	
-	$('#form-connexion').on('submit', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $this = $(this);
+	$('#form-connexion').on('submit', ajaxLogin);
 
-        // ajouter form verification
-
- 		$.ajax({
-	        method: "POST",
-	        url: SETTINGS.SERVER_ADDR + "/login",
-	        data: $this.serialize(),
-	        cache: false,
-	        success: function(json){
-	            console.log("AJAX OK");
-	            console.log(json);
-	            if(!json.has_error){
-	            	//refresh en etant connecté au server
-	            	console.log("CONNEXION");
-            		location.reload(true);
-	            }
-	            else{
-	            	displayFormErrors("#form-connexion", json);
-	            }
-	        },
-	        error: function(resp, statut, erreur){
-    			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.status+" à la connexion : "+resp.statusText));
-	            console.log("AJAX NOK");
-	        },
-	        complete: function(){
-	            console.log("AJAX DONE");
-	        }
-	    });
-		return false;
-    });
-
-    $('#form-inscription').on('submit', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $this = $(this);
-
-        //ajouter form verification
- 		$.ajax({
-	        method: "POST",
-	        url: SETTINGS.SERVER_ADDR + "/signup",
-	        data: $this.serialize(),
-	        cache: false,
-	        success: function(json){
-	            console.log("AJAX OK");
-	            console.log(json);
-	            if(!json.has_error){
-	            	//refresh en etant connecté au server
-	            	console.log("REGISTERED");
-            		location.reload(true);
-	            }
-	            else{
-	            	displayFormErrors("#form-inscription", json);
-	            }
-	        },
-	        error: function(resp, statut, erreur){
-	            console.log("AJAX NOK");
-    			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.code+" à l'inscription : "+resp.statusText));
-	        },
-	        complete: function(){
-	            console.log("AJAX DONE");
-	        }
-	    });
-		return false;
-    });
+    $('#form-inscription').on('submit', ajaxSignup);
 });

@@ -189,7 +189,14 @@
 		{% endif %}
 		{% endfor %}
 		console.log(users);
-		console.log("connected : {{ session.user }}")
+
+		//cant "var connected = {{ session.user is defined }};" Because python and javascript boolean are different : "False" and "false"
+		{% if session.user is defined %}
+		var connected = true;
+		{% else %}
+		var connected = false;
+		{% endif %}
+		console.log("connected : "+connected)
 	</script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
 	{% endblock %}
