@@ -85,10 +85,6 @@ def init_db():
     except:
         pass
 
-"""
-    Fonctions générales
-"""
-
 def _database_op(dbname, create=True, drop=False):
    if config.DATABASE == config.POSTGRE:
         db_engine = create_engine(_get_complete_database_name('postgres'))
@@ -121,10 +117,6 @@ def _get_default_database_name():
 
 def _get_default_db_session():
     return _SESSIONMAKER_DEFAULT_()
-       
-"""
-  Fonctions relatives à l'utilisateur 
-"""
 
 def create_user(firstname, lastname, email, pwd, promo):
     session = _get_default_db_session()
