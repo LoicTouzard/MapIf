@@ -64,8 +64,9 @@ def hash_pwd(pwd_clear):
 
 @app.route('/', methods=['GET'])
 def root():
-    users = db.get_users_with_location()
-    return render_template('map.html', users=users)
+    #users = db.get_users_with_location()
+    locations=db.get_locations_with_users()
+    return render_template('map.html', locations=locations) # users=users)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -175,7 +176,7 @@ def addlocation():
     if check_connected(session):
         code = 200
         # recupération des données du post
-        uid = session['user'].id
+        uid = session['user']['id']
         osm_id = escape(request.form['osm_id'].strip())
         osm_type = escape(request.form['osm_type'].strip())
         # vérification des champs
@@ -193,11 +194,9 @@ def addlocation():
                 content = "La nouvelle localisation a été enregistrée."
     return json_response(Response(err, content).json(), status_code=code)
 
-
 # -----------------------
 #   Lancement du serveur
 # -----------------------
-
     
 def launch_server():
     db.init_db()

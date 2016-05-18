@@ -195,13 +195,25 @@ def get_user_locations(uid):
         locations.append({'timestamp': ul.timestamp, 'location': l})
     return locations
 
-def get_users_with_location():
+def get_users_last_location():
     users = get_all_users()
     locations = []
     for u in users:
         location = get_last_location(u.id)
         locations.append({'user':u,  'location':location})
     return locations
+
+def get_locations_with_users():
+    users = get_all_users()
+    locations = {}
+    for u in users:
+        l = get_last_location(u.id)['data']
+        if l:
+            str_id = '%d' % l.osm_id
+            if not locations.get(str_id, None):
+                locations[str_id] = {'location':l,'users':[]}
+            locations[str_id]['users'].append(u)
+    return list(locations.values())
 
 def get_last_location(uid):
     session = _get_default_db_session()
