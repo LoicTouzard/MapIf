@@ -17,7 +17,10 @@ var createAlert = function(msg){
 var mymap
 var feature;
 
-var chooseAddr = function (lat1, lng1, lat2, lng2, osm_type) {
+var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type) {
+	$el = $(element);
+	$el.closest(".list-group").find(".list-group-item").removeClass("selected");
+	$el.addClass("selected");
 	var loc1 = new L.LatLng(lat1, lng1);
 	var loc2 = new L.LatLng(lat2, lng2);
 	var bounds = new L.LatLngBounds(loc1, loc2);
@@ -35,6 +38,7 @@ var chooseAddr = function (lat1, lng1, lat2, lng2, osm_type) {
 
 		feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(mymap);
 		mymap.fitBounds(bounds);
+		mymap.zoomOut();
 	}
 }
 
@@ -42,26 +46,41 @@ var addrSearch = function () {
     var city = document.getElementById("addr-search-input-city");
     var country = document.getElementById("addr-search-input-country");
     console.log("request for "+city.value +" "+country.value)
-    $.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=5&city=' + city.value + "&country="+country.value, function(data) {
+    var num_search = 0;
+    var display_result = function(data) {
         var items = [];
-
+        num_search += 1;
+        console.log("request num"+num_search);
     	console.log(data)
         $.each(data, function(key, val) {
-            bb = val.boundingbox;
-            item = '<div class="list-group-item"><div class="row-action-primary checkbox">  <label><input type="radio" name="result-choice"></label></div><div class="row-content">  <h4 class="list-group-item-heading">Tile with a checkbox in it</h4>  <p class="list-group-item-text"><a href="#"onclick="chooseAddr(' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', "' + val.osm_type + '");return false;"">' + val.display_name + '</a></p></div></div><div class="list-group-separator"></div>';
-            items.push(item);
+        	//if(val.type == "city" || val.type == "village" || val.type == "administrative"){
+        	if(val.address.city && val.address.country){
+	            bb = val.boundingbox;
+	            item = '<div class="list-group-item place-result-item" onclick="chooseAddr(this,' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', \'' + val.osm_type + '\');return false;"><h4 class="list-group-item-heading">'+val.address.country+' '+val.address.city+' : '+val.address.postcode+'</h4>  <p class="list-group-item-text">' + val.display_name + '</p></div><hr>';
+	            items.push(item);
+        	}
         });
 
 		$('#search-results').empty();
         if (items.length != 0) {
-            $('<p>', { html: "Search results:" }).appendTo('#search-results');
+        	$('<h4>').text("Recherche de villes pour "+city.value+" "+country.value+" : ").appendTo('#search-results');
             $('<div></div>').addClass("list-group")
             	.html(items.join(''))
             	.appendTo('#search-results');
+    		$.material.ripples('.place-result-item');
         } else {
-            $('<p>', { html: "No results found" }).appendTo('#search-results');
+        	if (num_search > 1) {
+            	$('<h4 class="no-result">').text("Pas de ville pour "+city.value+" "+country.value+"...").appendTo('#search-results');
+        	}
+        	else{
+        		// let's try a more permissive search
+        		 $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + city.value + " "+country.value, display_result);
+        	}
         }
-    });
+
+    }
+
+    $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&city=' + city.value + "&country="+country.value, display_result);
 }
 
 
@@ -155,7 +174,7 @@ var displayFormErrors = function(form, errors){
 
 var leftPanelOpen = function(){
 	$("#left-panel").removeClass("closePanel");
-		$("#left-panel .widget-pane-toggle-button-container .btn").focusout()
+		$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()
 			.attr('data-original-title', "Réduire le panneau latéral")
 			.find(".glyphicon").removeClass("glyphicon-triangle-right")
 			.addClass("glyphicon-triangle-left");
@@ -163,7 +182,7 @@ var leftPanelOpen = function(){
 
 var leftPanelClose = function(){
 	$("#left-panel").addClass("closePanel");
-		$("#left-panel .widget-pane-toggle-button-container .btn").focusout()
+		$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()
 			.attr('data-original-title', "Étendre le panneau latéral")
 			.find(".glyphicon").removeClass("glyphicon-triangle-left")
 			.addClass("glyphicon-triangle-right");
@@ -211,7 +230,7 @@ $(function(){
 
 	/********* MAP *********/
 
-	mymap = L.map('mapid').setView(SETTINGS.GEOPOSITIONS.INSALYON, 13);
+	mymap = L.map('mymap').setView(SETTINGS.GEOPOSITIONS.INSALYON).fitWorld().zoomIn();
 
 	// different maps providers
 	
@@ -246,7 +265,7 @@ $(function(){
 		addrSearch();
 		console.log($(this));
 		// TODO focusout not working, need to find why
-		$(this).focusout();
+		$(this).focusout().blur();
 		return false;
 	});
 

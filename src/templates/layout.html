@@ -11,6 +11,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/ripples.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/leaflet/leaflet.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+	<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
 	{% endblock %}
 
 </head>
@@ -47,8 +48,9 @@
 	<div id="page-content" class="container-fluid">
 		<div id="page-wrapper">
 			<div id="left-panel" class="closePanel">
-				<div id="left-panel-form" class="row">
-					<div class="col-xs-12">
+				<div id="left-panel-content">
+					<div id="left-panel-form">
+						<h4>Trouver un lieu</h4>
 						<div class="form-group label-floating">
 							<label class="control-label" for="addr-search-input-city">Ville</label>
 							<input class="form-control" id="addr-search-input-city" type="text">
@@ -59,15 +61,13 @@
 						</div>
 						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab"><i class="material-icons"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></a>
 					</div>
-				</div>
-				<div id="left-panel-result" class="row">
-					<div class="col-xs-12">
+					<div id="left-panel-result">
 						<div id="search-results"></div>
 					</div>
 				</div>
 				<div class="widget-pane-toggle-button-container"><button type="button" class="btn btn-raised btn-xs" data-toggle="tooltip" data-placement="right" title="&Eacute;tendre le panneau latéral" data-original-title="Tooltip on right"><span class="glyphicon glyphicon-triangle-right"></span></button> </div>
 			</div>
-			<div id="mapid"></div>
+			<div id="mymap"></div>
 		</div>
 	</div>
 	{% endblock %}
