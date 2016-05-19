@@ -129,21 +129,19 @@ body,
 
 .place-result-item .media-right{
 		position: relative;
-		min-width: 24px;
+		min-width: 40px;
 }
 
-.place-result-item .media-right .material-icons{
-	background: blue none repeat scroll 0% 0%;
-	border-radius: 100%;
+.place-result-item .media-right .fab{
 	position: absolute;
 	display: block;
-	margin-top: -12px;
-	transition: left 1s ease 0s;
-	left: 70px;
+	margin-top: -50%;
+	transition: left 0.7s cubic-bezier(.55,0,.1,1);
+	left: 56px;
 	color: white;
 }
 
-.place-result-item.selected .media-right .material-icons{
+.place-result-item.selected .media-right .fab{
 	left:0;
 }
 

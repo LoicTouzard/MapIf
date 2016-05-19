@@ -96,15 +96,18 @@ var addrSearch = function () {
 			            		.addClass("list-group-item-text")
 			            	)
 		            	).append($("<div></div>")
-		            		.addClass("media-right media-middle")
-		            		.append($('<i></i>')
-		            			.addClass("material-icons")
-		            			.text("add")
+		            		.addClass("media-right media-middle btn-group-sm")
+		            		.append($("<span></span>")
+		            			.addClass("btn btn-default btn-fab fab")
 		            			.click(function(e){
 				            		e.preventDefault();
 				            		ajaxAddLocation(val.osm_type, val.osm_id);
 				            		return false;
 				            	})
+			            		.append($('<i></i>')
+			            			.addClass("material-icons")
+			            			.text("add")
+			            		)
 		            		)
 		            	);
 				}
@@ -427,15 +430,13 @@ $(function(){
 
 	// add markers for locations of users
 	for (var i = 0; i < locations.length; i++) {
-        console.log('HELLO FROM LVL 1');
 		var location = locations[i].location;
 		var users = locations[i].users;
 
 		var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
 			+" à "+location.city+" "+location.country.toUpperCase()+"</h4>";
-		for (var i = 0; i < users.length; i++) {
-            console.log('HELLO FROM LVL 2');
-			popupText += users[i].firstname + " "+users[i].lastname+"<br>";
+		for (var j = 0; j < users.length; j++) {
+			popupText += users[j].firstname + " "+users[j].lastname+"<br>";
 		};
 		
 		L.marker([location.lat, location.lon]).addTo(mymap)
