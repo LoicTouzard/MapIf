@@ -2,7 +2,7 @@
 import re
 
 VALIDATORS = {
-    'email': re.compile('^[\w\.\_]+@[\w\_\.]+\.\w{2,3}$'),
+    'email': re.compile('^[\w\.\_\-]+@[\w\.\_\-]+\.\w{2,3}$'),
     'alphanum': re.compile('^\w+$'),
     'num': re.compile('^\d+$'),
     'price': re.compile('^\d+(\.\d+)$'),
