@@ -16,6 +16,7 @@ from flask.ext.cors import CORS
 from src.utils import db
 from src.utils.response import Response
 from src.utils import validator
+from src.utils import ini
 from datetime import date
 import hashlib
 import binascii
@@ -30,7 +31,7 @@ PASSWORD = 'default'
 app = Flask(__name__)
 # Check Configuration section for more details
 app.config.from_object(__name__)
-app.secret_key = 'development_key'
+app.secret_key = ini.config('APP', 'secret_key')
 
 CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}})
 
