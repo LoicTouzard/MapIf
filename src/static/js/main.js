@@ -96,15 +96,23 @@ var addrSearch = function () {
 			            		.addClass("list-group-item-text")
 			            	)
 		            	).append($("<div></div>")
-		            		.addClass("media-right media-middle")
-		            		.append($('<i></i>')
-		            			.addClass("material-icons")
-		            			.text("add")
+		            		.addClass("media-right media-middle btn-group-sm")
+		            		.append($("<span></span>")
+		            			.addClass("btn btn-success btn-raised btn-fab fab")
 		            			.click(function(e){
 				            		e.preventDefault();
 				            		ajaxAddLocation(val.osm_type, val.osm_id);
 				            		return false;
 				            	})
+			            		.append($('<i></i>')
+			            			.addClass("material-icons")
+			            			.text("add")
+			            		).click(function(e){
+			            			e.preventDefault();
+			            			e.stopPropagation();
+			            			// CONFIRM MODAL
+			            			return false
+			            		})
 		            		)
 		            	);
 				}
@@ -135,6 +143,7 @@ var addrSearch = function () {
             	.append(items)
             	.appendTo('#search-results');
     		$.material.ripples('.place-result-item');
+    		$.material.ripples('.media-right .fab');
         } else {
         	if (num_search > 1) {
             	$('<h4 class="no-result">').text("Pas de ville pour \""+city.value+" "+country.value+"\"...").appendTo('#search-results');
@@ -427,15 +436,13 @@ $(function(){
 
 	// add markers for locations of users
 	for (var i = 0; i < locations.length; i++) {
-        console.log('HELLO FROM LVL 1');
 		var location = locations[i].location;
 		var users = locations[i].users;
 
 		var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
 			+" à "+location.city+" "+location.country.toUpperCase()+"</h4>";
-		for (var i = 0; i < users.length; i++) {
-            console.log('HELLO FROM LVL 2');
-			popupText += users[i].firstname + " "+users[i].lastname+"<br>";
+		for (var j = 0; j < users.length; j++) {
+			popupText += users[j].firstname + " "+users[j].lastname+"<br>";
 		};
 		
 		L.marker([location.lat, location.lon]).addTo(mymap)

@@ -39,9 +39,9 @@ body,
 	position : absolute;
 	background-color: white;
 	z-index: 1005;
-	-webkit-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	-o-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	transition: left 0.7s cubic-bezier(.55,0,.1,1);
+	-webkit-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	-o-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	transition: all 0.7s cubic-bezier(.55,0,.1,1);
 }
 
 #left-panel.closePanel{
@@ -50,9 +50,9 @@ body,
 
 #left-panel + #mymap .leaflet-control-zoom{
 	left : 300px;
-	-webkit-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	-o-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	transition: left 0.7s cubic-bezier(.55,0,.1,1);
+	-webkit-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	-o-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	transition: all 0.7s cubic-bezier(.55,0,.1,1);
 }
 
 #left-panel.closePanel + #mymap .leaflet-control-zoom{
@@ -129,21 +129,21 @@ body,
 
 .place-result-item .media-right{
 		position: relative;
-		min-width: 24px;
+		min-width: 40px;
 }
 
-.place-result-item .media-right .material-icons{
-	background: blue none repeat scroll 0% 0%;
-	border-radius: 100%;
+.place-result-item .media-right .fab{
 	position: absolute;
 	display: block;
-	margin-top: -12px;
-	transition: left 1s ease 0s;
-	left: 70px;
+	margin-top: -50%;
+	left: 56px;
 	color: white;
+	-webkit-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	-o-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	transition: all 0.7s cubic-bezier(.55,0,.1,1);
 }
 
-.place-result-item.selected .media-right .material-icons{
+.place-result-item.selected .media-right .fab{
 	left:0;
 }
 
@@ -193,3 +193,7 @@ body,
 	user-select: none;           /* Non-prefixed version, currently*/
 }
 
+.g-recaptcha{
+	margin: auto;
+	width : 304px;
+}
