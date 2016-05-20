@@ -39,6 +39,14 @@ class User(_BASE_):
     pwd = Column(String)
     promo = Column(Integer)
 
+    def as_dict(self):
+        return {
+            'firstname': self.firstname,
+            'lastname': self.lastname,
+            'email': self.email,
+            'promo': self.promo
+        }
+
     def __repr__(self):
         return "<User(id='{0}',firstname='{1}',lastname='{2}',email='{3}',promo='{4}')>".format(
             self.id, self.firstname, self.lastname, self.email, self.promo)
@@ -55,8 +63,17 @@ class Location(_BASE_):
     lat = Column(Float)
     lon = Column(Float)
 
+    def as_dict(self):
+        return {
+            'osm_id': self.osm_id,
+            'city': self.city,
+            'country': self.country,
+            'lat': self.lat,
+            'lon': self.lon
+        }
+
     def __repr__(self):
-        return "<Location(id='{0}',osm_id='{2}',city='{3}',country='{4}',lat='{5}',lon='{6}')>".format(
+        return "<Location(id='{0}',osm_id='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(
             self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
 
 class UserLocation(_BASE_):
@@ -67,6 +84,13 @@ class UserLocation(_BASE_):
     uid = Column(Integer, ForeignKey('user.id'))
     lid = Column(Integer, ForeignKey('location.id'))
     timestamp = Column(DateTime, default=func.now())
+
+    def as_dict(self):
+        return {
+            'uid': self.uid,
+            'lid': self.lid,
+            'timestamp': self.timestamp
+        }
 
     def __repr__(self):
         return "<UserLocation(id='{0}',timestamp='{1}')>".format(
@@ -140,15 +164,15 @@ def get_all_users():
 def user_exists(email):
     session = _get_default_db_session()
     result = []
-    for a in session.query(User).filter(User.email == email):
-        result.append(a)
+    for row in session.query(User).filter(User.email == email):
+        result.append(row)
     return len(result) != 0
     
 def get_user(email, pwd):
     session = _get_default_db_session()
     result = []
-    for a in session.query(User).filter(User.email == email, User.pwd == pwd):
-        result.append(a)
+    for row in session.query(User).filter(User.email == email, User.pwd == pwd):
+        result.append(row)
     if len(result) == 0:
         return None
     else:
@@ -185,22 +209,22 @@ def get_user_locations(uid):
     session = _get_default_db_session()
     locations = []
     for ul in session.query(UserLocation).filter(UserLocation.uid == uid):
+        print(ul)
         l = session.query(Location).filter(Location.id == ul.lid)
-        locations.append({'timestamp': ul.timestamp, 'location': l})
+        locations.append({'timestamp': ul.timestamp, 'location': l.first().as_dict()})
+    print(locations)
     return locations
 
 def get_users_last_location():
-    users = get_all_users()
     locations = []
-    for u in users:
+    for u in get_all_users():
         location = get_last_location(u.id)
         locations.append({'user':u,  'location':location})
     return locations
 
 def get_locations_with_users():
-    users = get_all_users()
     locations = {}
-    for u in users:
+    for u in get_all_users():
         l = get_last_location(u.id)['data']
         if l:
             str_id = '%d' % l.osm_id

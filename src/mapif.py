@@ -26,8 +26,12 @@ DEBUG = True
 USERNAME = 'admin'
 PASSWORD = 'default'
 
-# create our little application :)
+# load config file and exit on error
+if not ini.init_config('mapif.ini'):
+    print("Configuration file is missing. Server can't be started !")
+    exit(-1)
 
+# create our little application :)
 app = Flask(__name__)
 # Check Configuration section for more details
 app.config.from_object(__name__)
@@ -151,22 +155,19 @@ def signup():
                     content = 'ok'
     return json_response(Response(err, content).json(), status_code=code)
 
-@app.route('/locations', methods=['POST'])
+@app.route('/locations', methods=['GET'])
 def locations():
     err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    code = 403
-    if check_connected(session):
-        code = 200
-        uid = request.form['uid']
-        content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
-        if validator.validate(uid, 'num'):
-            uid = int(uid)
-            locations = get_user_locations(uid)
-            content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
-            if locations:
-                err = False
-                content = locations
+    code = 200
+    uid = request.args['uid']
+    content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
+    if validator.validate(uid, 'num'):
+        uid = int(uid)
+        locations = db.get_user_locations(uid)
+        content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
+        if locations:
+            err = False
+            content = locations
     return json_response(Response(err, content).json(), status_code=code)
 
 @app.route('/addlocation', methods=['POST'])
@@ -202,7 +203,6 @@ def page_not_found(e):
 # -----------------------
 #   Lancement du serveur
 # -----------------------
-    
-def launch():
+def run():
     db.init_db()
-    app.run(host='localhost')
+    app.run(host='localhost', port=5000)
