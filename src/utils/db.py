@@ -17,14 +17,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import exists
 from sqlalchemy.schema import MetaData
 from sqlalchemy.ext.declarative import declarative_base
-import config
 from src.utils import nominatim
+from src.utils import ini
 
 # ----------------- CONFIG
 
 _BASE_ = declarative_base()
 _SESSIONMAKER_DEFAULT_ = None
-_DBNAME_ = "general"
 
 # ----------------- OBJECTS
 
@@ -76,7 +75,7 @@ class UserLocation(_BASE_):
 # ---------------------- FUNCTIONS
 
 def init_db():
-    _database_op(_DBNAME_, create=True, drop=False)
+    _database_op(ini.config('DB', 'db_name'), action='create')
     engine = create_engine(_get_default_database_name())
     global _SESSIONMAKER_DEFAULT_
     _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
@@ -85,35 +84,38 @@ def init_db():
     except:
         pass
 
-def _database_op(dbname, create=True, drop=False):
-   if config.DATABASE == config.POSTGRE:
+def _database_op(dbname, action='create'):
+   if ini.config('DB', 'engine') == 'postgre':
         db_engine = create_engine(_get_complete_database_name('postgres'))
         connection = db_engine.connect()
         connection.execute('commit')
         try:
-            if create:
+            if action == 'create':
                 connection.execute('CREATE DATABASE "{0}"'.format(dbname))
-            if drop:
+            elif action == 'drop':
                 connection.execute('DROP DATABASE "{0}"'.format(dbname))
-        except:
-            pass
+        except Exception as e:
+            print('_database_op error : details below.\nPython exception: {0}'.format(e))
         connection.close()
-   elif config.DATABASE == config.SQLITE:
-        if create:
+   else: # default is sqlite
+        if action == 'create':
             engine = create_engine(_get_complete_database_name(dbname))
             if not database_exists(engine.url):
                 create_database(engine.url)
-        if drop:
+        elif action == 'drop':
             remove("database/{0}.sqlite".format(dbname))
 
 def _get_complete_database_name(database):
-    if config.DATABASE == config.POSTGRE:
-        return "postgresql://{0}:{1}@{2}/{3}".format(config.POSTGRE_USER, config.POSTGRE_PASS, config.POSTGRE_HOST, database)
-    if config.DATABASE == config.SQLITE:
+    if ini.config('DB', 'engine') == 'postgre':
+        return "postgresql://{0}:{1}@{2}/{3}".format(
+            ini.config('DB', 'postgre_user'), 
+            ini.config('DB', 'postgre_pass'), 
+            ini.config('DB', 'postgre_host'), database)
+    if ini.config('DB', 'engine') == 'sqlite':
         return "sqlite:///database/{0}.sqlite".format(database)
 
 def _get_default_database_name():
-    return _get_complete_database_name(_DBNAME_)
+    return _get_complete_database_name(ini.config('DB', 'db_name'))
 
 def _get_default_db_session():
     return _SESSIONMAKER_DEFAULT_()

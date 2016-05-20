@@ -111,42 +111,43 @@ def signup():
     content = "Opération interdite, vous êtes déjà connecté !"
     if not check_connected(session):
         code = 200
-        content = "Une erreur s'est produite, l'inscription de l'utilisateur est annulée."
-        # recuperation du contenu de la requete
-        firstname = escape(request.form['firstname'].strip())
-        lastname = escape(request.form['lastname'].strip())
-        email = request.form['email'].strip()
-        pwd_clear = request.form['password1']
-        pwd_clear2 = request.form['password2']
-        promo = request.form['promo'].strip()
-        # verification des champs
-        content = {}
-        if validator.is_empty(firstname):
-            content['firstname'] = "Le champ prénom ne doit pas être vide !"
-        if validator.is_empty(lastname):
-            content['lastname'] = "Le champ nom ne doit pas être vide !"
-        if not validator.validate(email, 'email'):
-            content['email'] = "L'email ne respecte pas le format attendu !"
-        if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
-            content['promo'] = "La promo n'est pas une année correctement formaté !"
-        if len(pwd_clear) < 6:
-            content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
-        if pwd_clear2 != pwd_clear:
-            content['password2'] = "Les deux mots de passe doivent être identiques !"
-        # hash password
-        pwd_hash = hash_pwd(pwd_clear)
-        # realisation si pas d'erreur
-        if len(content.keys()) == 0:
-            content = "Cette adresse email est déjà attribuée à un utilisateur."
-            # verification de l'existence de l'utilisateur
-            if not db.user_exists(email):
-                # creation de l'utilisateur
-                db.create_user(firstname, lastname, email, pwd_hash, promo)
-                # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
-                load_user(session, email, pwd_hash)
-                # mise à jour des variables de réponse 
-                err = False
-                content = 'ok'
+        content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
+        if validator.check_captcha(request):
+            # recuperation du contenu de la requete
+            firstname = escape(request.form['firstname'].strip())
+            lastname = escape(request.form['lastname'].strip())
+            email = request.form['email'].strip()
+            pwd_clear = request.form['password1']
+            pwd_clear2 = request.form['password2']
+            promo = request.form['promo'].strip()
+            # verification des champs
+            content = {}
+            if validator.is_empty(firstname):
+                content['firstname'] = "Le champ prénom ne doit pas être vide !"
+            if validator.is_empty(lastname):
+                content['lastname'] = "Le champ nom ne doit pas être vide !"
+            if not validator.validate(email, 'email'):
+                content['email'] = "L'email ne respecte pas le format attendu !"
+            if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+                content['promo'] = "La promo n'est pas une année correctement formaté !"
+            if len(pwd_clear) < 6:
+                content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
+            if pwd_clear2 != pwd_clear:
+                content['password2'] = "Les deux mots de passe doivent être identiques !"
+            # hash password
+            pwd_hash = hash_pwd(pwd_clear)
+            # realisation si pas d'erreur
+            if len(content.keys()) == 0:
+                content = "Cette adresse email est déjà attribuée à un utilisateur."
+                # verification de l'existence de l'utilisateur
+                if not db.user_exists(email):
+                    # creation de l'utilisateur
+                    db.create_user(firstname, lastname, email, pwd_hash, promo)
+                    # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
+                    load_user(session, email, pwd_hash)
+                    # mise à jour des variables de réponse 
+                    err = False
+                    content = 'ok'
     return json_response(Response(err, content).json(), status_code=code)
 
 @app.route('/locations', methods=['POST'])

@@ -1,5 +1,8 @@
 
 import re
+import requests
+import json
+from src.utils import ini
 
 VALIDATORS = {
     'email': re.compile('^[\w\.\_\-]+@[\w\.\_\-]+\.\w{2,3}$'),
@@ -19,4 +22,14 @@ def validate(field, vtype=None):
 def is_empty(field):
     return len(field.strip()) == 0
 
+def check_captcha(request):
+    payload = {
+        'secret': ini.config('RECAPTCHA','recaptcha_secret_key'),
+        'response': request.form['g-recaptcha-response'],
+        'remoteip': request.remote_addr
+    }
+    resp = requests.post('https://www.google.com/recaptcha/api/siteverify', data=json.dumps(payload))
+    print(resp.text)
+    data = json.loads(resp.text)
+    return data['success']
 

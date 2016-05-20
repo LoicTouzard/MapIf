@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 # -!- encoding:utf8 -!-
 
-from src import Server
+from src import server
+from src.utils import ini
 
-Server.launch()
+if ini.init_config('mapif.ini'):
+    server.launch()
+else:
+    print("Configuration file is missing. Server can't be started !")
