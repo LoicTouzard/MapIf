@@ -15,7 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 	<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
 	{% endblock %}
-
+	<script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body>
 	{% block body %}
@@ -61,7 +61,7 @@
 							<label class="control-label" for="addr-search-input-country">Pays</label>
 							<input class="form-control" id="addr-search-input-country" type="text">
 						</div>
-						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab"><i class="material-icons">search</i></a>
+						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab btn-raised"><i class="material-icons">search</i></a>
 					</div>
 					<div id="left-panel-result">
 						<div id="search-results"></div>
@@ -156,6 +156,7 @@
 							</select>
 							<span class="help-block">La fameuse 6IF... !</span>
 						</div>
+						<div class="g-recaptcha" data-sitekey="6Lc_cCATAAAAAB0j0KykFgsWtlN4KtWrX1iYD8Nz"></div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>

@@ -98,7 +98,7 @@ var addrSearch = function () {
 		            	).append($("<div></div>")
 		            		.addClass("media-right media-middle btn-group-sm")
 		            		.append($("<span></span>")
-		            			.addClass("btn btn-default btn-fab fab")
+		            			.addClass("btn btn-success btn-raised btn-fab fab")
 		            			.click(function(e){
 				            		e.preventDefault();
 				            		ajaxAddLocation(val.osm_type, val.osm_id);
@@ -107,7 +107,12 @@ var addrSearch = function () {
 			            		.append($('<i></i>')
 			            			.addClass("material-icons")
 			            			.text("add")
-			            		)
+			            		).click(function(e){
+			            			e.preventDefault();
+			            			e.stopPropagation();
+			            			// CONFIRM MODAL
+			            			return false
+			            		})
 		            		)
 		            	);
 				}
@@ -138,6 +143,7 @@ var addrSearch = function () {
             	.append(items)
             	.appendTo('#search-results');
     		$.material.ripples('.place-result-item');
+    		$.material.ripples('.media-right .fab');
         } else {
         	if (num_search > 1) {
             	$('<h4 class="no-result">').text("Pas de ville pour \""+city.value+" "+country.value+"\"...").appendTo('#search-results');

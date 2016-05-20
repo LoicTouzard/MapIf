@@ -39,9 +39,9 @@ body,
 	position : absolute;
 	background-color: white;
 	z-index: 1005;
-	-webkit-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	-o-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	transition: left 0.7s cubic-bezier(.55,0,.1,1);
+	-webkit-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	-o-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	transition: all 0.7s cubic-bezier(.55,0,.1,1);
 }
 
 #left-panel.closePanel{
@@ -50,9 +50,9 @@ body,
 
 #left-panel + #mymap .leaflet-control-zoom{
 	left : 300px;
-	-webkit-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	-o-transition: left 0.7s cubic-bezier(.55,0,.1,1);
-	transition: left 0.7s cubic-bezier(.55,0,.1,1);
+	-webkit-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	-o-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	transition: all 0.7s cubic-bezier(.55,0,.1,1);
 }
 
 #left-panel.closePanel + #mymap .leaflet-control-zoom{
@@ -136,9 +136,11 @@ body,
 	position: absolute;
 	display: block;
 	margin-top: -50%;
-	transition: left 0.7s cubic-bezier(.55,0,.1,1);
 	left: 56px;
 	color: white;
+	-webkit-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	-o-transition: all 0.7s cubic-bezier(.55,0,.1,1);
+	transition: all 0.7s cubic-bezier(.55,0,.1,1);
 }
 
 .place-result-item.selected .media-right .fab{
@@ -191,3 +193,7 @@ body,
 	user-select: none;           /* Non-prefixed version, currently*/
 }
 
+.g-recaptcha{
+	margin: auto;
+	width : 304px;
+}
