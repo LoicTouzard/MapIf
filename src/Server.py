@@ -193,6 +193,10 @@ def addlocation():
                 content = "La nouvelle localisation a été enregistrée."
     return json_response(Response(err, content).json(), status_code=code)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+    
 # -----------------------
 #   Lancement du serveur
 # -----------------------
