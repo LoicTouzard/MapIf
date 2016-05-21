@@ -166,6 +166,30 @@
 			</div>
 		</div>
 	</div>
+
+	{% if session.user is defined %}
+	<!-- Confirmation add position modal -->
+	<div class="modal fade" id="positionModal" tabindex="-1" role="dialog" aria-labelledby="position">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="position">Définir un nouvelle position</h4>
+				</div>
+				<div class="modal-body">
+				<p>Votre position actuelle est -------- depuis le -----</p>
+				<p>Vous n'avez pas encore défini votre position</p>
+				<p>Voulez vous ajouter <strong><span id="position-add-city">city</span> <span id="position-add-country">COUNTRY</span></strong> à votre historique de déplacement ?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+					<button id="change-current-position-validate" type="button" class="btn btn-primary">Changer ma position actuelle</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
 	{% block scripts %}
 	<!-- Javascript Libs -->
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/jquery-2.2.3/jquery-2.2.3.min.js') }}"></script>

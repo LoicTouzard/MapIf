@@ -8,7 +8,6 @@
 import os
 import traceback
 from src.utils import timer
-from src.utils import ini
 
 _LOGS_ = None
 _LOG_PERF_ = None
