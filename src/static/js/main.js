@@ -387,6 +387,13 @@ $(function(){
 	$.material.init();
 
 	$("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+	console.log(Cookies.get("visited"))
+	// show about if it is the first visit
+	if(!Cookies.get("visited")){
+		Cookies.set('visited', 'visited', { expires: 365 });
+		$("#aboutModal").modal("show");
+	}	
 	// generate the promotions year
 	(function(){
 		var startYear = 1969;
