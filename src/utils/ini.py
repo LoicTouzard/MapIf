@@ -21,7 +21,7 @@ def init_config(filename):
     ok = False
     if not _CONFIG_:
         _CONFIG_ = configparser.ConfigParser()
-        if len(_CONFIG_.read(filename)) > 0:
+        if len(_CONFIG_.read(filename, encoding='utf-8')) > 0:
             logger.mprint('Configuration file {0} successfully loaded !'.format(filename))
             ok = True
         else:
