@@ -62,20 +62,6 @@ var addrSearch = function () {
         	//if(val.type == "city" || val.type == "village" || val.type == "administrative"){
         	if(val.address.city && val.address.country){
 	            var bb = val.boundingbox;
-	            // var item = '<div class="list-group-item place-result-item" onclick="chooseAddr(this,' + bb[0] + ', ' + bb[2] + ', ' + bb[1] + ', ' + bb[3]  + ', \'' + val.osm_type + '\', ' + val.osm_id  +');return false;"><h4 class="list-group-item-heading">'+val.address.country+' '+val.address.city+' : '+val.address.postcode+'</h4>  <p class="list-group-item-text">' + val.display_name + '</p></div><hr>';
-/*
-<div class="media">
-  <div class="media-left">
-    <a href="#">
-      <img class="media-object" src="..." alt="...">
-    </a>
-  </div>
-  <div class="media-body">
-    <h4 class="media-heading">Media heading</h4>
-    ...
-  </div>
-</div>			
-*/
 				var $item;
 				if(connected){
 					// with button
@@ -99,20 +85,27 @@ var addrSearch = function () {
 		            		.addClass("media-right media-middle btn-group-sm")
 		            		.append($("<span></span>")
 		            			.addClass("btn btn-success btn-raised btn-fab fab")
-		            			.click(function(e){
-				            		e.preventDefault();
-				            		ajaxAddLocation(val.osm_type, val.osm_id);
-				            		return false;
-				            	})
-			            		.append($('<i></i>')
-			            			.addClass("material-icons")
-			            			.text("add")
-			            		).click(function(e){
+				            	.attr("data-toggle","modal")
+				            	.attr("data-target", "#positionModal")
+				            	.click(function(e){
 			            			e.preventDefault();
 			            			e.stopPropagation();
 			            			// CONFIRM MODAL
+				            		$("#change-current-position-validate").on("click",function(){
+				            			e.preventDefault();
+				            			e.stopPropagation();
+				            			ajaxAddLocation(val.osm_type, val.osm_id);
+				            			return false;
+				            		})
+				            		$("#position-add-city").text(val.address.city);
+				            		$("#position-add-country").text(val.address.country.toUpperCase());
+				            		$("#positionModal").modal("show");
 			            			return false
 			            		})
+			            		.append($('<i></i>')
+			            			.addClass("material-icons")
+			            			.text("add")
+			            		)
 		            		)
 		            	);
 				}
@@ -431,7 +424,7 @@ $(function(){
 	*/
 	// add marker to insa
 	L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
-	    .bindPopup('Bienvenu(e) à l\'INSA.')
+	    .bindPopup('Bienvenue à l\'INSA.')
 	    .openPopup();
 
 	// add markers for locations of users
