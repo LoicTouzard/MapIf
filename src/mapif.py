@@ -8,6 +8,7 @@
 import hashlib
 import binascii
 import uuid
+import os
 from datetime import date
 from flask import Flask 
 from flask import request
@@ -27,6 +28,8 @@ from src.utils import validator
 from src.utils import ini
 from src.utils import logger
 
+# print current root for debugging
+logger.mprint("Running from {0}".format(os.getcwd()))
 # load config file and exit on error
 logger.mprint("Loading configuration file...")
 if not ini.init_config('mapif.ini'):
