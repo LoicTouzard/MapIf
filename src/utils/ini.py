@@ -7,7 +7,6 @@
 
 import configparser
 import os
-from src.utils import logger
 
 _CONFIG_ = None
 
@@ -25,12 +24,12 @@ def init_config(filename):
     if not _CONFIG_:
         _CONFIG_ = configparser.ConfigParser()
         if len(_CONFIG_.read(filename, encoding='utf-8')) > 0:
-            logger.mprint('Configuration file {0} successfully loaded !'.format(filename))
+            print('[mapif.ini](INFO)> Configuration file {0} successfully loaded !'.format(filename))
             ok = True
         else:
-            logger.log_error("Configuration file {0} can't be loaded !".format(filename))
+            print("[mapif.ini](ERR)> Configuration file {0} can't be loaded !".format(filename))
     else:
-        logger.mprint('Configuration file has already been loaded !')
+        print('[mapif.ini](ERR)> Configuration file has already been loaded !')
     return ok
 
 
@@ -61,19 +60,19 @@ def config(section, option, env_var=None, default=None, boolean=False):
                     else:
                         res = _CONFIG_[section][option]
                 else:
-                    logger.mprint("Missing option {0} in section {1} in configuration file !".format(option, section))
+                    print("[mapif.ini](ERR)>  Missing option {0} in section {1} in configuration file !".format(option, section))
                     if default:
-                        logger.mprint("Using default configuration value: {0}".format(default))
+                        print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
                         res = default
             else:
-                logger.mprint("Missing section {0} in configuration file".format(section))
+                print("[mapif.ini](ERR)> Missing section {0} in configuration file".format(section))
                 if default:
-                    logger.mprint("Using default configuration value: {0}".format(default))
+                    print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
                     res = default
         else:
-            logger.mprint("Configuration file must be loaded to use config(section, option) function ! Call init_config(filename) before !")
+            print("[mapif.ini](ERR)> Configuration file must be loaded to use config(section, option) function ! Call init_config(filename) before !")
             if default:
-                logger.mprint("Using default configuration value: {0}".format(default))
+                print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
                 res = default
     # finally return res
     return res
