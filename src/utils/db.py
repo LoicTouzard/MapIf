@@ -99,7 +99,7 @@ class UserLocation(_BASE_):
 # ---------------------- FUNCTIONS
 
 def init_db():
-    _database_op(ini.config('DB', 'db_name'), action='create')
+    _database_op(ini.config('DB', 'db_name', ''), action='create')
     engine = create_engine(_get_default_database_name())
     global _SESSIONMAKER_DEFAULT_
     _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
@@ -110,7 +110,7 @@ def init_db():
 
 def _database_op(dbname, action='create'):
    if ini.config('DB', 'engine') == 'postgre':
-        db_engine = create_engine(_get_complete_database_name('postgres'))
+        db_engine = create_engine(_get_complete_database_name('postgre'))
         connection = db_engine.connect()
         connection.execute('commit')
         try:
@@ -130,13 +130,18 @@ def _database_op(dbname, action='create'):
             remove("database/{0}.sqlite".format(dbname))
 
 def _get_complete_database_name(database):
+    url = None
     if ini.config('DB', 'engine') == 'postgre':
-        return "postgresql://{0}:{1}@{2}/{3}".format(
-            ini.config('DB', 'postgre_user'), 
-            ini.config('DB', 'postgre_pass'), 
-            ini.config('DB', 'postgre_host'), database)
-    if ini.config('DB', 'engine') == 'sqlite':
-        return "sqlite:///database/{0}.sqlite".format(database)
+        if ini.getenv('OPENSHIFT_POSTGRESQL_DB_URL'):
+            url = ini.getenv('OPENSHIFT_POSTGRESQL_DB_URL')
+        else:
+            url = "postgresql://{0}:{1}@{2}/{3}".format(
+                ini.config('DB', 'postgre_user'), 
+                ini.config('DB', 'postgre_pass'), 
+                ini.config('DB', 'postgre_host'), database)
+    elif ini.config('DB', 'engine') == 'sqlite':
+        url = "sqlite:///database/{0}.sqlite".format(database)
+    return url
 
 def _get_default_database_name():
     return _get_complete_database_name(ini.config('DB', 'db_name'))
