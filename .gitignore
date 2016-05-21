@@ -1,12 +1,14 @@
 ### Python template
 # Byte-compiled / optimized / DLL files
-general.sqlite
 __pycache__/
 *.py[cod]
 *$py.class
 
 # Configuration file
 *.ini
+
+# Databases
+*.sqlite
 
 # C extensions
 *.so
