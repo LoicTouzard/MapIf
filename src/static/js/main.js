@@ -85,6 +85,7 @@ var addrSearch = function () {
 		            		.addClass("media-right media-middle btn-group-sm")
 		            		.append($("<span></span>")
 		            			.addClass("btn btn-success btn-raised btn-fab fab")
+		            			.attr("title", "En faire ma position actuelle")
 				            	.attr("data-toggle","modal")
 				            	.attr("data-target", "#positionModal")
 				            	.click(function(e){
@@ -462,6 +463,8 @@ $(function(){
 
 	/********* LEFT PANEL *********/
 
+	$("#menu-findplace").click(leftPanelOpen);
+
 	$("#left-panel .widget-pane-toggle-button-container .btn").on("click",function(){
 		leftPanelToggle();
 	});
@@ -480,6 +483,7 @@ $(function(){
 	        $("#addr-search-submit").click();
 	    }
 	});
+
 
 	/********* AJAX *********/
 	
