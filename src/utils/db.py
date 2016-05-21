@@ -278,4 +278,4 @@ def get_last_location(uid):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('TESTS NOT IMPLEMENTED')
+    logger.mprint('DB - TESTS NOT IMPLEMENTED')

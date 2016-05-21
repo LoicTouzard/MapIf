@@ -8,6 +8,7 @@
 import requests
 from urllib.parse import quote
 import json
+from src.utils import logger
 
 _SEARCH_BASE_URL_ = "http://nominatim.openstreetmap.org/search/"
 _SEARCH_PARAMS_ = {
@@ -70,16 +71,8 @@ def reverse_location_for(osm_id, osm_type):
 
 def test():
     lat, lon, city, country = location_for('Lyon', 'France')
-    logger.mprint(json.dumps({
-            'lat': lat,
-            'lon': lon,
-            'city': city,
-            'country': country
-        }, indent=4))
+    out = 'NOMINATIM result for location_for(Lyon, France)\n'+json.dumps({'lat': lat, 'lon': lon, 'city': city, 'country': country}, indent=4)
+    logger.mprint(out)
     lat, lon, city, country = reverse_location_for('15976890', 'way')
-    logger.mprint(json.dumps({
-            'lat': lat,
-            'lon': lon,
-            'city': city,
-            'country': country
-        }, indent=4))
+    out = 'NOMINATIM result for reverse_location_for(15976890, way)\n'+json.dumps({'lat': lat, 'lon': lon, 'city': city, 'country': country}, indent=4)
+    logger.mprint(out)

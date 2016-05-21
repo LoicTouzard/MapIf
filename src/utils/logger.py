@@ -84,4 +84,4 @@ def init_logs():
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    mprint('TESTS NOT IMPLEMENTED')
+    mprint('LOGGER - TESTS NOT IMPLEMENTED')

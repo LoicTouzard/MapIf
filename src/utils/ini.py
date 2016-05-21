@@ -70,4 +70,9 @@ def config(section, option, env_var=None, default=None, boolean=False):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('TESTS NOT IMPLEMENTED')
+    out = 'Configuration loaded from mapif.ini\n'
+    for section in _CONFIG_.sections():
+        out += ' + {0}\n'.format(section)
+        for option in _CONFIG_.options(section):
+            out += '    - {0} = {1}\n'.format(option, _CONFIG_[section][option])
+    logger.mprint(out)

@@ -271,4 +271,4 @@ def run():
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('NOTHING TO TEST HERE')
+    logger.mprint('MAPIF - TESTS NOT IMPLEMENTED')

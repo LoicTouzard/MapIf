@@ -26,7 +26,7 @@ _VALIDATORS_ = {
 
 def validate(field, vtype=None):
     if vtype in _VALIDATORS_.keys():
-        return _VALIDATORS_[vtype].match(field)
+        return True if _VALIDATORS_[vtype].match(field) else False
     else:
         return False
 
@@ -49,4 +49,6 @@ def check_captcha(request):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('TESTS NOT IMPLEMENTED')
+    logger.mprint('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
+    logger.mprint('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
+    logger.mprint('VALIDATOR - <!> TODO <!> add some tests')

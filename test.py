@@ -6,7 +6,6 @@
 # ------------------------------------------------------------------------------------------
 
 from src.utils import db
-from src.utils import error
 from src.utils import ini
 from src.utils import logger
 from src.utils import nominatim

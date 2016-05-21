@@ -6,6 +6,7 @@
 # ------------------------------------------------------------------------------------------
 
 import json
+from src.utils import logger
 
 # ------------------------------------------------------------------------------------------
 #                                     RESPONSE CLASS
@@ -22,4 +23,8 @@ class Response:
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    pass
+    out = 'NEGATIVE RESPONSE TEST\n'+json.dumps(Response(True, 'an error occured !').json(), indent=4)
+    logger.mprint(out)
+    out = 'POSITIVE RESPONSE TEST\n'+json.dumps(Response(False, 'everything is OK.').json(), indent=4)
+    logger.mprint(out)
+    
