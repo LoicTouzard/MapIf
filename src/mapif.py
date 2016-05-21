@@ -100,8 +100,11 @@ def _internal_error(code):
 def root():
     try:
         #users = db.get_users_with_location()
-        locations=db.get_locations_with_users()
-        return render_template('map.html', locations=locations) # users=users)
+        locations = db.get_locations_with_users()
+        user_locations = None 
+        if _check_connected(session):
+            user_locations = db.get_user_locations(session['user']['id'])
+        return render_template('map.html', locations=locations, user_locations=user_locations) # users=users)
     except Exception as e:
         logger.log_error('mapif.root() error: details below.', e)
         return _internal_error('R00T_K0')
