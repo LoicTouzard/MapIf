@@ -32,7 +32,7 @@ from src.utils import logger
 logger.mprint("Running from {0}".format(os.getcwd()))
 # load config file and exit on error
 logger.mprint("Loading configuration file...")
-if not ini.init_config('mapif.ini'):
+if not ini.init_config('app-root/runtime/repo/mapif.ini'):
     logger.mprint("Configuration file is missing. Server can't be started !")
     exit(-1)
 

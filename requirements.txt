@@ -4,3 +4,4 @@ sqlalchemy_utils
 flask-responses
 flask-cors
 requests
+psycopg2
