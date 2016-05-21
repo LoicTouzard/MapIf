@@ -193,7 +193,19 @@ body,
 	user-select: none;           /* Non-prefixed version, currently*/
 }
 
-.g-recaptcha{
+.g-recaptcha {
 	margin: auto;
 	width : 304px;
+}
+
+.instruction {
+	margin-top: 20px;
+}
+
+.menu-ref {
+	color: #283593;
+}
+
+.danger {
+	color: #d32f2f;
 }
