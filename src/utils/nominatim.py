@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+# -!- encoding:utf8 -!-
+
+# ------------------------------------------------------------------------------------------
+#                                    IMPORTS & GLOBALS
+# ------------------------------------------------------------------------------------------
+
 import requests
 from urllib.parse import quote
 import json
@@ -18,6 +25,10 @@ _OSM_TYPES_ = {
     'node': 'N',
     'relation': 'R'
 }
+
+# ------------------------------------------------------------------------------------------
+#                               EXTERN FUNCTIONS
+# ------------------------------------------------------------------------------------------
 
 def location_for(city, country):
     url = _SEARCH_BASE_URL_ + quote('{city} {country}'.format(city=city, country=country))

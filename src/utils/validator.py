@@ -1,10 +1,16 @@
+#!/usr/bin/python3
+# -!- encoding:utf8 -!-
+
+# ------------------------------------------------------------------------------------------
+#                                    IMPORTS & GLOBALS
+# ------------------------------------------------------------------------------------------
 
 import re
 import requests
 import json
 from src.utils import ini
 
-VALIDATORS = {
+_VALIDATORS_ = {
     'email': re.compile('^[\w\.\_\-]+@[\w\.\_\-]+\.\w{2,3}$'),
     'alphanum': re.compile('^\w+$'),
     'num': re.compile('^\d+$'),
@@ -13,9 +19,13 @@ VALIDATORS = {
     'year': re.compile('^\d{4}$')
 }
 
+# ------------------------------------------------------------------------------------------
+#                               EXTERN FUNCTIONS
+# ------------------------------------------------------------------------------------------
+
 def validate(field, vtype=None):
-    if vtype in VALIDATORS.keys():
-        return VALIDATORS[vtype].match(field)
+    if vtype in _VALIDATORS_.keys():
+        return _VALIDATORS_[vtype].match(field)
     else:
         return False
 
@@ -33,3 +43,7 @@ def check_captcha(request):
     data = json.loads(resp.text)
     return data['success']
 
+# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
+
+if __name__ == '__main__':
+    print('TESTS NOT IMPLEMENTED')

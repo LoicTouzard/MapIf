@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 # -!- encoding:utf8 -!-
 
-# --------------- IMPORTS
+# ------------------------------------------------------------------------------------------
+#                                    IMPORTS & GLOBALS
+# ------------------------------------------------------------------------------------------
 
 from sqlalchemy import create_engine
 from sqlalchemy import Column
@@ -20,12 +22,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from src.utils import nominatim
 from src.utils import ini
 
-# ----------------- CONFIG
-
 _BASE_ = declarative_base()
 _SESSIONMAKER_DEFAULT_ = None
 
-# ----------------- OBJECTS
+# ------------------------------------------------------------------------------------------
+#                                      MODEL OBJECTS
+# ------------------------------------------------------------------------------------------
 
 
 class User(_BASE_):
@@ -76,6 +78,7 @@ class Location(_BASE_):
         return "<Location(id='{0}',osm_id='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(
             self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
 
+
 class UserLocation(_BASE_):
     __tablename__ = 'user_location'
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
@@ -96,17 +99,10 @@ class UserLocation(_BASE_):
         return "<UserLocation(id='{0}',timestamp='{1}')>".format(
             self.id, self.timestamp)
 
-# ---------------------- FUNCTIONS
+# ------------------------------------------------------------------------------------------
+#                               INTERNAL FUNCTIONS 
+# ------------------------------------------------------------------------------------------
 
-def init_db():
-    _database_op(ini.config('DB', 'db_name', ''), action='create')
-    engine = create_engine(_get_default_database_name())
-    global _SESSIONMAKER_DEFAULT_
-    _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
-    try:
-        _BASE_.metadata.create_all(engine)
-    except:
-        pass
 
 def _database_op(dbname, action='create'):
    if ini.config('DB', 'engine') == 'postgre':
@@ -129,6 +125,7 @@ def _database_op(dbname, action='create'):
         elif action == 'drop':
             remove("database/{0}.sqlite".format(dbname))
 
+
 def _get_complete_database_name(database):
     url = None
     if ini.config('DB', 'engine') == 'postgre':
@@ -143,11 +140,29 @@ def _get_complete_database_name(database):
         url = "sqlite:///database/{0}.sqlite".format(database)
     return url
 
+
 def _get_default_database_name():
     return _get_complete_database_name(ini.config('DB', 'db_name'))
 
+
 def _get_default_db_session():
     return _SESSIONMAKER_DEFAULT_()
+
+# ------------------------------------------------------------------------------------------
+#                               EXTERN FUNCTIONS
+# ------------------------------------------------------------------------------------------
+
+
+def init_db():
+    _database_op(ini.config('DB', 'db_name'), action='create')
+    engine = create_engine(_get_default_database_name())
+    global _SESSIONMAKER_DEFAULT_
+    _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
+    try:
+        _BASE_.metadata.create_all(engine)
+    except:
+        pass
+
 
 def create_user(firstname, lastname, email, pwd, promo):
     session = _get_default_db_session()
@@ -158,6 +173,7 @@ def create_user(firstname, lastname, email, pwd, promo):
         return True
     return False
 
+
 def get_all_users():
     session = _get_default_db_session()
     users = []
@@ -166,12 +182,14 @@ def get_all_users():
     session.close()
     return users
 
+
 def user_exists(email):
     session = _get_default_db_session()
     result = []
     for row in session.query(User).filter(User.email == email):
         result.append(row)
     return len(result) != 0
+
     
 def get_user(email, pwd):
     session = _get_default_db_session()
@@ -182,6 +200,7 @@ def get_user(email, pwd):
         return None
     else:
         return result[0]
+
 
 def add_user_location(uid, osm_id, osm_type):
     session = _get_default_db_session()
@@ -195,10 +214,12 @@ def add_user_location(uid, osm_id, osm_type):
     session.close()
     return True
 
+
 def get_location(osm_id):
     session = _get_default_db_session()
     location = session.query(Location).filter(Location.osm_id == osm_id)
     return location.first()
+
 
 def create_location(osm_id, osm_type):
     session = _get_default_db_session()
@@ -210,6 +231,7 @@ def create_location(osm_id, osm_type):
     session.close()
     return True
 
+
 def get_user_locations(uid):
     session = _get_default_db_session()
     locations = []
@@ -220,12 +242,14 @@ def get_user_locations(uid):
     print(locations)
     return locations
 
+
 def get_users_last_location():
     locations = []
     for u in get_all_users():
         location = get_last_location(u.id)
         locations.append({'user':u,  'location':location})
     return locations
+
 
 def get_locations_with_users():
     locations = {}
@@ -237,6 +261,7 @@ def get_locations_with_users():
                 locations[str_id] = {'location':l,'users':[]}
             locations[str_id]['users'].append(u)
     return list(locations.values())
+
 
 def get_last_location(uid):
     session = _get_default_db_session()
@@ -250,3 +275,7 @@ def get_last_location(uid):
         timestamp = ul.first().timestamp
     return {'timestamp': timestamp, 'data': location}
 
+# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
+
+if __name__ == '__main__':
+    print('TESTS NOT IMPLEMENTED')

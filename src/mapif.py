@@ -1,6 +1,14 @@
-# all the imports
-import sqlite3
-from contextlib import closing
+#!/usr/bin/python3
+# -!- encoding:utf8 -!-
+
+# ------------------------------------------------------------------------------------------
+#                       IMPORTS, GLOBALS AND MODULES INITIALIZATION
+# ------------------------------------------------------------------------------------------
+
+import hashlib
+import binascii
+import uuid
+from datetime import date
 from flask import Flask 
 from flask import request
 from flask import session
@@ -17,33 +25,34 @@ from src.utils import db
 from src.utils.response import Response
 from src.utils import validator
 from src.utils import ini
-from datetime import date
-import hashlib
-import binascii
-
-# configuration
-DEBUG = True
-USERNAME = 'admin'
-PASSWORD = 'default'
+from src.utils import logger
 
 # load config file and exit on error
 if not ini.init_config('mapif.ini'):
     print("Configuration file is missing. Server can't be started !")
     exit(-1)
 
+# initialize logs
+logger.init_logs()
+
 # create our little application :)
 app = Flask(__name__)
-# Check Configuration section for more details
-app.config.from_object(__name__)
-app.secret_key = ini.config('APP', 'secret_key')
 
+# check Configuration section for more details
+app.config.from_object(__name__)
+
+# load secret key from configuration file or generated a UUID and use it as secret key
+app.secret_key = ini.config('APP', 'secret_key', default=str(uuid.uuid4()))
+
+# allow cross origin requests on this application
 CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}})
 
-# --------------------------
-#   Fonction utilitaires
-# --------------------------
+# ------------------------------------------------------------------------------------------
+#                               PRIVATE FUNCTIONS
+# ------------------------------------------------------------------------------------------
 
-def load_user(session, email, pwd):
+
+def _load_user(session, email, pwd):
     usr = db.get_user(email, pwd)
     if usr:
         session['user'] = {
@@ -54,23 +63,26 @@ def load_user(session, email, pwd):
             'promo': usr.promo
         }
 
-def check_connected(session):
+
+def _check_connected(session):
     return session.get('user', None)
 
-def hash_pwd(pwd_clear):
+
+def _hash_pwd(pwd_clear):
     dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
     return binascii.hexlify(dk)
 
+# ------------------------------------------------------------------------------------------
+#                               FLASK ROUTES HANDLERS
+# ------------------------------------------------------------------------------------------
 
-# --------------------------
-#   Handlers de l'API
-# --------------------------
 
 @app.route('/', methods=['GET'])
 def root():
     #users = db.get_users_with_location()
     locations=db.get_locations_with_users()
     return render_template('map.html', locations=locations) # users=users)
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -88,6 +100,7 @@ def login():
             err = False
             content = "Vous êtes maintenant connecté !"
     return json_response(Response(err, content).json(), status_code=code)
+
     
 @app.route('/logout')
 def logout():
@@ -98,6 +111,7 @@ def logout():
     else:
         session.pop('user', None)
     return redirect('/')
+
     
 @app.route('/profil', methods=['POST'])
 def profil():
@@ -108,6 +122,7 @@ def profil():
     else:
         pass # TODO modification profil utilisateur
         return render_template('profil.html')
+
     
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -155,6 +170,7 @@ def signup():
                     content = 'ok'
     return json_response(Response(err, content).json(), status_code=code)
 
+
 @app.route('/locations', methods=['GET'])
 def locations():
     err = True
@@ -169,6 +185,7 @@ def locations():
             err = False
             content = locations
     return json_response(Response(err, content).json(), status_code=code)
+
 
 @app.route('/addlocation', methods=['POST'])
 def addlocation():
@@ -196,13 +213,20 @@ def addlocation():
                 content = "La nouvelle localisation a été enregistrée."
     return json_response(Response(err, content).json(), status_code=code)
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+# ------------------------------------------------------------------------------------------
+#                               SERVER RUN FUNCTION
+# ------------------------------------------------------------------------------------------
     
-# -----------------------
-#   Lancement du serveur
-# -----------------------
 def run():
     db.init_db()
     app.run(host='localhost', port=5000)
+
+# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
+
+if __name__ == '__main__':
+    print('NOTHING TO TEST HERE')

@@ -1,37 +1,69 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
+# -!- encoding:utf8 -!-
 
-from .timer import get_date, get_diff
+# ------------------------------------------------------------------------------------------
+#                                    IMPORTS & GLOBALS
+# ------------------------------------------------------------------------------------------
+
+import os
 import traceback
-import config
+from src.utils import timer
+from src.utils import ini
 
-def read_file(filePath):
-	with open(filePath, 'r') as file:
-		print(file.read())
+_LOGS_ = None
+_LOG_PERF_ = None	
+_LOG_DIR_ = None
 
-def append_content(filePath, content):
-	with open(filePath, 'a') as file:
-		file.write(content+'\n')
+# ------------------------------------------------------------------------------------------
+#                               INTERNAL FUNCTIONS 
+# ------------------------------------------------------------------------------------------
 
-def write_content(filePath, content):
-	with open(filePath, 'w') as file:
-		file.write(content+'\n')
+def _create_log(logfile):
+    if not os.path.exists(_LOG_DIR_):
+        os.makedirs(_LOG_DIR_)
+    with open(_LOG_DIR_+logfile, 'w+') as f:
+        f.write("""
+# ---------------------------------------------------
+#	MapIf log file : {0}
+#	Created at : {1}
+# ---------------------------------------------------
+""".format(logfile, timer.get_date()))
 
-def log_performance(start, end, params, filePath):
-	time = get_diff(start, end)
-	date = get_date()
-	content = date+" - Execution time = "+str(time)+" sec "+params
+def _log(logfile, content):
+	with open(_LOG_DIR_+logfile, 'a') as f:
+		f.write("{0} - {1}\n".format(timer.get_date(), content))
 
-	if config.LOG_PERF:
-		append_content(filePath, content)
-	if config.PRINT_PERF:
-		print(content)
+# ------------------------------------------------------------------------------------------
+#                               EXTERN FUNCTIONS
+# ------------------------------------------------------------------------------------------
 
+# TODO : use a decorator instead, it will be more developer friendly that way.
+def log_perf(start_time, end_time, params):
+	if _LOG_PERF_:
+		delta = timer.get_diff(start_time, end_time)
+		_log("execution time = {0} sec {1}".format(str(delta), params))
+	
 def log_error(ex):
-	date = get_date()
-	with open('error.log', 'a') as f:
-		f.write(date+" - ")
-		traceback.print_exc(file=f)
+	_log(_LOGS_['stderr'], "python traceback below :\n{0}".format(traceback.format_exc()))
 
 def log_trace(msg):
-	with open('trace.log', 'a') as f:
-		f.write("{0}: {1}\n".format(get_date(), msg))
+	_log(_LOGS_['stdout'], msg)
+
+def init_logs():
+	global _LOGS_
+	global _LOG_PERF_
+	global _LOG_DIR_
+	_LOG_DIR_ = ini.config('LOGGER', 'log_dir', default='logs/')
+	_LOGS_ = {
+		'stdout': ini.config('LOGGER', 'std_log', default='mapif.log'),
+		'perfout': ini.config('LOGGER', 'perf_log', default='mapif.perf.log'),
+		'stderr': ini.config('LOGGER', 'err_log', default='mapif.err.log')
+	}
+	_LOG_PERF_ = ini.config('LOGGER','log_perf', default=False)
+	for logfile in _LOGS_.values():
+		_create_log(logfile)
+
+# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
+
+if __name__ == '__main__':
+    print('TESTS NOT IMPLEMENTED')
