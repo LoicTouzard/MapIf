@@ -101,6 +101,9 @@ def _internal_error(code):
 
 @app.route('/', methods=['GET'])
 def root():
+    """
+        This is the main application's route. It displays the application main page.
+    """
     try:
         #users = db.get_users_with_location()
         locations = db.get_locations_with_users()
@@ -115,6 +118,9 @@ def root():
 
 @app.route('/login', methods=['POST'])
 def login():
+    """
+        This route is used to authenticate a user in the application
+    """
     try:
         err = True
         content = "Opération interdite, vous êtes déjà connecté !"
@@ -136,6 +142,9 @@ def login():
     
 @app.route('/logout')
 def logout():
+    """
+        This route is used to close the session of a connected user
+    """
     try:
         err = True
         content = "Opération interdite, vous n'êtes pas connecté !"
@@ -151,6 +160,9 @@ def logout():
     
 @app.route('/profil', methods=['POST'])
 def profil():
+    """
+        This route will be used to update user profile
+    """
     try:
         err = True
         content = "Opération interdite, vous n'êtes pas connecté !"
@@ -165,6 +177,9 @@ def profil():
     
 @app.route('/signup', methods=['POST'])
 def signup():
+    """
+        This route is used by the application to add a new user to the application
+    """
     try:
         err = True
         code = 403
@@ -216,6 +231,9 @@ def signup():
 
 @app.route('/locations', methods=['GET'])
 def locations():
+    """
+        This route is used to retrieve all locations for a given user 
+    """
     try:
         err = True
         code = 200
@@ -236,6 +254,9 @@ def locations():
 
 @app.route('/addlocation', methods=['POST'])
 def addlocation():
+    """
+        This route is used to add a new location for a user
+    """
     try:
         err = True
         content = "Opération interdite, vous n'êtes pas connecté !"
@@ -264,9 +285,32 @@ def addlocation():
         logger.log_error('mapif.addlocation() error: details below.', e)
         return _internal_error('4DDL0C4T10N_K0')
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    """
+        This route is used to delete completly a user account and all its data
+    """
+    try:
+        err = True
+        content = "Opération interdite vous n'êtes pas connecté !"
+        code = 403
+        if _check_connected(session):
+            code = 200
+            uid = session['user']['id']
+            content = "La suppression du compte a échouée !"
+            if db.delete_user(uid):
+                err = False
+                content = "Le compte a été supprimé avec succès."
+        return json_response(Response(err, content).json(), status_code=code)
+    except Exception as e:
+        logger.log_error('mapif.delete() error: details below.', e)
+        return _internal_error('D3L3T3_K0')
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """
+        This is an error handler for 404 NOT FOUND exception
+    """
     return render_template('404.html'), 404
 
 # ------------------------------------------------------------------------------------------
@@ -274,10 +318,16 @@ def page_not_found(e):
 # ------------------------------------------------------------------------------------------
     
 def run():
+    """
+        Start the application (dev only)
+    """
     logger.mprint("Starting MapIf flask application...")
     app.run(host='localhost', port=5000)
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('MAPIF - TESTS NOT IMPLEMENTED')
+    """
+        Module unit tests
+    """
+    print('MAPIF - TESTS NOT IMPLEMENTED')

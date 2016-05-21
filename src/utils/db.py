@@ -155,6 +155,9 @@ def _get_default_db_session():
 
 
 def init_db():
+    """
+        Initializes MapIf database.
+    """
     _database_op(ini.config('DB', 'db_name'), action='create')
     engine = create_engine(_get_default_database_name())
     global _SESSIONMAKER_DEFAULT_
@@ -167,17 +170,23 @@ def init_db():
 
 
 def create_user(firstname, lastname, email, pwd, promo):
+    """
+        Creates a user and insert it in the database
+    """
     ok = False
     session = _get_default_db_session()
     if not user_exists(email):
         session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd,promo=promo))       
         session.commit()
-        session.close()
         ok = True
+    session.close()
     return ok
 
 
 def get_all_users():
+    """
+        Returns a list of all users registered in the database
+    """
     session = _get_default_db_session()
     users = []
     for row in session.query(User).all():
@@ -187,22 +196,33 @@ def get_all_users():
 
 
 def user_exists(email):
+    """
+        Checks if a user already exists using given email
+    """
     session = _get_default_db_session()
     result = []
     for row in session.query(User).filter(User.email == email):
         result.append(row)
+    session.close()
     return len(result) != 0
 
     
 def get_user(email, pwd):
+    """
+        Returns the user matching both email and password (hashed) or None
+    """
     session = _get_default_db_session()
     result = []
     for row in session.query(User).filter(User.email == email, User.pwd == pwd):
         result.append(row)
+    session.close()
     return None if len(result) == 0 else result[0]
 
 
 def add_user_location(uid, osm_id, osm_type):
+    """
+        Adds location for the user having matching uid
+    """
     session = _get_default_db_session()
     location = get_location(osm_id)
     if not location:
@@ -216,12 +236,20 @@ def add_user_location(uid, osm_id, osm_type):
 
 
 def get_location(osm_id):
+    """
+        Searches the database location matching the given osm_id
+    """
     session = _get_default_db_session()
     location = session.query(Location).filter(Location.osm_id == osm_id)
+    session.close()
     return location.first()
 
 
 def create_location(osm_id, osm_type):
+    """
+        Creates a new location using given osm_id and osm_type to get 
+        valid information from nominatim API
+    """
     ok = True
     session = _get_default_db_session()
     lat, lon, city, country = nominatim.reverse_location_for(osm_id, osm_type)
@@ -230,31 +258,42 @@ def create_location(osm_id, osm_type):
     else:
         session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       
         session.commit()
-        session.close()
+    session.close()
     return ok
 
 
 def get_user_locations(uid):
+    """
+        Returns a list of locations for the given user with the associated 
+        timestamp
+    """
     session = _get_default_db_session()
     locations = []
     for ul in session.query(UserLocation).filter(UserLocation.uid == uid):
         l = session.query(Location).filter(Location.id == ul.lid)
         locations.append({'timestamp': ul.timestamp, 'location': l.first().as_dict()})
+    session.close()
     return locations
 
 
-def get_users_last_location():
+def get_users_lastest_location():
+    """
+        Gets a list of users latest location
+    """
     locations = []
     for u in get_all_users():
-        location = get_last_location(u.id)
+        location = get_lastest_location(u.id)
         locations.append({'user':u,  'location':location})
     return locations
 
 
 def get_locations_with_users():
+    """
+        Returns a list of user having the same latest location indexed with this location
+    """
     locations = {}
     for u in get_all_users():
-        l = get_last_location(u.id)['data']
+        l = get_lastest_location(u.id)['data']
         if l:
             str_id = '%d' % l.osm_id
             if not locations.get(str_id, None):
@@ -263,7 +302,10 @@ def get_locations_with_users():
     return list(locations.values())
 
 
-def get_last_location(uid):
+def get_lastest_location(uid):
+    """
+        Returns the latest location added by the user matching given id
+    """
     session = _get_default_db_session()
     ul = session.query(UserLocation).filter(UserLocation.uid == uid).order_by(UserLocation.timestamp.desc())
     location = None
@@ -273,9 +315,24 @@ def get_last_location(uid):
         if location:
             location = location.first()
         timestamp = ul.first().timestamp
+    session.close()
     return {'timestamp': timestamp, 'data': location}
+
+
+def delete_user(uid):
+    """
+        Erases all data related to user's given id, data is definitly lost
+    """
+    session = _get_default_db_session()
+    session.query(UserLocation).filter(UserLocation.uid == uid).delete()
+    session.query(User).filter(User.id == uid).delete()
+    session.commit()
+    session.close()
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
+    """
+        Module unit tests
+    """
     print('DB - TESTS NOT IMPLEMENTED')

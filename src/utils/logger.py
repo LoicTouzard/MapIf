@@ -43,11 +43,17 @@ def _log(logfile, content):
 
 # TODO : use a decorator instead, it will be more developer friendly that way.
 def log_perf(start_time, end_time, params):
+    """
+        Logs performance of an operation in perf log
+    """
     if _LOG_PERF_:
         delta = timer.get_diff(start_time, end_time)
         _log("execution time = {0} sec {1}".format(str(delta), params))
     
 def log_error(msg=None, ex=None):
+    """
+        Logs error in errors' log
+    """
     if _LOGS_:
         if msg:
             _log(_LOGS_['stderr'], msg)
@@ -55,15 +61,24 @@ def log_error(msg=None, ex=None):
             _log(_LOGS_['stderr'], "python traceback below :\n{0}".format(traceback.format_exc()))
 
 def log_trace(msg):
+    """
+        Logs a trace in traces' log
+    """
     if _LOGS_:
         _log(_LOGS_['stdout'], msg)
 
 def mprint(msg):
+    """
+        Prints a message to stdout and add a trace to traces log
+    """
     logline = "{0}[mapif] > {1}".format(timer.get_date(), msg)
     log_trace(logline)
     print(logline)
 
 def init_logs():
+    """
+        Initializes logging module, creating missing log files if needed
+    """
     global _LOGS_
     global _LOG_PERF_
     global _LOG_DIR_
@@ -87,4 +102,7 @@ def init_logs():
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
+    """
+        Module unit tests
+    """
     print('LOGGER - TESTS NOT IMPLEMENTED')

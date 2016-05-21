@@ -23,6 +23,9 @@ class Response:
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
+    """
+        Module unit tests
+    """
     out = 'NEGATIVE RESPONSE TEST\n'+json.dumps(Response(True, 'an error occured !').json(), indent=4)
     print(out)
     out = 'POSITIVE RESPONSE TEST\n'+json.dumps(Response(False, 'everything is OK.').json(), indent=4)

@@ -25,15 +25,24 @@ _VALIDATORS_ = {
 # ------------------------------------------------------------------------------------------
 
 def validate(field, vtype=None):
+    """
+        (In)Validates data based on its type using regular expressions
+    """
     if vtype in _VALIDATORS_.keys():
         return True if _VALIDATORS_[vtype].match(field) else False
     else:
         return False
 
 def is_empty(field):
+    """
+        Tests if a field is empty
+    """
     return len(field.strip()) == 0
 
 def check_captcha(request):
+    """
+        Google ReCaptcha validation process
+    """
     payload = {
         'secret': ini.config('RECAPTCHA','recaptcha_secret_key'),
         'response': request.form['g-recaptcha-response'],
@@ -48,6 +57,9 @@ def check_captcha(request):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
+    """
+        Module unit tests
+    """
     print('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
     print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
     print('VALIDATOR - <!> TODO <!> add some tests')

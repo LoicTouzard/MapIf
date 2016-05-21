@@ -17,6 +17,9 @@ _CONFIG_ = None
 
 
 def init_config(filename):
+    """
+        Initializes configuration loading it from INI file
+    """
     global _CONFIG_
     ok = False
     if not _CONFIG_:
@@ -32,10 +35,18 @@ def init_config(filename):
 
 
 def getenv(env_var):
+    """
+        Returns a configuration value from an environnement variable
+    """
     return os.getenv(env_var, None)
 
 
 def config(section, option, env_var=None, default=None, boolean=False):
+    """
+        Tries to retrieve configuration from environement vriable if not None and 
+        then search INI file for the config finally return default value if the first
+        two operations failed
+    """
     res = None
     # try to search for environement var if not None
     if env_var:
@@ -70,6 +81,9 @@ def config(section, option, env_var=None, default=None, boolean=False):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
+    """
+        Module unit tests
+    """
     out = 'Configuration loaded from mapif.ini\n'
     for section in _CONFIG_.sections():
         out += ' + {0}\n'.format(section)

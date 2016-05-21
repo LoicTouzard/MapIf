@@ -32,6 +32,9 @@ _OSM_TYPES_ = {
 # ------------------------------------------------------------------------------------------
 
 def location_for(city, country):
+    """
+        Search a latitude and longitude for the given city and country using Nominatim API
+    """
     url = _SEARCH_BASE_URL_ + quote('{city} {country}'.format(city=city, country=country))
     resp = requests.get(url, params=_SEARCH_PARAMS_)
     data = json.loads(resp.text)
@@ -49,6 +52,9 @@ def location_for(city, country):
     return (lat, lon, city, country) 
 
 def reverse_location_for(osm_id, osm_type):
+    """
+        Retrieve information related with the given osm_id and osm_type using Nominatim API
+    """
     params = _REVERSE_PARAMS_
     params['osm_id'] = osm_id
     params['osm_type'] = _OSM_TYPES_.get(osm_type, None)
@@ -70,6 +76,9 @@ def reverse_location_for(osm_id, osm_type):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
+    """
+        Module unit tests
+    """
     lat, lon, city, country = location_for('Lyon', 'France')
     out = 'NOMINATIM result for location_for(Lyon, France)\n'+json.dumps({'lat': lat, 'lon': lon, 'city': city, 'country': country}, indent=4)
     print(out)
