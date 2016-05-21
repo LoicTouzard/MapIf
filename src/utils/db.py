@@ -107,7 +107,7 @@ class UserLocation(_BASE_):
 
 def _database_op(dbname, action='create'):
    if ini.config('DB', 'engine') == 'postgre':
-        db_engine = create_engine(_get_complete_database_name('postgre'))
+        db_engine = create_engine(_get_complete_database_name(dbname))
         connection = db_engine.connect()
         connection.execute('commit')
         try:
@@ -134,8 +134,8 @@ def _get_complete_database_name(database):
             url = ini.getenv('OPENSHIFT_POSTGRESQL_DB_URL')
         else:
             url = "postgresql://{0}:{1}@{2}/{3}".format(
-                ini.config('DB', 'postgre_user'), 
-                ini.config('DB', 'postgre_pass'), 
+                ini.config('DB', 'postgre_user'),
+                ini.config('DB', 'postgre_pass'),
                 ini.config('DB', 'postgre_host'), database)
     elif ini.config('DB', 'engine') == 'sqlite':
         url = "sqlite:///database/{0}.sqlite".format(database)
