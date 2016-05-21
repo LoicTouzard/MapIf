@@ -18,3 +18,8 @@ class Response:
 
     def json(self):
         return {'has_error': self.has_error, 'content': self.content}
+
+# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
+
+def test():
+    pass

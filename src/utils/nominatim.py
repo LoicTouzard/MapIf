@@ -68,7 +68,7 @@ def reverse_location_for(osm_id, osm_type):
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
+def test():
     lat, lon, city, country = location_for('Lyon', 'France')
     logger.mprint(json.dumps({
             'lat': lat,

@@ -85,12 +85,6 @@ def _hash_pwd(pwd_clear):
     dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
     return binascii.hexlify(dk)
 
-def _internal_error(code):
-    return json_response(
-        Response(True, 
-            "Une erreur interne au serveur s'est produite. Transmettez le CODE={0} suivant aux développeurs.".format(code)).json(), 
-        status_code=500)
-
 # ------------------------------------------------------------------------------------------
 #                               FLASK ROUTES HANDLERS
 # --------------------  ----------------------------------------------------------------------
@@ -276,5 +270,5 @@ def run():
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
+def test():
     logger.mprint('NOTHING TO TEST HERE')

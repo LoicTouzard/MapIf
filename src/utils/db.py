@@ -277,5 +277,5 @@ def get_last_location(uid):
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
+def test():
     logger.mprint('TESTS NOT IMPLEMENTED')

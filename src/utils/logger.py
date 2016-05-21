@@ -84,5 +84,5 @@ def init_logs():
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
+def test():
     mprint('TESTS NOT IMPLEMENTED')

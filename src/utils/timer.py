@@ -22,6 +22,5 @@ def get_diff(start_time, end_time):
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
-    from src.utils import logger
+def test():
     logger.mprint('TESTS NOT IMPLEMENTED')

@@ -69,5 +69,5 @@ def config(section, option, env_var=None, default=None, boolean=False):
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
+def test():
     logger.mprint('TESTS NOT IMPLEMENTED')

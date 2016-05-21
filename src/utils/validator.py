@@ -48,5 +48,5 @@ def check_captcha(request):
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
-if __name__ == '__main__':
+def test():
     logger.mprint('TESTS NOT IMPLEMENTED')
