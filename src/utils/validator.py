@@ -39,8 +39,7 @@ def check_captcha(request):
         'response': request.form['g-recaptcha-response'],
         'remoteip': request.remote_addr
     }
-    resp = requests.post('https://www.google.com/recaptcha/api/siteverify', data=json.dumps(payload))
-    print(resp.text)
+    resp = requests.post('https://www.google.com/recaptcha/api/siteverify', params=payload)
     data = json.loads(resp.text)
     if not data['success']:
         logger.log_trace("from validator: {0} may be a bot !".format(request.remote_addr))
