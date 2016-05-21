@@ -32,7 +32,7 @@ def init_config(filename):
 
 
 def getenv(env_var):
-    return os.getenv(varname, None)
+    return os.getenv(env_var, None)
 
 
 def config(section, option, env_var=None, default=None, boolean=False):
