@@ -21,6 +21,7 @@ from sqlalchemy.schema import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from src.utils import nominatim
 from src.utils import ini
+from src.utils import logger
 
 _BASE_ = declarative_base()
 _SESSIONMAKER_DEFAULT_ = None
@@ -115,7 +116,7 @@ def _database_op(dbname, action='create'):
             elif action == 'drop':
                 connection.execute('DROP DATABASE "{0}"'.format(dbname))
         except Exception as e:
-            print('_database_op error : details below.\nPython exception: {0}'.format(e))
+            logger.log_error('_database_op error: details below.', e)
         connection.close()
    else: # default is sqlite
         if action == 'create':
@@ -160,18 +161,20 @@ def init_db():
     _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
     try:
         _BASE_.metadata.create_all(engine)
-    except:
-        pass
+        logger.mprint("DB module successfully initialized.")
+    except Exception as e:
+        logger.log_error('init_db error: details below.', e)
 
 
 def create_user(firstname, lastname, email, pwd, promo):
+    ok = False
     session = _get_default_db_session()
     if not user_exists(email):
         session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd,promo=promo))       
         session.commit()
         session.close()
-        return True
-    return False
+        ok = True
+    return ok
 
 
 def get_all_users():
@@ -196,10 +199,7 @@ def get_user(email, pwd):
     result = []
     for row in session.query(User).filter(User.email == email, User.pwd == pwd):
         result.append(row)
-    if len(result) == 0:
-        return None
-    else:
-        return result[0]
+    return None if len(result) == 0 else result[0]
 
 
 def add_user_location(uid, osm_id, osm_type):
@@ -207,7 +207,7 @@ def add_user_location(uid, osm_id, osm_type):
     location = get_location(osm_id)
     if not location:
         if not create_location(osm_id, osm_type):
-            return False
+            return False # interrupt here
     location = get_location(osm_id)
     session.add(UserLocation(uid=uid, lid=location.id))
     session.commit()
@@ -222,24 +222,24 @@ def get_location(osm_id):
 
 
 def create_location(osm_id, osm_type):
+    ok = True
     session = _get_default_db_session()
     lat, lon, city, country = nominatim.reverse_location_for(osm_id, osm_type)
     if not lat or not lon or not city or not country:
-        return False
-    session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       
-    session.commit()
-    session.close()
-    return True
+        ok = False
+    else:
+        session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       
+        session.commit()
+        session.close()
+    return ok
 
 
 def get_user_locations(uid):
     session = _get_default_db_session()
     locations = []
     for ul in session.query(UserLocation).filter(UserLocation.uid == uid):
-        print(ul)
         l = session.query(Location).filter(Location.id == ul.lid)
         locations.append({'timestamp': ul.timestamp, 'location': l.first().as_dict()})
-    print(locations)
     return locations
 
 
@@ -278,4 +278,4 @@ def get_last_location(uid):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 if __name__ == '__main__':
-    print('TESTS NOT IMPLEMENTED')
+    logger.mprint('TESTS NOT IMPLEMENTED')

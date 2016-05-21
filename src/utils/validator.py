@@ -9,6 +9,7 @@ import re
 import requests
 import json
 from src.utils import ini
+from src.utils import logger
 
 _VALIDATORS_ = {
     'email': re.compile('^[\w\.\_\-]+@[\w\.\_\-]+\.\w{2,3}$'),
@@ -41,9 +42,11 @@ def check_captcha(request):
     resp = requests.post('https://www.google.com/recaptcha/api/siteverify', data=json.dumps(payload))
     print(resp.text)
     data = json.loads(resp.text)
+    if not data['success']:
+        logger.log_trace("from validator: {0} may be a bot !".format(request.remote_addr))
     return data['success']
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 if __name__ == '__main__':
-    print('TESTS NOT IMPLEMENTED')
+    logger.mprint('TESTS NOT IMPLEMENTED')

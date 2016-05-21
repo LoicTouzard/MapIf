@@ -70,14 +70,14 @@ def reverse_location_for(osm_id, osm_type):
 
 if __name__ == '__main__':
     lat, lon, city, country = location_for('Lyon', 'France')
-    print(json.dumps({
+    logger.mprint(json.dumps({
             'lat': lat,
             'lon': lon,
             'city': city,
             'country': country
         }, indent=4))
     lat, lon, city, country = reverse_location_for('15976890', 'way')
-    print(json.dumps({
+    logger.mprint(json.dumps({
             'lat': lat,
             'lon': lon,
             'city': city,

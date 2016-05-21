@@ -28,12 +28,18 @@ from src.utils import ini
 from src.utils import logger
 
 # load config file and exit on error
+logger.mprint("Loading configuration file...")
 if not ini.init_config('mapif.ini'):
-    print("Configuration file is missing. Server can't be started !")
+    logger.mprint("Configuration file is missing. Server can't be started !")
     exit(-1)
 
-# initialize logs
+# initialize logging module
+logger.mprint("Starting logging module...")
 logger.init_logs()
+
+# initialize DB module
+logger.mprint("Starting DB module...")
+db.init_db()
 
 # create our little application :)
 app = Flask(__name__)
@@ -43,6 +49,13 @@ app.config.from_object(__name__)
 
 # load secret key from configuration file or generated a UUID and use it as secret key
 app.secret_key = ini.config('APP', 'secret_key', default=str(uuid.uuid4()))
+
+# enable/disable debug
+app.debug = ini.config('APP', 'debug', default=False, boolean=True)
+if not app.debug:
+    logger.mprint("Debugger is disabled !")
+else:
+    logger.mprint("Debugger is enabled.")
 
 # allow cross origin requests on this application
 CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}})
@@ -72,146 +85,178 @@ def _hash_pwd(pwd_clear):
     dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
     return binascii.hexlify(dk)
 
+def _internal_error(code):
+    return json_response(
+        Response(True, 
+            "Une erreur interne au serveur s'est produite. Transmettez le CODE={0} suivant aux développeurs.".format(code)).json(), 
+        status_code=500)
+
 # ------------------------------------------------------------------------------------------
 #                               FLASK ROUTES HANDLERS
-# ------------------------------------------------------------------------------------------
+# --------------------  ----------------------------------------------------------------------
 
 
 @app.route('/', methods=['GET'])
 def root():
-    #users = db.get_users_with_location()
-    locations=db.get_locations_with_users()
-    return render_template('map.html', locations=locations) # users=users)
-
+    try:
+        #users = db.get_users_with_location()
+        locations=db.get_locations_with_users()
+        return render_template('map.html', locations=locations) # users=users)
+    except Exception as e:
+        logger.log_error('mapif.root() error: details below.', e)
+        return _internal_error('R00T_K0')
+    
 
 @app.route('/login', methods=['POST'])
 def login():
-    err = True
-    content = "Opération interdite, vous êtes déjà connecté !"
-    code = 403
-    if not check_connected(session):
-        content = "L'utilisateur et/ou le mot de passe est érroné."
-        code = 200
-        email = request.form['email']
-        pwd_clear = request.form['password']
-        pwd_hash = hash_pwd(pwd_clear)
-        load_user(session, email, pwd_hash)
-        if check_connected(session):
-            err = False
-            content = "Vous êtes maintenant connecté !"
-    return json_response(Response(err, content).json(), status_code=code)
-
+    try:
+        err = True
+        content = "Opération interdite, vous êtes déjà connecté !"
+        code = 403
+        if not _check_connected(session):
+            content = "L'utilisateur et/ou le mot de passe est érroné."
+            code = 200
+            email = request.form['email']
+            pwd_clear = request.form['password']
+            pwd_hash = _hash_pwd(pwd_clear)
+            _load_user(session, email, pwd_hash)
+            if _check_connected(session):
+                err = False
+                content = "Vous êtes maintenant connecté !"
+        return json_response(Response(err, content).json(), status_code=code)
+    except Exception as e:
+        logger.log_error('mapif.login() error: details below.', e)
+        return _internal_error('L0G1N_K0')
     
 @app.route('/logout')
 def logout():
-    err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    if not check_connected(session):
-        return json_response(Response(err, content).json(), status_code=403)
-    else:
-        session.pop('user', None)
-    return redirect('/')
+    try:
+        err = True
+        content = "Opération interdite, vous n'êtes pas connecté !"
+        if not _check_connected(session):
+            return json_response(Response(err, content).json(), status_code=403)
+        else:
+            session.pop('user', None)
+        return redirect('/')
+    except Exception as e:
+        logger.log_error('mapif.logout() error: details below.', e)
+        return _internal_error('L0G0U7_K0')
 
     
 @app.route('/profil', methods=['POST'])
 def profil():
-    err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    if not check_connected(session):
-        return json_response(Response(err, content).json(), status_code=403)
-    else:
-        pass # TODO modification profil utilisateur
-        return render_template('profil.html')
-
+    try:
+        err = True
+        content = "Opération interdite, vous n'êtes pas connecté !"
+        if not _check_connected(session):
+            return json_response(Response(err, content).json(), status_code=403)
+        else:
+            pass # TODO modification profil utilisateur
+            return render_template('profil.html')
+    except Exception as e:
+        logger.log_error('mapif.profil() error: details below.', e)
+        return _internal_error('PR0F1L_K0')
     
 @app.route('/signup', methods=['POST'])
 def signup():
-    err = True
-    code = 403
-    content = "Opération interdite, vous êtes déjà connecté !"
-    if not check_connected(session):
-        code = 200
-        content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
-        if validator.check_captcha(request):
-            # recuperation du contenu de la requete
-            firstname = escape(request.form['firstname'].strip())
-            lastname = escape(request.form['lastname'].strip())
-            email = request.form['email'].strip()
-            pwd_clear = request.form['password1']
-            pwd_clear2 = request.form['password2']
-            promo = request.form['promo'].strip()
-            # verification des champs
-            content = {}
-            if validator.is_empty(firstname):
-                content['firstname'] = "Le champ prénom ne doit pas être vide !"
-            if validator.is_empty(lastname):
-                content['lastname'] = "Le champ nom ne doit pas être vide !"
-            if not validator.validate(email, 'email'):
-                content['email'] = "L'email ne respecte pas le format attendu !"
-            if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
-                content['promo'] = "La promo n'est pas une année correctement formaté !"
-            if len(pwd_clear) < 6:
-                content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
-            if pwd_clear2 != pwd_clear:
-                content['password2'] = "Les deux mots de passe doivent être identiques !"
-            # hash password
-            pwd_hash = hash_pwd(pwd_clear)
-            # realisation si pas d'erreur
-            if len(content.keys()) == 0:
-                content = "Cette adresse email est déjà attribuée à un utilisateur."
-                # verification de l'existence de l'utilisateur
-                if not db.user_exists(email):
-                    # creation de l'utilisateur
-                    db.create_user(firstname, lastname, email, pwd_hash, promo)
-                    # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
-                    load_user(session, email, pwd_hash)
-                    # mise à jour des variables de réponse 
-                    err = False
-                    content = 'ok'
-    return json_response(Response(err, content).json(), status_code=code)
+    try:
+        err = True
+        code = 403
+        content = "Opération interdite, vous êtes déjà connecté !"
+        if not _check_connected(session):
+            code = 200
+            content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
+            if validator.check_captcha(request):
+                # recuperation du contenu de la requete
+                firstname = escape(request.form['firstname'].strip())
+                lastname = escape(request.form['lastname'].strip())
+                email = request.form['email'].strip()
+                pwd_clear = request.form['password1']
+                pwd_clear2 = request.form['password2']
+                promo = request.form['promo'].strip()
+                # verification des champs
+                content = {}
+                if validator.is_empty(firstname):
+                    content['firstname'] = "Le champ prénom ne doit pas être vide !"
+                if validator.is_empty(lastname):
+                    content['lastname'] = "Le champ nom ne doit pas être vide !"
+                if not validator.validate(email, 'email'):
+                    content['email'] = "L'email ne respecte pas le format attendu !"
+                if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+                    content['promo'] = "La promo n'est pas une année correctement formaté !"
+                if len(pwd_clear) < 6:
+                    content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
+                if pwd_clear2 != pwd_clear:
+                    content['password2'] = "Les deux mots de passe doivent être identiques !"
+                # hash password
+                pwd_hash = _hash_pwd(pwd_clear)
+                # realisation si pas d'erreur
+                if len(content.keys()) == 0:
+                    content = "Cette adresse email est déjà attribuée à un utilisateur."
+                    # verification de l'existence de l'utilisateur
+                    if not db.user_exists(email):
+                        # creation de l'utilisateur
+                        db.create_user(firstname, lastname, email, pwd_hash, promo)
+                        # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
+                        _load_user(session, email, pwd_hash)
+                        # mise à jour des variables de réponse 
+                        err = False
+                        content = 'ok'
+        return json_response(Response(err, content).json(), status_code=code)
+    except Exception as e:
+        logger.log_error('mapif.signup() error: details below.', e)
+        return _internal_error('S1NGUP_K0')
 
 
 @app.route('/locations', methods=['GET'])
 def locations():
-    err = True
-    code = 200
-    uid = request.args['uid']
-    content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
-    if validator.validate(uid, 'num'):
-        uid = int(uid)
-        locations = db.get_user_locations(uid)
-        content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
-        if locations:
-            err = False
-            content = locations
-    return json_response(Response(err, content).json(), status_code=code)
+    try:
+        err = True
+        code = 200
+        uid = request.args['uid']
+        content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
+        if validator.validate(uid, 'num'):
+            uid = int(uid)
+            locations = db.get_user_locations(uid)
+            content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
+            if locations:
+                err = False
+                content = locations
+        return json_response(Response(err, content).json(), status_code=code)
+    except Exception as e:
+        logger.log_error('mapif.locations() error: details below.', e)
+        return _internal_error('L0C4T10N5_K0')
 
 
 @app.route('/addlocation', methods=['POST'])
 def addlocation():
-    err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    code = 403
-    if check_connected(session):
-        code = 200
-        # recupération des données du post
-        uid = session['user']['id']
-        osm_id = escape(request.form['osm_id'].strip())
-        osm_type = escape(request.form['osm_type'].strip())
-        # vérification des champs
-        content = {}
-        if validator.is_empty(osm_id):
-            content['osm_id'] = "Le champ osm_id ne doit pas être vide !"
-        if validator.is_empty(osm_type):
-            content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
-        if len(content.keys()) == 0:
-            # create user - location mapping record in db
-            content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."
-            if db.add_user_location(uid, osm_id, osm_type):
-                # definition du message de retour
-                err = False
-                content = "La nouvelle localisation a été enregistrée."
-    return json_response(Response(err, content).json(), status_code=code)
+    try:
+        err = True
+        content = "Opération interdite, vous n'êtes pas connecté !"
+        code = 403
+        if _check_connected(session):
+            code = 200
+            # recupération des données du post
+            uid = session['user']['id']
+            osm_id = escape(request.form['osm_id'].strip())
+            osm_type = escape(request.form['osm_type'].strip())
+            # vérification des champs
+            content = {}
+            if validator.is_empty(osm_id):
+                content['osm_id'] = "Le champ osm_id ne doit pas être vide !"
+            if validator.is_empty(osm_type):
+                content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
+            if len(content.keys()) == 0:
+                # create user - location mapping record in db
+                content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."
+                if db.add_user_location(uid, osm_id, osm_type):
+                    # definition du message de retour
+                    err = False
+                    content = "La nouvelle localisation a été enregistrée."
+        return json_response(Response(err, content).json(), status_code=code)
+    except Exception as e:
+        logger.log_error('mapif.addlocation() error: details below.', e)
+        return _internal_error('4DDL0C4T10N_K0')
 
 
 @app.errorhandler(404)
@@ -223,10 +268,10 @@ def page_not_found(e):
 # ------------------------------------------------------------------------------------------
     
 def run():
-    db.init_db()
+    logger.mprint("Starting MapIf flask application...")
     app.run(host='localhost', port=5000)
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 if __name__ == '__main__':
-    print('NOTHING TO TEST HERE')
+    logger.mprint('NOTHING TO TEST HERE')
