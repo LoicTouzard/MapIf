@@ -48,6 +48,6 @@ def check_captcha(request):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
-    logger.mprint('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
-    logger.mprint('VALIDATOR - <!> TODO <!> add some tests')
+    print('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
+    print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
+    print('VALIDATOR - <!> TODO <!> add some tests')

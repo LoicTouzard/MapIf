@@ -75,4 +75,4 @@ def test():
         out += ' + {0}\n'.format(section)
         for option in _CONFIG_.options(section):
             out += '    - {0} = {1}\n'.format(option, _CONFIG_[section][option])
-    logger.mprint(out)
+    print(out)

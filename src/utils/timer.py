@@ -6,7 +6,6 @@
 # ------------------------------------------------------------------------------------------
 
 import time
-from src.utils import logger
 
 # ------------------------------------------------------------------------------------------
 #                               EXTERN FUNCTIONS
@@ -24,6 +23,6 @@ def get_diff(start_time, end_time):
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
 def test():
-    logger.mprint('TIMER TEST - get_time() returned {0}'.format(get_time()))
-    logger.mprint('TIMER TEST - get_date() returned {0}'.format(get_date()))
-    logger.mprint('TIMER TEST - get_diff(10, 35) returned {0}'.format(get_diff(10, 35)))
+    print('TIMER TEST - get_time() returned {0}'.format(get_time()))
+    print('TIMER TEST - get_date() returned {0}'.format(get_date()))
+    print('TIMER TEST - get_diff(10, 35) returned {0}'.format(get_diff(10, 35)))

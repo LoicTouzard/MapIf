@@ -72,7 +72,7 @@ def reverse_location_for(osm_id, osm_type):
 def test():
     lat, lon, city, country = location_for('Lyon', 'France')
     out = 'NOMINATIM result for location_for(Lyon, France)\n'+json.dumps({'lat': lat, 'lon': lon, 'city': city, 'country': country}, indent=4)
-    logger.mprint(out)
+    print(out)
     lat, lon, city, country = reverse_location_for('15976890', 'way')
     out = 'NOMINATIM result for reverse_location_for(15976890, way)\n'+json.dumps({'lat': lat, 'lon': lon, 'city': city, 'country': country}, indent=4)
-    logger.mprint(out)
+    print(out)
