@@ -53,6 +53,8 @@ app.config.from_object(__name__)
 # load secret key from configuration file or generated a UUID and use it as secret key
 app.secret_key = ini.config('APP', 'secret_key', default=str(uuid.uuid4()))
 
+logger.log_error('fuck this')
+
 # enable/disable debug
 app.debug = ini.config('APP', 'debug', default=False, boolean=True)
 if not app.debug:

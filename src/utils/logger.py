@@ -8,6 +8,7 @@
 import os
 import traceback
 from src.utils import timer
+from src.utils import ini
 
 _LOGS_ = None
 _LOG_PERF_ = None
@@ -21,7 +22,7 @@ def _create_log(logfile):
     if _LOG_DIR_:
         if not os.path.exists(_LOG_DIR_):
             os.makedirs(_LOG_DIR_)
-        with open(_LOG_DIR_+logfile, 'w+') as f:
+        with open(_LOG_DIR_+logfile, 'w') as f:
             f.write("""
 # ---------------------------------------------------
 #    MapIf log file : {0}
@@ -29,6 +30,7 @@ def _create_log(logfile):
 # ---------------------------------------------------
 
 """.format(logfile, timer.get_date()))
+
 
 def _log(logfile, content):
     if _LOG_DIR_:
@@ -77,6 +79,7 @@ def init_logs():
             _create_log(logfile)
         mprint("Logging module successfully initialized.")
     except Exception as e:
+        mprint("Logging module initialization failed.")
         log_error("Logging module initialization failed.", e)
     
 
