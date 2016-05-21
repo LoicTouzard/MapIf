@@ -53,8 +53,6 @@ app.config.from_object(__name__)
 # load secret key from configuration file or generated a UUID and use it as secret key
 app.secret_key = ini.config('APP', 'secret_key', default=str(uuid.uuid4()))
 
-logger.log_error('fuck this')
-
 # enable/disable debug
 app.debug = ini.config('APP', 'debug', default=False, boolean=True)
 if not app.debug:
@@ -88,7 +86,7 @@ def _check_connected(session):
 
 def _hash_pwd(pwd_clear):
     dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
-    return binascii.hexlify(dk)
+    return binascii.hexlify(dk).decode('utf-8')
 
 def _internal_error(code):
     return json_response(

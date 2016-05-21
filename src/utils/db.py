@@ -106,13 +106,14 @@ class UserLocation(_BASE_):
 
 
 def _database_op(dbname, action='create'):
+   engine = create_engine(_get_complete_database_name(dbname))
    if ini.config('DB', 'engine') == 'postgre':
-        db_engine = create_engine(_get_complete_database_name(dbname))
-        connection = db_engine.connect()
+        connection = engine.connect()
         connection.execute('commit')
         try:
             if action == 'create':
-                connection.execute('CREATE DATABASE "{0}"'.format(dbname))
+                if not database_exists(engine.url):
+                    connection.execute('CREATE DATABASE "{0}"'.format(dbname))
             elif action == 'drop':
                 connection.execute('DROP DATABASE "{0}"'.format(dbname))
         except Exception as e:
@@ -120,7 +121,6 @@ def _database_op(dbname, action='create'):
         connection.close()
    else: # default is sqlite
         if action == 'create':
-            engine = create_engine(_get_complete_database_name(dbname))
             if not database_exists(engine.url):
                 create_database(engine.url)
         elif action == 'drop':
