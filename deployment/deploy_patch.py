@@ -39,6 +39,6 @@ try:
         f.write(content)
     # print ok message
     echo('done!', 'green')
-except Exception, e:
+except Exception as e:
     echo('failed!', 'red')
 # ---------------------------------------------------------
