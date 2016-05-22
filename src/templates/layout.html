@@ -270,9 +270,21 @@
 					<h4 class="modal-title" id="position">Définir un nouvelle position</h4>
 				</div>
 				<div class="modal-body">
-				<p>Votre position actuelle est -------- depuis le -----</p>
-				<p>Vous n'avez pas encore défini votre position</p>
-				<p>Voulez vous ajouter <strong><span id="position-add-city">city</span> <span id="position-add-country">COUNTRY</span></strong> à votre historique de déplacement ?</p>
+				{% for loc in user_locations[-5:] | reverse %}
+					{% if loop.first %}
+					<h5>Votre position actuelle est {{ loc.location.city }} {{ loc.location.country }} depuis le {{ loc.timestamp.strftime('%d %B %Y') }}</h5>
+					{% else %}
+						{% if loop.last and loop.index is equalto 5 %}
+					<p>...</p>
+						{% else %}
+					<p>Vous étiez à {{ loc.location.city }} {{ loc.location.country }} le {{ loc.timestamp.strftime('%d %B %Y') }}</p>
+						{% endif %}
+					{% endif %}
+				{% else %}
+					<p>Vous n'avez pas encore défini votre position</p>
+				{% endfor %}
+
+					<p class="well">Voulez vous ajouter <strong><span id="position-add-city">city</span> <span id="position-add-country">COUNTRY</span></strong> à votre historique de déplacement ?</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
@@ -316,6 +328,7 @@
 		});
 		{% endfor %}
 		console.log(locations);
+
 		/*
 		var users = [];
 		{% for user in users %}
