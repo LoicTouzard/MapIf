@@ -33,18 +33,20 @@ var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type, osm_id) {
 	if (feature) {
 		mymap.removeLayer(feature);
 	}
+	/*
 	if (osm_type == "node") {
 		feature = L.circle( loc1, 25, {color: 'green', fill: false}).addTo(mymap);
 		mymap.fitBounds(bounds);
 		mymap.setZoom(18);
 	} else {
+		*/
 		var loc3 = new L.LatLng(lat1, lng2);
 		var loc4 = new L.LatLng(lat2, lng1);
 
 		feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(mymap);
 		mymap.fitBounds(bounds);
 		mymap.zoomOut();
-	}
+	//}
 	return false;
 }
 
@@ -59,8 +61,11 @@ var addrSearch = function () {
         console.log("request num"+num_search);
     	console.log(data)
         $.each(data, function(key, val) {
-        	//if(val.type == "city" || val.type == "village" || val.type == "administrative"){
-        	if(val.address.city && val.address.country){
+        	if(((val.class == "place" && (val.type == "city" || val.type == "town" || val.type == "village"))
+        		|| (val.class == "boundary" && val.type == "administrative"))
+        		&& val.address.city && val.address.country
+        		&& val.osm_type!= "way"){
+    			console.log(val)
 	            var bb = val.boundingbox;
 				var $item;
 				if(connected){
@@ -144,13 +149,13 @@ var addrSearch = function () {
         	}
         	else{
         		// let's try a more permissive search
-        		 $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + city.value + " "+country.value, display_result);
+        		 $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&q=' + city.value + " "+country.value, display_result);
         	}
         }
 
     }
 
-    $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&city=' + city.value + "&country="+country.value, display_result);
+    $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&city=' + city.value + "&country="+country.value, display_result);
 }
 
 
