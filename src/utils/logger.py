@@ -83,7 +83,7 @@ def init_logs():
     global _LOG_PERF_
     global _LOG_DIR_
     try:
-        _LOG_DIR_ = ini.config('LOGGER', 'log_dir', default='app-root/runtime/repo/logs/')
+        _LOG_DIR_ = ini.config('LOGGER', 'log_dir', 'OPENSHIFT_LOG_DIR', default='logs/')
         _LOGS_ = {
             'stdout': ini.config('LOGGER', 'std_log', default='mapif.log'),
             'perfout': ini.config('LOGGER', 'perf_log', default='mapif.perf.log'),

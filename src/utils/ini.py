@@ -33,11 +33,11 @@ def init_config(filename):
     return ok
 
 
-def getenv(env_var):
+def getenv(env_var, default=None):
     """
         Returns a configuration value from an environnement variable
     """
-    return os.getenv(env_var, None)
+    return os.getenv(env_var, default)
 
 
 def config(section, option, env_var=None, default=None, boolean=False):

@@ -11,7 +11,7 @@ import uuid
 import os
 import locale
 from datetime import date
-from flask import Flask 
+from flask import Flask
 from flask import request
 from flask import session
 from flask import redirect
@@ -33,7 +33,8 @@ from src.utils import logger
 logger.mprint("Running from {0}".format(os.getcwd()))
 # load config file and exit on error
 logger.mprint("Loading configuration file...")
-if not ini.init_config('app-root/runtime/repo/mapif.ini'):
+_APP_ROOT_=ini.getenv('OPENSHIFT_REPO_DIR', '')
+if not ini.init_config(_APP_ROOT_+'mapif.ini'):
     logger.mprint("Configuration file is missing. Server can't be started !")
     exit(-1)
 
