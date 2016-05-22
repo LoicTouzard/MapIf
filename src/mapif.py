@@ -9,6 +9,7 @@ import hashlib
 import binascii
 import uuid
 import os
+import locale
 from datetime import date
 from flask import Flask 
 from flask import request
@@ -43,6 +44,9 @@ logger.init_logs()
 # initialize DB module
 logger.mprint("Starting DB module...")
 db.init_db()
+
+# set locale
+locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 
 # create our little application :)
 app = Flask(__name__)
