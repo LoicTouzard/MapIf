@@ -11,7 +11,7 @@ becho "calling rhc to deploy app..."
 sudo rhc deploy master -a ${APP}
 becho "done!"
 becho "calling rhc to send configuration file to openshift..."
-sudo rhc scp ${APP} upload ${INI_DIR}${INI_FILE} ${INI_DIR}
+sudo rhc scp ${APP} upload ${INI_FILE} ${INI_DIR}
 becho "done!"
 becho "calling rhc to restart application..."
 sudo rhc app restart -a ${APP}
