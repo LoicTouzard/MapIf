@@ -89,8 +89,10 @@ def _check_connected(session):
 
 
 def _hash_pwd(pwd_clear):
-    dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
-    return binascii.hexlify(dk).decode('utf-8')
+    return hashlib.sha256(bytearray(pwd_clear, encoding='utf8')).hexdigest()
+    # unsupported Python 3.3 hash operation
+    #dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
+    #return binascii.hexlify(dk).decode('utf-8')
 
 def _internal_error(code):
     return json_response(
