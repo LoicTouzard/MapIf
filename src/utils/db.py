@@ -255,6 +255,7 @@ def create_location(osm_id, osm_type):
     session = _get_default_db_session()
     lat, lon, city, country = nominatim.reverse_location_for(osm_id, osm_type)
     if not lat or not lon or not city or not country:
+        logger.log_error('Incomplete location returned by Nominatim (lat={0},lon={1},city={2},country={3})'.format(lat,lon,city,country))
         ok = False
     else:
         session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       

@@ -238,7 +238,7 @@ def locations():
         code = 200
         uid = request.args['uid']
         content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
-        if validator.validate(uid, 'num'):
+        if validator.validate(uid, 'int'):
             uid = int(uid)
             locations = db.get_user_locations(uid)
             content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."

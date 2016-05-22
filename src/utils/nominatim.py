@@ -70,6 +70,8 @@ def reverse_location_for(osm_id, osm_type):
         address = data.get('address', None)
         if address: 
             city = address.get('city', None)
+            if not city:
+                city = address.get('county', None)
             country = address.get('country', None)
     return (lat, lon, city, country)
 

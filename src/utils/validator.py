@@ -14,8 +14,8 @@ from src.utils import logger
 _VALIDATORS_ = {
     'email': re.compile('^[\w\.\_\-]+@[\w\.\_\-]+\.\w{2,3}$'),
     'alphanum': re.compile('^\w+$'),
-    'num': re.compile('^\d+$'),
-    'price': re.compile('^\d+(\.\d+)$'),
+    'int': re.compile('^\d+$'),
+    'double': re.compile('^\d+(\.\d+)?$'),
     'phone': re.compile('^(\+\d{2}(\s)?\d|\d{2})(\s)?(\d{2}(\s)?){4}$'),
     'year': re.compile('^\d{4}$')
 }
@@ -62,4 +62,6 @@ def test():
     """
     print('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
     print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
-    print('VALIDATOR - <!> TODO <!> add some tests')
+    print('VALIDATOR - validate(doe@hotmail.fr, email) returned {0}'.format(validate('doe@hotmail.fr', 'email')))
+    print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
+    print('VALIDATOR - add tests here <!>')
