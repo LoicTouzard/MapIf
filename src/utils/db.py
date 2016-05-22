@@ -330,6 +330,7 @@ def delete_user(uid):
     session.query(User).filter(User.id == uid).delete()
     session.commit()
     session.close()
+    return True
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 

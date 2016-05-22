@@ -219,3 +219,13 @@ body,
 #delete-account-panel{
 	margin-top: 20px;
 }
+
+.no-result{
+	margin-right: 15px;
+	margin-left: 15px;
+}
+
+.popupUsers{
+	overflow: auto;
+	max-height: 150px;
+}

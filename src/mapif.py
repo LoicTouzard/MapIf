@@ -303,11 +303,10 @@ def delete_account():
         if _check_connected(session):
             code = 200
             uid = session['user']['id']
-            content = "La suppression du compte a échouée !"
-            if db.delete_user(uid):
-                session.pop('user', None)
-                err = False
-                content = "Le compte a été supprimé avec succès."
+            db.delete_user(uid)
+            session.pop('user', None)
+            err = False
+            content = "Le compte a été supprimé avec succès."
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
         logger.log_error('mapif.delete_account() error: details below.', e)

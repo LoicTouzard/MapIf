@@ -67,7 +67,7 @@ var addrSearch = function () {
         logger("request num"+num_search);
     	logger(data)
         $.each(data, function(key, val) {
-        	if(((val.class == "place" && (val.type == "city" || val.type == "town" || val.type == "village"))
+        	if(((val.class == "place" && (val.type == "city" || val.type == "town" || val.type == "village" || val.type == "county"))
         		|| (val.class == "boundary" && val.type == "administrative"))
         		&& val.address.city && val.address.country
         		&& val.osm_type!= "way"){
@@ -152,6 +152,7 @@ var addrSearch = function () {
         } else {
         	if (num_search > 1) {
             	$('<h4 class="no-result">').text("Pas de ville pour \""+city.value+" "+country.value+"\"...").appendTo('#search-results');
+            	$('<p class="no-result">').html("Pour trouver un résultat vous pouvez : <ol><li>Vérifier l'orthographe de votre recherche</li><li>Chercher une ville plus grande proche de la votre</li><li>Nous contacter en nous donnant votre recherche exacte, le big data n'est pas une science exacte ...</li></ol>").appendTo('#search-results');
         	}
         	else{
         		// let's try a more permissive search
@@ -162,6 +163,8 @@ var addrSearch = function () {
     }
 
     $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&city=' + city.value + "&country="+country.value, display_result);
+
+    $('<h4 class="no-result">').text("Recherche de ville pour \""+city.value+" "+country.value+"\" en cours...").appendTo('#search-results');
 
     if (feature) {
 		mymap.removeLayer(feature);
@@ -177,9 +180,11 @@ var checkAcountDelete = function(){
 	$confirm = $("#delete-button-confirm");
 	if($input.val() === "je sui 1 gro boloss"){
 		$confirm.removeAttr("disabled");
+		$confirm.bind("click", ajaxDeleteAccount);
 	}
 	else{
 		$confirm.attr("disabled", "disabled");
+		$confirm.unbind("click", ajaxDeleteAccount);
 	}
 }
 
@@ -495,8 +500,7 @@ $(function(){
 	*/
 	// add marker to insa
 	L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
-	    .bindPopup('Bienvenue à l\'INSA.')
-	    .openPopup();
+	    .bindPopup('Bienvenue à l\'INSA !');
 
 	// add markers for locations of users
 	for (var i = 0; i < locations.length; i++) {
@@ -504,11 +508,12 @@ $(function(){
 		var users = locations[i].users;
 
 		var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
-			+" à "+location.city+" "+location.country.toUpperCase()+"</h4>";
+			+" à "+location.city+" "+location.country.toUpperCase()+"</h4><div class='popupUsers'>";
 		for (var j = 0; j < users.length; j++) {
 			popupText += users[j].firstname + " "+users[j].lastname+"<br>";
 		};
-		
+		popupText += "</div>";
+
 		L.marker([location.lat, location.lon]).addTo(mymap)
 		    .bindPopup(popupText);
 
@@ -588,6 +593,8 @@ $(function(){
 	/********* PROFIL *********/
 	
 	$("#delete-input").keyup(checkAcountDelete).val("");
+
+	$("#delete-button-confirm").attr("disabled", "disabled");
 
 	/********* AJAX *********/
 	
