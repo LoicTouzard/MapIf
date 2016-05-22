@@ -13,11 +13,11 @@ if not _APP_ROOT_:
 # patch route in main.js -----------------------------------
 _MAIN_JS_=_APP_ROOT_+'src/static/js/main.js'
 content = ''
-with open(_MAIN_JS_, 'r') as f:
+with open(_MAIN_JS_, 'r', encoding='utf-8') as f:
     content = f.read()
 
 content.replace('localhost:5000', _APP_URL_)
 
-with open(_MAIN_JS_, 'w') as f:
+with open(_MAIN_JS_, 'w', encoding='utf-8') as f:
     f.write(content)
 # ---------------------------------------------------------

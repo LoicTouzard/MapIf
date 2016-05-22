@@ -22,7 +22,7 @@ def _create_log(logfile):
     if _LOG_DIR_:
         if not os.path.exists(_LOG_DIR_):
             os.makedirs(_LOG_DIR_)
-        with open(_LOG_DIR_+logfile, 'w') as f:
+        with open(_LOG_DIR_+logfile, 'w', encoding='utf-8') as f:
             f.write("""
 # ---------------------------------------------------
 #    MapIf log file : {0}
@@ -34,7 +34,7 @@ def _create_log(logfile):
 
 def _log(logfile, content):
     if _LOG_DIR_:
-        with open(_LOG_DIR_+logfile, 'a') as f:
+        with open(_LOG_DIR_+logfile, 'a', encoding='utf-8') as f:
             f.write("{0} - {1}\n".format(timer.get_date(), content))
 
 # ------------------------------------------------------------------------------------------
