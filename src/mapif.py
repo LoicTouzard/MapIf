@@ -116,11 +116,11 @@ def root():
         user_locations = None 
         if _check_connected(session):
             user_locations = db.get_user_locations(session['user']['id'])
-        return render_template('map.html', locations=locations, user_locations=user_locations) # users=users)
+        return render_template('layout.html', locations=locations, user_locations=user_locations) # users=users)
     except Exception as e:
         logger.log_error('mapif.root() error: details below.', e)
         return _internal_error('R00T_K0')
-    
+
 
 @app.route('/login', methods=['POST'])
 def login():
