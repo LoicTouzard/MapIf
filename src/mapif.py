@@ -291,8 +291,8 @@ def addlocation():
         logger.log_error('mapif.addlocation() error: details below.', e)
         return _internal_error('4DDL0C4T10N_K0')
 
-@app.route('/delete', methods=['DELETE'])
-def delete():
+@app.route('/delete/account', methods=['DELETE'])
+def delete_account():
     """
         This route is used to delete completly a user account and all its data
     """
@@ -310,8 +310,8 @@ def delete():
                 content = "Le compte a été supprimé avec succès."
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
-        logger.log_error('mapif.delete() error: details below.', e)
-        return _internal_error('D3L3T3_K0')
+        logger.log_error('mapif.delete_account() error: details below.', e)
+        return _internal_error('D3L3T3_4CC0UN7_K0')
 
 @app.errorhandler(404)
 def page_not_found(e):
