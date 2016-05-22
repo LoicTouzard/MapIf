@@ -105,7 +105,6 @@ def root():
         This is the main application's route. It displays the application main page.
     """
     try:
-        #users = db.get_users_with_location()
         locations = db.get_locations_with_users()
         user_locations = None 
         if _check_connected(session):

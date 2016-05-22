@@ -38,7 +38,7 @@ class User(_BASE_):
     id = Column(Integer, primary_key=True, nullable=False)
     firstname = Column(String)
     lastname = Column(String)
-    email = Column(String)
+    email = Column(String, unique=True, nullable=False)
     pwd = Column(String)
     promo = Column(Integer)
 
@@ -60,7 +60,7 @@ class Location(_BASE_):
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
 
     id = Column(Integer, primary_key=True, nullable=False)
-    osm_id = Column(Integer)
+    osm_id = Column(Integer, unique=True, nullable=False)
     city = Column(String)
     country = Column(String)
     lat = Column(Float)
@@ -83,11 +83,9 @@ class Location(_BASE_):
 class UserLocation(_BASE_):
     __tablename__ = 'user_location'
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
-
-    id = Column(Integer, primary_key=True, nullable=False)
-    uid = Column(Integer, ForeignKey('user.id'))
-    lid = Column(Integer, ForeignKey('location.id'))
-    timestamp = Column(DateTime, default=func.now())
+    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    lid = Column(Integer, ForeignKey('location.id'), primary_key=True)
+    timestamp = Column(DateTime, default=func.now(), primary_key=True)
 
     def as_dict(self):
         return {
@@ -106,8 +104,11 @@ class UserLocation(_BASE_):
 
 
 def _database_op(dbname, action='create'):
-   engine = create_engine(_get_complete_database_name(dbname))
-   if ini.config('DB', 'engine') == 'postgre':
+    """
+        DEPRECATED
+    """
+    engine = create_engine(_get_complete_database_name(dbname))
+    if ini.config('DB', 'engine') == 'postgre':
         connection = engine.connect()
         connection.execute('commit')
         try:
@@ -119,7 +120,7 @@ def _database_op(dbname, action='create'):
         except Exception as e:
             logger.log_error('_database_op error: details below.', e)
         connection.close()
-   else: # default is sqlite
+    else: # default is sqlite
         if action == 'create':
             if not database_exists(engine.url):
                 create_database(engine.url)
@@ -158,7 +159,7 @@ def init_db():
     """
         Initializes MapIf database.
     """
-    _database_op(ini.config('DB', 'db_name'), action='create')
+    #_database_op(ini.config('DB', 'db_name'), action='create') # DEPRECATED : ensure database exists before launching application
     engine = create_engine(_get_default_database_name())
     global _SESSIONMAKER_DEFAULT_
     _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
