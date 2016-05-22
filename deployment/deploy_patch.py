@@ -16,7 +16,7 @@ content = ''
 with open(_MAIN_JS_, 'r', encoding='utf-8') as f:
     content = f.read()
 
-content.replace('localhost:5000', _APP_URL_)
+content = content.replace('localhost:5000', _APP_URL_)
 
 with open(_MAIN_JS_, 'w', encoding='utf-8') as f:
     f.write(content)
