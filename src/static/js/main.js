@@ -18,9 +18,10 @@ var logger = function(msg){
 	}
 }
 
-var handleError = function(msg){
-	
+var handleServerError = function(code){
+	createSnackbar(code);
 }
+
 
 /********* MAP *********/
 
@@ -334,7 +335,8 @@ var ajaxLogin = function(e) {
             }
         },
         error: function(resp, statut, erreur){
-			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.status+" à la connexion : "+resp.statusText));
+        	jsonResp = JSON.parse(resp.responseText);
+        	handleServerError(jsonResp.code)
             logger("AJAX NOK");
         },
         complete: function(){
@@ -368,8 +370,9 @@ var ajaxSignup = function(e) {
             }
         },
         error: function(resp, statut, erreur){
+        	jsonResp = JSON.parse(resp.responseText);
+        	handleServerError(jsonResp.code)
             logger("AJAX NOK");
-			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.code+" à l'inscription : "+resp.statusText));
         },
         complete: function(){
             logger("AJAX DONE");
@@ -402,8 +405,9 @@ var ajaxAddLocation = function(osm_type, osm_id){
             }
         },
         error: function(resp, statut, erreur){
+        	jsonResp = JSON.parse(resp.responseText);
+        	handleServerError(jsonResp.code)
             logger("AJAX NOK");
-            	alert("une erreur est survenue")
         },
         complete: function(){
             logger("AJAX DONE");
@@ -426,8 +430,9 @@ var ajaxDeleteAccount = function(){
             }
         },
         error: function(resp, statut, erreur){
+        	jsonResp = JSON.parse(resp.responseText);
+        	handleServerError(jsonResp.code)
             logger("AJAX NOK");
-            alert("une erreur est survenue")
         },
         complete: function(){
             logger("AJAX DONE");

@@ -13,12 +13,13 @@ from src.utils import logger
 # ------------------------------------------------------------------------------------------
 
 class Response:
-    def __init__(self, has_error = True, content = {}):
+    def __init__(self, has_error = True, content = {}, code=None):
         self.has_error = has_error
         self.content = content
+        self.code = code
 
     def json(self):
-        return {'has_error': self.has_error, 'content': self.content}
+        return {'has_error': self.has_error, 'content': self.content, 'code': self.code}
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 

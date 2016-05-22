@@ -97,8 +97,8 @@ def _hash_pwd(pwd_clear):
 
 def _internal_error(code):
     return json_response(
-        Response(True, 
-            "Une erreur interne au serveur s'est produite. Transmettez le CODE={0} suivant aux développeurs.".format(code)).json(), 
+        Response(has_error=True, code=code,
+            content="Une erreur interne au serveur s'est produite. Transmettez le CODE {0} aux développeurs ainsi qu'une description de ce que vous faisiez.".format(code)).json(), 
         status_code=500)
 
 # ------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ def root():
         return render_template('layout.html', locations=locations, user_locations=user_locations) # users=users)
     except Exception as e:
         logger.log_error('mapif.root() error: details below.', e)
-        return _internal_error('R00T_K0')
+        return _internal_error('R00TK0')
 
 
 @app.route('/login', methods=['POST'])
@@ -144,7 +144,7 @@ def login():
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
         logger.log_error('mapif.login() error: details below.', e)
-        return _internal_error('L0G1N_K0')
+        return _internal_error('L0G1NK0')
     
 @app.route('/logout')
 def logout():
@@ -161,7 +161,7 @@ def logout():
         return redirect('/')
     except Exception as e:
         logger.log_error('mapif.logout() error: details below.', e)
-        return _internal_error('L0G0U7_K0')
+        return _internal_error('L0G0U7K0')
 
     
 @app.route('/profil', methods=['POST'])
@@ -179,7 +179,7 @@ def profil():
             return render_template('profil.html')
     except Exception as e:
         logger.log_error('mapif.profil() error: details below.', e)
-        return _internal_error('PR0F1L_K0')
+        return _internal_error('PR0F1LK0')
     
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -232,7 +232,7 @@ def signup():
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
         logger.log_error('mapif.signup() error: details below.', e)
-        return _internal_error('S1NGUP_K0')
+        return _internal_error('S1NGUPK0')
 
 
 @app.route('/locations', methods=['GET'])
@@ -255,7 +255,7 @@ def locations():
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
         logger.log_error('mapif.locations() error: details below.', e)
-        return _internal_error('L0C4T10N5_K0')
+        return _internal_error('L0C4T10N5K0')
 
 
 @app.route('/addlocation', methods=['POST'])
@@ -289,7 +289,7 @@ def addlocation():
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
         logger.log_error('mapif.addlocation() error: details below.', e)
-        return _internal_error('4DDL0C4T10N_K0')
+        return _internal_error('4DDL0C4T10NK0')
 
 @app.route('/delete/account', methods=['DELETE'])
 def delete_account():
@@ -311,7 +311,7 @@ def delete_account():
         return json_response(Response(err, content).json(), status_code=code)
     except Exception as e:
         logger.log_error('mapif.delete_account() error: details below.', e)
-        return _internal_error('D3L3T3_4CC0UN7_K0')
+        return _internal_error('D3L3T34CC0UN7K0')
 
 @app.errorhandler(404)
 def page_not_found(e):
