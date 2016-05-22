@@ -31,14 +31,14 @@
 			</div>
 			<div class="navbar-collapse collapse navbar-inverse-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="javascript:void(0)">Carte</a></li>
-					<li id="menu-findplace"><a href="javascript:void(0)">Trouver un lieu</a></li>
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
+					<li id="menu-map" class="navbar-item-left active"><a href="javascript:void(0)">Carte</a></li>
+					<li id="menu-findplace" class="navbar-item-left"><a href="javascript:void(0)">Rechercher</a></li>
+					<li id="menu-about" class="navbar-item-left"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if not session.user %}
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal"><!-- <span class="glyphicon glyphicon-log-in"></span> --> S'inscrire</a></li>
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal"><!-- <span class="glyphicon glyphicon-log-in"></span> --> Connexion</a></li>
+					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal">S'inscrire</a></li>
+					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal">Connexion</a></li>
 					{% else %}
 					<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Profil</a></li>
 					<li><a href="{{ url_for('logout') }}">Deconnexion</a></li>
@@ -179,7 +179,7 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-sm-6">
-							<h5>MapIf</h5>
+							<h5>MapIf <small>Version 1.0.0</small></h5>
 							<p>
 								Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le 
 								stage, veille du départ en échange pour une majorité d'entre eux. Cette
@@ -232,7 +232,7 @@
 								</p>
 								<p>
 									Une fois connecté, vous aurez la possibilité d'ajouter une première localisation à votre profil en cliquant sur 
-									le bouton <b class="menu-ref">Trouver un lieu</b> à gauche dans le menu. Renseignez la ville et le pays où elle 
+									le bouton <b class="menu-ref">Rechercher</b> à gauche dans le menu. Renseignez la ville et le pays où elle 
 									se trouve et cliquez sur le bouton avec la loupe. Une fois la recherche effectuée, sélectionnez le résultat le 
 									plus pertinent selon vous et cliquez sur le bouton marqué d'un plus. 
 								</p>

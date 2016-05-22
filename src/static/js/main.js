@@ -32,21 +32,16 @@ var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type, osm_id) {
 
 	if (feature) {
 		mymap.removeLayer(feature);
+		feature = undefined;
 	}
-	/*
-	if (osm_type == "node") {
-		feature = L.circle( loc1, 25, {color: 'green', fill: false}).addTo(mymap);
-		mymap.fitBounds(bounds);
-		mymap.setZoom(18);
-	} else {
-		*/
-		var loc3 = new L.LatLng(lat1, lng2);
-		var loc4 = new L.LatLng(lat2, lng1);
 
-		feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(mymap);
-		mymap.fitBounds(bounds);
-		mymap.zoomOut();
-	//}
+	var loc3 = new L.LatLng(lat1, lng2);
+	var loc4 = new L.LatLng(lat2, lng1);
+
+	feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(mymap);
+	mymap.fitBounds(bounds);
+	mymap.zoomOut();
+
 	return false;
 }
 
@@ -156,6 +151,11 @@ var addrSearch = function () {
     }
 
     $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&city=' + city.value + "&country="+country.value, display_result);
+
+    if (feature) {
+		mymap.removeLayer(feature);
+		feature = undefined;
+	}
 }
 
 
