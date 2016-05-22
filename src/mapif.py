@@ -47,7 +47,7 @@ logger.mprint("Starting DB module...")
 db.init_db()
 
 # set locale
-locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
 
 # create our little application :)
 app = Flask(__name__)
