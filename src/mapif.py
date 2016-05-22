@@ -291,7 +291,7 @@ def addlocation():
         logger.log_error('mapif.addlocation() error: details below.', e)
         return _internal_error('4DDL0C4T10N_K0')
 
-@app.route('/delete', methods=['POST'])
+@app.route('/delete', methods=['DELETE'])
 def delete():
     """
         This route is used to delete completly a user account and all its data
@@ -305,6 +305,7 @@ def delete():
             uid = session['user']['id']
             content = "La suppression du compte a échouée !"
             if db.delete_user(uid):
+                session.pop('user', None)
                 err = False
                 content = "Le compte a été supprimé avec succès."
         return json_response(Response(err, content).json(), status_code=code)
