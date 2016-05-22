@@ -1,2 +1,2 @@
 echo "patching deployed files..."
-(python $OPENSHIFT_REPO_DIR/deploy_patch.py && echo "done !") ||echo "failed !"
+(python $OPENSHIFT_REPO_DIR/deployment/deploy_patch.py && echo "done !") ||echo "failed !"
