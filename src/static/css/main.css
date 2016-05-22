@@ -215,3 +215,7 @@ body,
 .navbar a:active{
 	outline: none;
 }
+
+#delete-account-panel{
+	margin-top: 20px;
+}

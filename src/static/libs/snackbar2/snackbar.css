@@ -1,0 +1,68 @@
+.paper-snackbar {
+	z-index: 2000;
+  transition-property: opacity, bottom, left, right, width, margin, border-radius;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+  font-size: 14px;
+  min-height: 14px;
+  background-color: #323232;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  line-height: 22px;
+  padding: 18px 24px;
+  bottom: 0px;
+  opacity: 0;
+
+}
+
+@media (min-width: 640px) {
+  .paper-snackbar {
+    /*
+    Desktop:
+      Single-line snackbar height: 48 dp tall
+      Minimum width: 288 dp
+      Maximum width: 568 dp
+      2 dp rounded corner
+      Text: Roboto Regular 14 sp
+      Action button: Roboto Medium 14 sp, all-caps text
+      Default background fill: #323232 100%
+    */
+
+    min-width: 288px;
+    max-width: 568px;
+    display: inline-flex;
+    border-radius: 2px;
+    margin: 24px;
+    bottom: -100px;
+    
+  }
+}
+
+@media (max-width: 640px) {
+  .paper-snackbar {
+  /*
+  Mobile:
+    Single-line snackbar height: 48 dp
+    Multi-line snackbar height: 80 dp
+    Text: Roboto Regular 14 sp
+    Action button: Roboto Medium 14 sp, all-caps text
+    Default background fill: #323232 100%  
+  */
+    left: 0px;
+    right: 0px;
+  }
+}
+
+.paper-snackbar .action {
+  background: inherit;
+  display: inline-block;
+  border: none;
+  font-size: inherit;
+  text-transform: uppercase;
+  color: #ffeb3b;
+  margin: 0px 0px 0px 24px;
+  padding: 1px 5px;
+}

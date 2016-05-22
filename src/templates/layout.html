@@ -12,8 +12,11 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/bootstrap-material-design.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/bootstrap-material-design/css/ripples.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/leaflet/leaflet.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/snackbar2/snackbar.css') }}"></link>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+
 	<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+
 	{% endblock %}
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
@@ -27,20 +30,22 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="javascript:void(0)">Map-IF</a>
+				<a class="navbar-brand" href="javascript:void(0)">MapIF</a>
 			</div>
 			<div class="navbar-collapse collapse navbar-inverse-collapse">
 				<ul class="nav navbar-nav">
 					<li id="menu-map" class="navbar-left-item active"><a href="javascript:void(0)">Carte</a></li>
 					<li id="menu-search" class="navbar-left-item"><a href="javascript:void(0)">Rechercher</a></li>
 					<li id="menu-about" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
+					{% if session.user %}
+					<li id="menu-profil" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#profilModal">Profil</a></li>
+					{% endif %}
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if not session.user %}
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal">S'inscrire</a></li>
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal">Connexion</a></li>
 					{% else %}
-					<li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Profil</a></li>
 					<li><a href="{{ url_for('logout') }}">Deconnexion</a></li>
 					{% endif %}
 				</ul>
@@ -293,6 +298,41 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Profil modal -->
+	<div class="modal fade" id="profilModal" tabindex="-1" role="dialog" aria-labelledby="profil">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="profil">Mon profil</h4>
+				</div>
+				<div class="modal-body">
+					<a href="https://www.facebook.com/"><img id="fb-logo" class="img-responsive center-block" src="{{ url_for('static', filename='image/goto_facebook.png') }}" alt="go to facebook !"></a>
+					<div id="delete-account-panel" class="panel panel-danger">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">Danger !</h3>
+					  </div>
+					  <div class="panel-body">
+					    <p class="text-danger">Attention la suppression du compte entraine la suppression <strong>definitive</strong> de toutes les données qui y sont liées ...</p>
+					    <div class="form-group has-error">
+						  <label class="control-label" for="delete-input">Ecrivez : "<em>je sui 1 gro boloss</em>"</label>
+						  <div class="input-group">
+						    <input id="delete-input" class="form-control" type="text" pattern="je sui 1 gro boloss" required placeholder="C'est qui le boloss ?" >
+						    <span class="input-group-btn">
+						        <button id="delete-button-confirm" disabled="disabled" class="btn btn-raised btn-danger">Supprimer définitivement mon compte</button>
+						    </span>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	{% endif %}
 
 	{% block scripts %}
@@ -303,7 +343,7 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-material-design/js/ripples.min.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/leaflet/leaflet.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/js-cookie/js-cookie.js') }}"></script>
-	
+	<script type="text/javascript" src="{{ url_for('static', filename='libs/snackbar2/snackbar.js') }}"></script>
 
 	<!-- Personnal -->
 	<script type="text/javascript">

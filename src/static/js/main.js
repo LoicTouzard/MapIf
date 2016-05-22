@@ -3,7 +3,8 @@ SETTINGS = {
 	'GEOPOSITIONS':{
 		'INSALYON':[45.7832543, 4.8780048]
 	},
-	'SERVER_ADDR':"http://localhost:5000"
+	'SERVER_ADDR':"http://localhost:5000",
+	'DEBUG':true
 }
 
 // create an alert element with given content
@@ -11,9 +12,18 @@ var createAlert = function(msg){
 	return $('<div class="alert alert-dismissible alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Bah alors ?!</strong> '+msg+'</div>');
 }
 
+var logger = function(msg){
+	if(SETTINGS.DEBUG){
+		console.log(msg);
+	}
+}
 
+var handleError = function(msg){
+	
+}
 
 /********* MAP *********/
+
 var mymap
 var feature;
 var selected_osm = 0;
@@ -48,19 +58,19 @@ var chooseAddr = function (element, lat1, lng1, lat2, lng2, osm_type, osm_id) {
 var addrSearch = function () {
     var city = document.getElementById("addr-search-input-city");
     var country = document.getElementById("addr-search-input-country");
-    console.log("request for "+city.value +" "+country.value)
+    logger("request for "+city.value +" "+country.value)
     var num_search = 0;
     var display_result = function(data) {
         var items = [];
         num_search += 1;
-        console.log("request num"+num_search);
-    	console.log(data)
+        logger("request num"+num_search);
+    	logger(data)
         $.each(data, function(key, val) {
         	if(((val.class == "place" && (val.type == "city" || val.type == "town" || val.type == "village"))
         		|| (val.class == "boundary" && val.type == "administrative"))
         		&& val.address.city && val.address.country
         		&& val.osm_type!= "way"){
-    			console.log(val)
+    			logger(val)
 	            var bb = val.boundingbox;
 				var $item;
 				if(connected){
@@ -159,8 +169,21 @@ var addrSearch = function () {
 }
 
 
+/********* PROFIL *********/
+
+var checkAcountDelete = function(){
+	$input = $(this);
+	$confirm = $("#delete-button-confirm");
+	if($input.val() === "je sui 1 gro boloss"){
+		$confirm.removeAttr("disabled");
+	}
+	else{
+		$confirm.attr("disabled", "disabled");
+	}
+}
 
 /********* FORM VALIDATION *********/
+
 var p3_trolled = false;
 var p3_open = false;
 var $p3_block;
@@ -265,7 +288,7 @@ var leftPanelClose = function(){
 		.attr('data-original-title', "Étendre le panneau latéral")
 		.find(".glyphicon").removeClass("glyphicon-triangle-left")
 		.addClass("glyphicon-triangle-right");
-		
+
 	$("#menu-search").removeClass("active");
 	$("#menu-map").addClass("active");
 }
@@ -299,11 +322,11 @@ var ajaxLogin = function(e) {
         data: $this.serialize(),
         cache: false,
         success: function(json){
-            console.log("AJAX OK");
-            console.log(json);
+            logger("AJAX OK");
+            logger(json);
             if(!json.has_error){
             	//refresh en etant connecté au server
-            	console.log("CONNEXION");
+            	logger("CONNEXION");
         		location.reload(true);
             }
             else{
@@ -312,10 +335,10 @@ var ajaxLogin = function(e) {
         },
         error: function(resp, statut, erreur){
 			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.status+" à la connexion : "+resp.statusText));
-            console.log("AJAX NOK");
+            logger("AJAX NOK");
         },
         complete: function(){
-            console.log("AJAX DONE");
+            logger("AJAX DONE");
         }
     });
 	return false;
@@ -333,11 +356,11 @@ var ajaxSignup = function(e) {
 	    data: $this.serialize(),
 	    cache: false,
 	    success: function(json){
-            console.log("AJAX OK");
-            console.log(json);
+            logger("AJAX OK");
+            logger(json);
             if(!json.has_error){
             	//refresh en etant connecté au server
-            	console.log("REGISTERED");
+            	logger("REGISTERED");
         		location.reload(true);
             }
             else{
@@ -345,11 +368,11 @@ var ajaxSignup = function(e) {
             }
         },
         error: function(resp, statut, erreur){
-            console.log("AJAX NOK");
+            logger("AJAX NOK");
 			$this.find(".modal-body").prepend(createAlert("Erreur "+resp.code+" à l'inscription : "+resp.statusText));
         },
         complete: function(){
-            console.log("AJAX DONE");
+            logger("AJAX DONE");
         }
     });
 	return false;
@@ -367,11 +390,11 @@ var ajaxAddLocation = function(osm_type, osm_id){
         data: $params,
         cache: false,
         success: function(json){
-            console.log("AJAX OK");
-            console.log(json);
+            logger("AJAX OK");
+            logger(json);
             if(!json.has_error){
             	//refresh en etant connecté au server
-            	console.log("ADDED");
+            	logger("ADDED");
         		location.reload(true);
             }
             else{
@@ -379,11 +402,35 @@ var ajaxAddLocation = function(osm_type, osm_id){
             }
         },
         error: function(resp, statut, erreur){
-            console.log("AJAX NOK");
+            logger("AJAX NOK");
             	alert("une erreur est survenue")
         },
         complete: function(){
-            console.log("AJAX DONE");
+            logger("AJAX DONE");
+        }
+    });
+	return false;
+}
+
+var ajaxDeleteAccount = function(){
+	$.ajax({
+        method: "DELETE",
+        url: SETTINGS.SERVER_ADDR + "/delete/account",
+        cache: false,
+        success: function(json){
+            logger("AJAX OK");
+            logger(json);
+            if(!json.has_error){
+            	//refresh en etant connecté au server
+        		location.reload(true);
+            }
+        },
+        error: function(resp, statut, erreur){
+            logger("AJAX NOK");
+            alert("une erreur est survenue")
+        },
+        complete: function(){
+            logger("AJAX DONE");
         }
     });
 	return false;
@@ -399,7 +446,7 @@ $(function(){
 
 	$("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
-	console.log(Cookies.get("visited"))
+	logger(Cookies.get("visited"))
 	// show about if it is the first visit
 	if(!Cookies.get("visited")){
 		Cookies.set('visited', 'visited', { expires: 365 });
@@ -464,7 +511,7 @@ $(function(){
 	};
 
 	mymap.on('click', function(e) {
-	    console.log("CLICK : Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
+	    logger("CLICK : Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
 	});
 
 
@@ -491,7 +538,7 @@ $(function(){
 	$("#addr-search-submit").click(function(e){
 		e.preventDefault();
 		addrSearch();
-		console.log($(this));
+		logger($(this));
 		// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
 		$(this).focusout().blur();
 		return false;
@@ -515,7 +562,14 @@ $(function(){
 	$('#aboutModal').on('show.bs.modal', function() {
 	    $(".navbar-left-item").removeClass("active");
 	    $("#menu-about").addClass("active");
-	}).on('hide.bs.modal', function(e){
+	});
+
+	$('#profilModal').on('show.bs.modal', function() {
+	    $(".navbar-left-item").removeClass("active");
+	    $("#menu-profil").addClass("active");
+	})
+
+	$('#aboutModal, #profilModal').on('hide.bs.modal', function(e){
 	    $(".navbar-left-item").removeClass("active");
 	    if(leftPanelIsOpen()){
 	    	$("#menu-search").addClass("active");
@@ -524,6 +578,11 @@ $(function(){
 	    	$("#menu-map").addClass("active");
 	    }
 	});
+
+
+	/********* PROFIL *********/
+	
+	$("#delete-input").keyup(checkAcountDelete).val("");
 
 	/********* AJAX *********/
 	
