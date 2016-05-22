@@ -209,3 +209,9 @@ body,
 .danger {
 	color: #d32f2f;
 }
+
+.navbar a,
+.navbar a:focus,
+.navbar a:active{
+	outline: none;
+}

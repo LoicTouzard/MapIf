@@ -250,18 +250,24 @@ var displayFormErrors = function(form, errors){
 
 var leftPanelOpen = function(){
 	$("#left-panel").removeClass("closePanel");
-		$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()
-			.attr('data-original-title', "Réduire le panneau latéral")
-			.find(".glyphicon").removeClass("glyphicon-triangle-right")
-			.addClass("glyphicon-triangle-left");
+	$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()
+		.attr('data-original-title', "Réduire le panneau latéral")
+		.find(".glyphicon").removeClass("glyphicon-triangle-right")
+		.addClass("glyphicon-triangle-left");
+
+	$("#menu-map").removeClass("active");
+	$("#menu-search").addClass("active");
 }
 
 var leftPanelClose = function(){
 	$("#left-panel").addClass("closePanel");
-		$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()
-			.attr('data-original-title', "Étendre le panneau latéral")
-			.find(".glyphicon").removeClass("glyphicon-triangle-left")
-			.addClass("glyphicon-triangle-right");
+	$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()
+		.attr('data-original-title', "Étendre le panneau latéral")
+		.find(".glyphicon").removeClass("glyphicon-triangle-left")
+		.addClass("glyphicon-triangle-right");
+		
+	$("#menu-search").removeClass("active");
+	$("#menu-map").addClass("active");
 }
 
 var leftPanelIsOpen = function(){
@@ -475,7 +481,8 @@ $(function(){
 
 	/********* LEFT PANEL *********/
 
-	$("#menu-findplace").click(leftPanelOpen);
+	$("#menu-search").click(leftPanelOpen);
+	$("#menu-map").click(leftPanelClose);
 
 	$("#left-panel .widget-pane-toggle-button-container .btn").on("click",function(){
 		leftPanelToggle();
@@ -496,6 +503,27 @@ $(function(){
 	    }
 	});
 
+
+	/********* MENU *********/
+
+	$("#menu-search, #menu-map").click(function(e){
+		e.preventDefault();
+		$(".navbar-left-item").removeClass("active");
+		$(this).addClass("active");
+	});
+
+	$('#aboutModal').on('show.bs.modal', function() {
+	    $(".navbar-left-item").removeClass("active");
+	    $("#menu-about").addClass("active");
+	}).on('hide.bs.modal', function(e){
+	    $(".navbar-left-item").removeClass("active");
+	    if(leftPanelIsOpen()){
+	    	$("#menu-search").addClass("active");
+	    }
+	    else{
+	    	$("#menu-map").addClass("active");
+	    }
+	});
 
 	/********* AJAX *********/
 	
