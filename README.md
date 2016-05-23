@@ -1,6 +1,6 @@
 # MapIf
+![Mapif-logo](src/static/favicon.png "Mapif-logo")   
 Où sont les IIIIIF ?  ICI --> [mapif en ligne](http://mapif-insa.rhcloud.com)
-![Mapif-logo](src/static/favicon.png "Mapif-logo")
 ## Le projet
 
 Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le stage, veille du départ en échange pour une majorité d'entre eux. Cette épreuve qu'est la séparation n'étant pas facile à vivre, ils ont décidé de développer cette petite application permettant de connaître la position d'autres IF des endroits où se trouvent leurs amis et où ils se trouvent eux mêmes.
