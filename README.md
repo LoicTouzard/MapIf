@@ -1,5 +1,5 @@
 # MapIf
-![Mapif-logo](src/static/favicon.png "Mapif-logo")
+Où sont les IIIIIF ?
 
 Ce projet à pour but de recenser la position des IFs.
 
