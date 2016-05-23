@@ -1,5 +1,5 @@
 ##
-##  Configuration de l'application Flask
+##  Flask Application configuration
 ##
 [APP]
 #
@@ -9,20 +9,20 @@ debug= # (true|false)
 #
 # Locale used to configure python
 #
-locale= # ex: fr_FR.UTF-8
+locale= # ex: fr_FR.UTF-8 for Linux or fra_fra for Windows
 #
 # Secret key used by flask
 #
 secret_key= # something secret
 
 ##
-##  Configuration de l'API ReCaptcha de Google
+##  Google ReCaptcha configuration
 ##
 [RECAPTCHA]
-recaptcha_secret_key= # another secret
+recaptcha_secret_key= # another secret given by the google API (https://www.google.com/recaptcha/admin#list)
 
 ##
-##  Configuration de la base de données
+##  Database configuration
 ##
 [DB]
 #
@@ -34,14 +34,14 @@ db_name= # ex: mapif
 #
 engine= # ex: postgre
 #
-# Configuration POSTGRE
+# if POSTGRE configuration
 #
 postgre_user= # ex: dummy
 postgre_pass= # ex: 123456 - this is a bad idea
 postgre_host= # your postgre host
 
 ##
-##  Configuration des logs
+##  Logs configuration
 ##
 [LOGGER]
 #
