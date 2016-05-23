@@ -6,6 +6,7 @@ __pycache__/
 
 # Configuration file
 *.ini
+*.dist
 
 # Databases
 *.sqlite

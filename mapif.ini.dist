@@ -1,0 +1,66 @@
+##
+##  Configuration de l'application Flask
+##
+[APP]
+#
+# Enable/Disable Flask and app debugging
+#
+debug= # (true|false)
+#
+# Locale used to configure python
+#
+locale= # ex: fr_FR.UTF-8
+#
+# Secret key used by flask
+#
+secret_key= # something secret
+
+##
+##  Configuration de l'API ReCaptcha de Google
+##
+[RECAPTCHA]
+recaptcha_secret_key= # another secret
+
+##
+##  Configuration de la base de données
+##
+[DB]
+#
+# Database name
+#
+db_name= # ex: mapif
+#
+# Database engine (one of {'postgre', 'sqlite'})
+#
+engine= # ex: postgre
+#
+# Configuration POSTGRE
+#
+postgre_user= # ex: dummy
+postgre_pass= # ex: 123456 - this is a bad idea
+postgre_host= # your postgre host
+
+##
+##  Configuration des logs
+##
+[LOGGER]
+#
+# Relative path to logs storage directory
+#
+log_dir=logs/
+#
+# Filename for trace log
+#
+std_log=mapif.log
+#
+# Filename for error log
+#
+err_log=mapif.err.log
+#
+# Filename for perf log
+#
+perf_log=mapif.perf.log
+#
+# Enable/Disable perf logs
+#
+log_perf= # (false|true) useless
