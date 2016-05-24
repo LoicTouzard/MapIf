@@ -1,7 +1,9 @@
 SETTINGS = {
 	'MAPBOXTOKEN':'pk.eyJ1IjoibHRvdXphcmQiLCJhIjoiY2lvMGV5OTJhMDB2Y3dka2xrZHpycGlrZiJ9.70MUkG_bCx7MPyIOhwfcKA',
 	'GEOPOSITIONS':{
-		'INSALYON':[45.7832543, 4.8780048]
+		'INSALYON': new L.LatLng(45.7832543, 4.8780048),
+		'WORLD_SOUTHWEST': new L.LatLng(-85, -180),
+		'WORLD_NORTHEAST': new L.LatLng(85, 180)
 	},
 	'SERVER_ADDR':"http://localhost:5000",
 	'DEBUG':true
@@ -482,7 +484,10 @@ $(function(){
 
 	/********* MAP *********/
 
-	mymap = L.map('mymap').setView(SETTINGS.GEOPOSITIONS.INSALYON).fitWorld().zoomIn();
+	mymap = L.map('mymap').setView(SETTINGS.GEOPOSITIONS.INSALYON)
+		.setMaxBounds([SETTINGS.GEOPOSITIONS.WORLD_SOUTHWEST, SETTINGS.GEOPOSITIONS.WORLD_NORTHEAST])
+		.fitWorld()
+		.zoomIn();
 
 	// different maps providers
 	
@@ -491,7 +496,8 @@ $(function(){
 		maxZoom: 18,
 		minZoom: 2,
 		id: 'ltouzard.0390bjno',
-		accessToken: SETTINGS.MAPBOXTOKEN
+		accessToken: SETTINGS.MAPBOXTOKEN,
+		noWrap: true
 	}).addTo(mymap);
 	/*
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

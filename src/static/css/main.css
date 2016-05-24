@@ -10,8 +10,8 @@ body,
 	padding: 0;
 }
 
-#mapid {
-	background: #58B;
+#mymap {
+	background: rgb(115,182,230);
 }
 
 #page-content{
