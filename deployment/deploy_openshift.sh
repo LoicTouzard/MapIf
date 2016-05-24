@@ -1,7 +1,7 @@
 INI_DIR=app-root/runtime/repo/
 INI_FILE=mapif.ini
 APP=mapif
-BRANCH=prod
+BRANCH=master
 
 colecho() { echo -e "\033[${1}m[deploy_openshift]> ${2}\033[0m"; }
 becho() { colecho 34 "${1}"; }

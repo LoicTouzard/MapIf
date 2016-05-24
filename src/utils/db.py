@@ -60,7 +60,7 @@ class Location(_BASE_):
     __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
 
     id = Column(Integer, primary_key=True, nullable=False)
-    osm_id = Column(Integer, unique=True, nullable=False)
+    osm_id = Column(String, unique=True, nullable=False)
     city = Column(String)
     country = Column(String)
     lat = Column(Float)
@@ -297,7 +297,7 @@ def get_locations_with_users():
     for u in get_all_users():
         l = get_lastest_location(u.id)['data']
         if l:
-            str_id = '%d' % l.osm_id
+            str_id = '%s' % l.osm_id
             if not locations.get(str_id, None):
                 locations[str_id] = {'location':l,'users':[]}
             locations[str_id]['users'].append(u)
