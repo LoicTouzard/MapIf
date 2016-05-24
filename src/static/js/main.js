@@ -506,8 +506,9 @@ $(function(){
 	}).addTo(mymap);
 	*/
 	// add marker to insa
-	L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
-	    .bindPopup('Bienvenue à l\'INSA !');
+	//L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
+	  //  .bindPopup('Bienvenue à l\'INSA !');
+    var markers = L.markerClusterGroup();
 
 	// add markers for locations of users
 	for (var i = 0; i < locations.length; i++) {
@@ -521,11 +522,13 @@ $(function(){
 		};
 		popupText += "</div>";
 
-		L.marker([location.lat, location.lon]).addTo(mymap)
+		L.marker([location.lat, location.lon]).addTo(markers)
 		    .bindPopup(popupText);
 
 		// ajouter des binds ?
 	};
+
+    mymap.addLayer(markers);
 
 	mymap.on('click', function(e) {
 	    logger("CLICK : Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
