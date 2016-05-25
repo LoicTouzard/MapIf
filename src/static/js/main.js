@@ -463,7 +463,7 @@ $(function(){
 	if(!Cookies.get("visited")){
 		Cookies.set('visited', 'visited', { expires: 365 });
 		$("#aboutModal").modal("show");
-	}	
+	}
 	// generate the promotions year
 	(function(){
 		var startYear = 1969;
@@ -479,7 +479,7 @@ $(function(){
 		};
 	})()
 
-	
+
 
 
 	/********* MAP *********/
@@ -490,7 +490,7 @@ $(function(){
 		.zoomIn();
 
 	// different maps providers
-	
+
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		maxZoom: 18,
@@ -508,7 +508,35 @@ $(function(){
 	// add marker to insa
 	//L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
 	  //  .bindPopup('Bienvenue à l\'INSA !');
-    var markers = L.markerClusterGroup();
+    var markers = L.markerClusterGroup({
+        iconCreateFunction: function (cluster) {
+            // get all markers of this cluster
+            var markers = cluster.getAllChildMarkers();
+            var nbIfs = 0;
+
+            // count the number of IFs in this cluster
+            for (var i = 0; i < markers.length; i++) {
+                nbIfs += markers[i].nbIfs;
+            }
+
+            // use default method to set css class
+            var className = ' marker-cluster-';
+            if (nbIfs < 10) {
+                className += 'small';
+            } else if (nbIfs < 100) {
+                className += 'medium';
+            } else {
+                className += 'large';
+            }
+
+
+            return new L.DivIcon({
+                html: '<div><span>' + nbIfs + '</span></div>',
+                className: 'marker-cluster' + className,
+                iconSize: new L.Point(40, 40,false)
+            });
+        }
+    });
 
 	// add markers for locations of users
 	for (var i = 0; i < locations.length; i++) {
@@ -522,8 +550,9 @@ $(function(){
 		};
 		popupText += "</div>";
 
-		L.marker([location.lat, location.lon]).addTo(markers)
-		    .bindPopup(popupText);
+        var marker = L.marker([location.lat, location.lon]);
+        marker.nbIfs = users.length;
+		marker.addTo(markers).bindPopup(popupText);
 
 		// ajouter des binds ?
 	};
