@@ -277,6 +277,18 @@ var displayFormErrors = function(form, errors){
 }
 
 
+/********* MAIN MENU *********/
+
+var onMobile = function(){
+	return $(window).width() < 768;
+}
+
+
+
+var menuIsExpanded = function(){
+	return ($("#main-navbar").attr("aria-expanded") == "true")?true:false;
+}
+
 /********* LEFT PANEL *********/
 
 var leftPanelOpen = function(){
@@ -486,8 +498,7 @@ $(function(){
 
 	mymap = L.map('mymap').setView(SETTINGS.GEOPOSITIONS.INSALYON)
 		.setMaxBounds([SETTINGS.GEOPOSITIONS.WORLD_SOUTHWEST, SETTINGS.GEOPOSITIONS.WORLD_NORTHEAST])
-		.fitWorld()
-		.zoomIn();
+		.setZoom(2);
 
 	// different maps providers
 
@@ -601,6 +612,13 @@ $(function(){
 
 
 	/********* MENU *********/
+
+	$(".navbar-left-item").click(function(e){
+		e.preventDefault();
+		if(onMobile() && menuIsExpanded()){
+			$("#main-navbar").collapse("hide");
+		}
+	})
 
 	$("#menu-search, #menu-map").click(function(e){
 		e.preventDefault();
