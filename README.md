@@ -1,6 +1,6 @@
 # MapIf
 ![Mapif-logo](src/static/favicon.png "Mapif-logo")   
-Où sont les IIIIIF ?  ICI --> [mapif en ligne](https://mapif-insa.rhcloud.com)  
+Où sont les IIIIIF ?  ICI --> [mapif en ligne](http://mapif-insa.rhcloud.com)  
 
 ## Le projet
 
