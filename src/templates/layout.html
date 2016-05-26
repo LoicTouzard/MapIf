@@ -37,7 +37,16 @@
 			<div id="main-navbar" class="navbar-collapse collapse navbar-inverse-collapse">
 				<ul class="nav navbar-nav">
 					<li id="menu-map" class="navbar-left-item active"><a href="javascript:void(0)">Carte</a></li>
-					<li id="menu-search" class="navbar-left-item"><a href="javascript:void(0)">Rechercher</a></li>
+					<li id="menu-search" class="navbar-left-item"><a href="javascript:void(0)">
+						{% if session.user %}
+							{% if user_locations[0] is not defined %}
+								Ajouter une localisation
+							{% else %}
+								Changer ma localisation
+							{% endif %}
+						{% else %}
+							Rechercher
+						{% endif %}</a></li>
 					<li id="menu-about" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
 					{% if session.user %}
 					<li id="menu-profil" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#profilModal">Profil</a></li>
