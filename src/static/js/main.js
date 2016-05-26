@@ -1,14 +1,3 @@
-SETTINGS = {
-	'MAPBOXTOKEN':'pk.eyJ1IjoibHRvdXphcmQiLCJhIjoiY2lvMGV5OTJhMDB2Y3dka2xrZHpycGlrZiJ9.70MUkG_bCx7MPyIOhwfcKA',
-	'GEOPOSITIONS':{
-		'INSALYON': new L.LatLng(45.7832543, 4.8780048),
-		'WORLD_SOUTHWEST': new L.LatLng(-85, -180),
-		'WORLD_NORTHEAST': new L.LatLng(85, 180)
-	},
-	'SERVER_ADDR':"http://localhost:5000",
-	'DEBUG':true
-}
-
 // create an alert element with given content
 var createAlert = function(msg){
 	return $('<div class="alert alert-dismissible alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Bah alors ?!</strong> '+msg+'</div>');
@@ -464,7 +453,9 @@ var ajaxDeleteAccount = function(){
 
 
 /******* JQUERY ON LOAD - BINDS *******/
-$(function(){
+$("body").on("settings-loaded",function(){
+	$(".version").text(SETTINGS.VERSION);
+
 	// Material Init
 	$.material.init();
 

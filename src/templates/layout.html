@@ -186,7 +186,7 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-sm-6">
-							<h5>MapIf <small>Version 1.0.1</small></h5>
+							<h5>MapIf <small>Version <span class="version">X.X.X</span></small></h5>
 							<p>
 								Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le 
 								stage, veille du départ en échange pour une majorité d'entre eux. Cette
@@ -376,25 +376,24 @@
 			]
 		});
 		{% endfor %}
-		console.log(locations);
 
-		/*
-		var users = [];
-		{% for user in users %}
-		console.log("{{ user }}");
-		{% if user.location.data %}
-		users.push({
-			id: "{{ user.user.id }}",
-			firstname: "{{ user.user.firstname }}",
-			lastname: "{{ user.user.lastname }}",
-			promo: "{{ user.user.promo }}",
-			lat: "{{ user.location.data.lat }}",
-			lon: "{{ user.location.data.lon }}"
-		});
-		{% endif %}
-		{% endfor %}
-		console.log(users);
-		*/
+		{# COMMENTED
+			var users = [];
+			{% for user in users %}
+			console.log("{{ user }}");
+			{% if user.location.data %}
+			users.push({
+				id: "{{ user.user.id }}",
+				firstname: "{{ user.user.firstname }}",
+				lastname: "{{ user.user.lastname }}",
+				promo: "{{ user.user.promo }}",
+				lat: "{{ user.location.data.lat }}",
+				lon: "{{ user.location.data.lon }}"
+			});
+			{% endif %}
+			{% endfor %}
+			// console.log(users);
+		#}
 		//cant "var connected = {{ session.user is defined }};" Because python and javascript boolean are different : "False" and "false"
 		{% if session.user is defined %}
 		var connected = true;
@@ -404,6 +403,21 @@
 		console.log("connected : "+connected)
 	</script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+	<script type="text/javascript">
+		// Load configuration script and trigger page scripts
+		SETTINGS = {};
+		$(function(){			
+			$.getJSON("{{ url_for('static', filename='settings.json') }}",function(data){
+				SETTINGS = data;
+				SETTINGS.GEOPOSITIONS = {
+					'INSALYON': new L.LatLng(45.7832543, 4.8780048),
+					'WORLD_SOUTHWEST': new L.LatLng(-85, -180),
+					'WORLD_NORTHEAST': new L.LatLng(85, 180)
+				},
+				$("body").trigger("settings-loaded");
+			});
+		});
+	</script>
 	{% endblock %}
 </body>
 </html>
