@@ -523,7 +523,7 @@ $(function(){
             var className = ' marker-cluster-';
             if (nbIfs < 10) {
                 className += 'small';
-            } else if (nbIfs < 100) {
+            } else if (nbIfs < 20) {
                 className += 'medium';
             } else {
                 className += 'large';
