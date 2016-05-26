@@ -147,13 +147,13 @@ var addrSearch = function () {
         	}
         	else{
         		// let's try a more permissive search
-        		 $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&q=' + city.value + " "+country.value, display_result);
+        		 $.getJSON(SETTINGS.PROTOCOL + '://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&q=' + city.value + " "+country.value, display_result);
         	}
         }
 
     }
 
-    $.getJSON('http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&city=' + city.value + "&country="+country.value, display_result);
+    $.getJSON(SETTINGS.PROTOCOL + '://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=20&city=' + city.value + "&country="+country.value, display_result);
 
     $('<h4 class="no-result">').text("Recherche de ville pour \""+city.value+" "+country.value+"\" en cours...").appendTo('#search-results');
 
