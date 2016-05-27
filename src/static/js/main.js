@@ -327,7 +327,7 @@ var ajaxLogin = function(e) {
 
 		$.ajax({
         method: "POST",
-        url: SETTINGS.SERVER_ADDR + "/login",
+        url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/login",
         data: $this.serialize(),
         cache: false,
         success: function(json){
@@ -362,7 +362,7 @@ var ajaxSignup = function(e) {
     //ajouter form verification
 	$.ajax({
 	    method: "POST",
-	    url: SETTINGS.SERVER_ADDR + "/signup",
+	    url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/signup",
 	    data: $this.serialize(),
 	    cache: false,
 	    success: function(json){
@@ -397,7 +397,7 @@ var ajaxAddLocation = function(osm_type, osm_id){
 	});
 	$.ajax({
         method: "POST",
-        url: SETTINGS.SERVER_ADDR + "/addlocation",
+        url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/addlocation",
         data: $params,
         cache: false,
         success: function(json){
@@ -427,7 +427,7 @@ var ajaxAddLocation = function(osm_type, osm_id){
 var ajaxDeleteAccount = function(){
 	$.ajax({
         method: "DELETE",
-        url: SETTINGS.SERVER_ADDR + "/delete/account",
+        url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/delete/account",
         cache: false,
         success: function(json){
             logger("AJAX OK");

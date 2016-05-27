@@ -33,4 +33,4 @@ Pour le style il s'agit de [Bootstrap 3.3.6](http://getbootstrap.com/), augment�
 
 Projet à l'initiative de [Nicolas Bonfante](https://github.com/niosega).  
 Réalisation par [Loïc Touzard](https://github.com/LoicTouzard) (Responsable Front), [Paul Dautry](https://github.com/pdautry) (Responsable Back) et [Kévin Bulmé](https://github.com/KevinBulme).  
-Remerciements à [Lisa Courant](https://github.com/lisacourant) pour le logo.  
+Remerciements aux contributeurs [Lisa Courant](https://github.com/lisacourant) pour le logo et [Mohamed HAIDARA](https://github.com/haidaraM/).  
