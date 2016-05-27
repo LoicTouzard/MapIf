@@ -411,9 +411,17 @@
 		{% endif %}
 		console.log("connected : "+connected)
 	</script>
+	<!-- the order is important ! -->
+	<script type="text/javascript" src="{{ url_for('static', filename='js/utils.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/left-panel.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/ajax.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/map.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/form.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/profil.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
 	<script type="text/javascript">
 		// Load configuration script and trigger page scripts
+		// 
 		SETTINGS = {};
 		$(function(){			
 			$.getJSON("{{ url_for('static', filename='settings.json') }}",function(data){
