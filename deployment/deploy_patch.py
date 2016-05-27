@@ -1,9 +1,11 @@
 #!/bin/python
 # -!- encoding:utf-8 -!-
 
-import os
+import os, json
 
-_COLOR_MAP_={
+_DEBUG_ = False
+
+_COLOR_MAP_ = {
     'red':31,
     'green':32,
     'yellow':33,
@@ -12,33 +14,34 @@ _COLOR_MAP_={
     'cyan':36,
     'white':37
 }
-_PROMPT_='[deploy_patch]> '
+_PROMPT_ = '[deploy_patch]> '
 
 def echo(msg, color='white'):
     print("\033[{0}m{1}{2}\033[0m".format(_COLOR_MAP_.get(color,37), _PROMPT_, msg))
 
-_APP_URL_='mapif-insa.rhcloud.com'
-
-_APP_ROOT_=os.getenv('OPENSHIFT_REPO_DIR')
+_APP_ROOT_ = os.getenv('OPENSHIFT_REPO_DIR')
 if not _APP_ROOT_:
-    echo('fatal error : missing environement variable !', 'red')
-    exit(1)
+    if _DEBUG_:
+        _APP_ROOT_ = ''
+    else:
+        echo('fatal error : missing environement variable !', 'red')
+        exit(1)
 
-# patch route in main.js -----------------------------------
-_MAIN_JS_=_APP_ROOT_+'src/static/js/main.js'
-content = ''
-echo('patching main.js ...', 'green')
+# patch settings.json -----------------------------------
+_SETTINGS_FILE_ = _APP_ROOT_ + 'src/static/settings.json'
 try:
-    # read source from file
-    with open(_MAIN_JS_, 'r', encoding='utf-8') as f:
-        content = f.read()
-    # patch source
-    content = content.replace('localhost:5000', _APP_URL_)
-    # write back patched source
-    with open(_MAIN_JS_, 'w', encoding='utf-8') as f:
-        f.write(content)
-    # print ok message
-    echo('done!', 'green')
+    with open(_SETTINGS_FILE_, 'r') as f:
+        settings = json.load(f)
+    if _DEBUG_:
+        print(json.dumps(settings, indent=4))
+    settings['DEBUG'] = False
+    settings['PROTOCOL'] = 'https'
+    settings['SERVER_ADDR'] = 'mapif-insa.rhcloud.com'
+    if _DEBUG_:
+        print(json.dumps(settings, indent=4))
+    else:
+        with open(_SETTINGS_FILE_, 'w') as f:
+            f.write(json.dumps(settings))
 except Exception as e:
-    echo('failed!', 'red')
+    echo('fatal error : {0}'.format(e))
 # ---------------------------------------------------------
