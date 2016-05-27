@@ -8,7 +8,7 @@ $("body").on("settings-loaded",function(){
 
 	$("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
-	logger(Cookies.get("visited"))
+	UtilsModule.logger(Cookies.get("visited"))
 	// show about if it is the first visit
 	if(!Cookies.get("visited")){
 		Cookies.set('visited', 'visited', { expires: 365 });
@@ -34,7 +34,7 @@ $("body").on("settings-loaded",function(){
 
 	/********* MAP *********/
 
-	mymap = L.map('mymap').setView(SETTINGS.GEOPOSITIONS.INSALYON)
+	PlaceSearchModule.mymap = L.map('mymap').setView(SETTINGS.GEOPOSITIONS.INSALYON)
 		.setMaxBounds([SETTINGS.GEOPOSITIONS.WORLD_SOUTHWEST, SETTINGS.GEOPOSITIONS.WORLD_NORTHEAST])
 		.setZoom(2);
 
@@ -47,15 +47,10 @@ $("body").on("settings-loaded",function(){
 		id: 'ltouzard.0390bjno',
 		accessToken: SETTINGS.MAPBOXTOKEN,
 		noWrap: true
-	}).addTo(mymap);
-	/*
-	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		attribution: 'Map data &copy; 2012 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-		maxZoom: 18
-	}).addTo(mymap);
-	*/
+	}).addTo(PlaceSearchModule.mymap);
+
 	// add marker to insa
-	//L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(mymap)
+	//L.marker(SETTINGS.GEOPOSITIONS.INSALYON).addTo(PlaceSearchModule.mymap)
 	  //  .bindPopup('Bienvenue à l\'INSA !');
     var markers = L.markerClusterGroup({
         iconCreateFunction: function (cluster) {
@@ -77,7 +72,6 @@ $("body").on("settings-loaded",function(){
             } else {
                 className += 'large';
             }
-
 
             return new L.DivIcon({
                 html: '<div><span>' + nbIfs + '</span></div>',
@@ -106,37 +100,37 @@ $("body").on("settings-loaded",function(){
 		// ajouter des binds ?
 	};
 
-    mymap.addLayer(markers);
+    PlaceSearchModule.mymap.addLayer(markers);
 
-	mymap.on('click', function(e) {
-	    logger("CLICK : Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
+	PlaceSearchModule.mymap.on('click', function(e) {
+	    UtilsModule.logger("CLICK : Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
 	});
 
 
 
 	/********* FORM VALIDATION *********/
 
-	$p3_block = $("#p3-block").hide();
-	$p3_msg = $("#p3-msg").hide();
+	FormModule.$p3_block = $("#p3-block").hide();
+	FormModule.$p3_msg = $("#p3-msg").hide();
 
 	$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
-		checkPasswords();
+		FormModule.checkPasswords();
 	});
 
 
 	/********* LEFT PANEL *********/
 
-	$("#menu-search").click(leftPanelOpen);
-	$("#menu-map").click(leftPanelClose);
+	$("#menu-search").click(LeftPanelModule.open);
+	$("#menu-map").click(LeftPanelModule.close);
 
 	$("#left-panel .widget-pane-toggle-button-container .btn").on("click",function(){
-		leftPanelToggle();
+		LeftPanelModule.toggle();
 	});
 
 	$("#addr-search-submit").click(function(e){
 		e.preventDefault();
-		addrSearch();
-		logger($(this));
+		PlaceSearchModule.addrSearch();
+		UtilsModule.logger($(this));
 		// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
 		$(this).focusout().blur();
 		return false;
@@ -153,7 +147,7 @@ $("body").on("settings-loaded",function(){
 
 	$(".navbar-left-item").click(function(e){
 		e.preventDefault();
-		if(onMobile() && menuIsExpanded()){
+		if(UtilsModule.onMobile() && UtilsModule.menuIsExpanded()){
 			$("#main-navbar").collapse("hide");
 		}
 	})
@@ -176,7 +170,7 @@ $("body").on("settings-loaded",function(){
 
 	$('#aboutModal, #profilModal').on('hide.bs.modal', function(e){
 	    $(".navbar-left-item").removeClass("active");
-	    if(leftPanelIsOpen()){
+	    if(LeftPanelModule.isOpen()){
 	    	$("#menu-search").addClass("active");
 	    }
 	    else{
@@ -185,15 +179,15 @@ $("body").on("settings-loaded",function(){
 	});
 
 
-	/********* PROFIL *********/
+	/********* PROFILE *********/
 	
-	$("#delete-input").keyup(checkAcountDelete).val("");
+	$("#delete-input").keyup(ProfileModule.checkAcountDelete).val("");
 
 	$("#delete-button-confirm").attr("disabled", "disabled");
 
 	/********* AJAX *********/
 	
-	$('#form-connexion').on('submit', ajaxLogin);
+	$('#form-connexion').on('submit', AjaxModule.login);
 
-    $('#form-inscription').on('submit', ajaxSignup);
+    $('#form-inscription').on('submit', AjaxModule.signup);
 });
