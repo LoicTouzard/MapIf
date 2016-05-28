@@ -66,6 +66,7 @@ var AjaxModule = {
                 }
                 else{
                     FormModule.displayFormErrors("#form-inscription", json);
+                    grecaptcha.reset();
                 }
             },
             error: function(resp, statut, erreur){
