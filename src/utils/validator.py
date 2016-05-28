@@ -17,7 +17,8 @@ _VALIDATORS_ = {
     'int': re.compile('^\d+$'),
     'double': re.compile('^\d+(\.\d+)?$'),
     'phone': re.compile('^(\+\d{2}(\s)?\d|\d{2})(\s)?(\d{2}(\s)?){4}$'),
-    'year': re.compile('^\d{4}$')
+    'year': re.compile('^\d{4}$'),
+    'timestamp': re.compile('^\d{4}(-\d{2}){2}$')
 }
 
 # ------------------------------------------------------------------------------------------

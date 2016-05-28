@@ -28,7 +28,9 @@ from src.utils.response import Response
 from src.utils import validator
 from src.utils import ini
 from src.utils import logger
-from src.utils.handlers import internal_error_handler
+from src.utils.wrappers import internal_error_handler
+from src.utils.wrappers import require_connected
+from src.utils.wrappers import require_disconnected
 
 # print current root for debugging
 logger.mprint("Running from {0}".format(os.getcwd()))
@@ -85,10 +87,8 @@ def _load_user(session, email, pwd):
             'promo': usr.promo
         }
 
-
 def _check_connected(session):
     return session.get('user', None)
-
 
 def _hash_pwd(pwd_clear):
     return hashlib.sha256(bytearray(pwd_clear, encoding='utf8')).hexdigest()
@@ -113,47 +113,88 @@ def root():
         user_locations = db.get_user_locations(session['user']['id'])
     return render_template('layout.html', locations=locations, user_locations=user_locations) # users=users)
 
+# ---------------------------------------- LOGIN RELATED ROUTES ----------------------------------------
 
 @app.route('/login', methods=['POST'])
 @internal_error_handler('L0G1NK0')
+@require_disconnected()
 def login():
     """
         This route is used to authenticate a user in the application
     """
-    err = True
-    content = "Opération interdite, vous êtes déjà connecté !"
-    code = 403
-    if not _check_connected(session):
-        content = "L'utilisateur et/ou le mot de passe est érroné."
-        code = 200
-        email = request.form['email']
-        pwd_clear = request.form['password']
-        pwd_hash = _hash_pwd(pwd_clear)
-        _load_user(session, email, pwd_hash)
-        if _check_connected(session):
-            err = False
-            content = "Vous êtes maintenant connecté !"
-    return json_response(Response(err, content).json(), status_code=code)
+    content = "L'utilisateur et/ou le mot de passe est érroné."
+    email = request.form['email']
+    pwd_clear = request.form['password']
+    pwd_hash = _hash_pwd(pwd_clear)
+    _load_user(session, email, pwd_hash)
+    if _check_connected(session):
+        err = False
+        content = "Vous êtes maintenant connecté !"
+    return json_response(Response(err, content).json(), status_code=200)
 
 
 @app.route('/logout')
 @internal_error_handler('L0G0U7K0')
+@require_connected()
 def logout():
     """
         This route is used to close the session of a connected user
     """
-    err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    if not _check_connected(session):
-        return json_response(Response(err, content).json(), status_code=403)
-    else:
-        session.pop('user', None)
+    session.pop('user', None)
     return redirect('/')
-
     
-@app.route('/profil', methods=['POST'])
-@internal_error_handler('PR0F1LK0')
-def profil():
+# ---------------------------------------- ACCOUNT RELATED ROUTES ----------------------------------------
+
+@app.route('/account/create', methods=['POST'])
+@internal_error_handler('4CC0U7CR34T3K0')
+@require_disconnected()
+def account_create():
+    """
+        This route is used by the application to add a new user to the application
+    """
+    content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
+    if validator.check_captcha(request):
+        # recuperation du contenu de la requete
+        firstname = escape(request.form['firstname'].strip())
+        lastname = escape(request.form['lastname'].strip())
+        email = request.form['email'].strip()
+        pwd_clear = request.form['password1']
+        pwd_clear2 = request.form['password2']
+        promo = request.form['promo'].strip()
+        # verification des champs
+        content = {}
+        if validator.is_empty(firstname):
+            content['firstname'] = "Le champ prénom ne doit pas être vide !"
+        if validator.is_empty(lastname):
+            content['lastname'] = "Le champ nom ne doit pas être vide !"
+        if not validator.validate(email, 'email'):
+            content['email'] = "L'email ne respecte pas le format attendu !"
+        if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+            content['promo'] = "La promo n'est pas une année correctement formaté !"
+        if len(pwd_clear) < 6:
+            content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
+        if pwd_clear2 != pwd_clear:
+            content['password2'] = "Les deux mots de passe doivent être identiques !"
+        # hash password
+        pwd_hash = _hash_pwd(pwd_clear)
+        # realisation si pas d'erreur
+        if len(content.keys()) == 0:
+            content = "Cette adresse email est déjà attribuée à un utilisateur."
+            # verification de l'existence de l'utilisateur
+            if not db.user_exists(email):
+                # creation de l'utilisateur
+                db.create_user(firstname, lastname, email, pwd_hash, promo)
+                # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
+                _load_user(session, email, pwd_hash)
+                # mise à jour des variables de réponse 
+                err = False
+                content = 'ok'
+    return json_response(Response(err, content).json(), status_code=200)
+
+
+@app.route('/account/update', methods=['POST'])
+@internal_error_handler('4CC0U7UPD4T3K0')
+def account_update():
     """
         This route will be used to update user profile
     """
@@ -164,60 +205,25 @@ def profil():
     else:
         pass # TODO modification profil utilisateur
         return render_template('profil.html')
-    
 
-@app.route('/account/create', methods=['POST'])
-@internal_error_handler('4CC0U7CR34T3K0')
-def account_create():
+
+@app.route('/account/delete', methods=['DELETE'])
+@internal_error_handler('4CC0UN7D3L3T3K0')
+@require_connected()
+def account_delete():
     """
-        This route is used by the application to add a new user to the application
+        This route is used to delete completly a user account and all its data
     """
-    err = True
-    code = 403
-    content = "Opération interdite, vous êtes déjà connecté !"
-    if not _check_connected(session):
-        code = 200
-        content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
-        if validator.check_captcha(request):
-            # recuperation du contenu de la requete
-            firstname = escape(request.form['firstname'].strip())
-            lastname = escape(request.form['lastname'].strip())
-            email = request.form['email'].strip()
-            pwd_clear = request.form['password1']
-            pwd_clear2 = request.form['password2']
-            promo = request.form['promo'].strip()
-            # verification des champs
-            content = {}
-            if validator.is_empty(firstname):
-                content['firstname'] = "Le champ prénom ne doit pas être vide !"
-            if validator.is_empty(lastname):
-                content['lastname'] = "Le champ nom ne doit pas être vide !"
-            if not validator.validate(email, 'email'):
-                content['email'] = "L'email ne respecte pas le format attendu !"
-            if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
-                content['promo'] = "La promo n'est pas une année correctement formaté !"
-            if len(pwd_clear) < 6:
-                content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
-            if pwd_clear2 != pwd_clear:
-                content['password2'] = "Les deux mots de passe doivent être identiques !"
-            # hash password
-            pwd_hash = _hash_pwd(pwd_clear)
-            # realisation si pas d'erreur
-            if len(content.keys()) == 0:
-                content = "Cette adresse email est déjà attribuée à un utilisateur."
-                # verification de l'existence de l'utilisateur
-                if not db.user_exists(email):
-                    # creation de l'utilisateur
-                    db.create_user(firstname, lastname, email, pwd_hash, promo)
-                    # chargement de l'utilisateur créé dans la session (connexion automatique après inscription)
-                    _load_user(session, email, pwd_hash)
-                    # mise à jour des variables de réponse 
-                    err = False
-                    content = 'ok'
-    return json_response(Response(err, content).json(), status_code=code)
+    uid = session['user']['id']
+    db.delete_user(uid)
+    session.pop('user', None)
+    err = False
+    content = "Le compte a été supprimé avec succès."
+    return json_response(Response(err, content).json(), status_code=200)
 
+# ---------------------------------------- LOCATION RELATED ROUTES ----------------------------------------
 
-@app.route('/locations', methods=['GET'])
+@app.route('/locations', methods=['POST'])
 @internal_error_handler('L0C4T10N5K0')
 def locations():
     """
@@ -225,7 +231,7 @@ def locations():
     """
     err = True
     code = 200
-    uid = request.args['uid']
+    uid = request.form['uid']
     content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
     if validator.validate(uid, 'int'):
         uid = int(uid)
@@ -237,73 +243,84 @@ def locations():
     return json_response(Response(err, content).json(), status_code=code)
 
 
-@app.route('/location/add', methods=['POST'])
+@app.route('/user/location/create', methods=['POST'])
 @internal_error_handler('L0C4T10N4DDK0')
-def location_add():
+@require_connected()
+def location_create():
     """
         This route is used to add a new location for a user
     """
-    err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    code = 403
-    if _check_connected(session):
-        code = 200
-        # recupération des données du post
-        uid = session['user']['id']
-        osm_id = escape(request.form['osm_id'].strip())
-        osm_type = escape(request.form['osm_type'].strip())
-        # vérification des champs
-        content = {}
-        if validator.is_empty(osm_id):
-            content['osm_id'] = "Le champ osm_id ne doit pas être vide !"
-        if validator.is_empty(osm_type):
-            content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
-        if len(content.keys()) == 0:
-            # create user - location mapping record in db
-            content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."
-            if db.add_user_location(uid, osm_id, osm_type):
-                # definition du message de retour
-                err = False
-                content = "La nouvelle localisation a été enregistrée."
-    return json_response(Response(err, content).json(), status_code=code)
+    # recupération des données du post
+    uid = session['user']['id']
+    osm_id = escape(request.form['osm_id'].strip())
+    osm_type = escape(request.form['osm_type'].strip())
+    # vérification des champs
+    content = {}
+    if validator.validate(osm_id, 'int'):
+        content['osm_id'] = "Le champ osm_id ne doit pas être vide !"
+    if validator.is_empty(osm_type):
+        content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
+    if len(content.keys()) == 0:
+        # create user - location mapping record in db
+        content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."
+        if db.create_user_location(uid, osm_id, osm_type):
+            err = False
+            content = "La nouvelle localisation a été enregistrée."
+    return json_response(Response(err, content).json(), status_code=200)
 
 
-@app.route('/location/update', methods=['POST'])
+@app.route('/user/location/update', methods=['POST'])
 @internal_error_handler('L0C4T10NUPD4T3K0')
+@require_connected()
 def location_update():
     """
         This route can be used to update a user location
     """
-    pass# TODO
+    # recupération des données du post
+    uid = session['user']['id']
+    osm_id = escape(request.form['osm_id'].strip())
+    timestamp = escape(request.form['timestamp'].strip())
+    # vérification des champs
+    content = {}
+    if validator.validate(osm_id, 'int'):
+        content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
+    if validator.validate(timestamp, 'timestamp'):
+        content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
+    if len(content.keys()) == 0:
+        # update timestamp
+        content = "La mise à jour de la localisation est un échec. Une erreur de persistence s'est produite."
+        if db.update_user_location(uid, osm_id, timestamp):
+            err = False
+            content = "La localisation a été mise à jour."
+    return json_response(Response(err, content).json(), status_code=200)
 
 
-@app.route('/location/delete')
+@app.route('/user/location/delete', methods=['DELETE'])
 @internal_error_handler('L0C4T10ND3L3T3K0')
 def location_delete():
     """
         This route can be used to delete a user location
     """
-    pass# TODO
+    # recupération des données du post
+    uid = session['user']['id']
+    osm_id = escape(request.form['osm_id'].strip())
+    timestamp = escape(request.form['timestamp'].strip())
+    # vérification des champs
+    content = {}
+    if validator.validate(osm_id, 'int'):
+        content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
+    if validator.validate(timestamp, 'timestamp'):
+        content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
+    if len(content.keys()) == 0:
+        # delete location 
+        content = "La suppression de la localisation n'a pas aboutie !"
+        if db.delete_user_location(uid, osm_id, timestamp):
+            err = False
+            content = "La localisation a été supprimée de votre historique."
+    return json_response(Response(err, content).json(), status_code=200)
+    
 
-
-@app.route('/account/delete', methods=['DELETE'])
-@internal_error_handler('4CC0UN7D3L3T3K0')
-def account_delete():
-    """
-        This route is used to delete completly a user account and all its data
-    """
-    err = True
-    content = "Opération interdite vous n'êtes pas connecté !"
-    code = 403
-    if _check_connected(session):
-        code = 200
-        uid = session['user']['id']
-        db.delete_user(uid)
-        session.pop('user', None)
-        err = False
-        content = "Le compte a été supprimé avec succès."
-    return json_response(Response(err, content).json(), status_code=code)
-
+# ---------------------------------------- FLASK ERROR HANDLERS ----------------------------------------
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -174,14 +174,14 @@ def create_user(firstname, lastname, email, pwd, promo):
     """
         Creates a user and insert it in the database
     """
-    ok = False
+    status = False
     session = _get_default_db_session()
     if not user_exists(email):
         session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd,promo=promo))       
         session.commit()
-        ok = True
+        status = True
     session.close()
-    return ok
+    return status
 
 
 def get_all_users():
@@ -220,7 +220,7 @@ def get_user(email, pwd):
     return None if len(result) == 0 else result[0]
 
 
-def add_user_location(uid, osm_id, osm_type):
+def create_user_location(uid, osm_id, osm_type):
     """
         Adds location for the user having matching uid
     """
@@ -234,6 +234,36 @@ def add_user_location(uid, osm_id, osm_type):
     session.commit()
     session.close()
     return True
+
+def update_user_location(uid, osm_id, timestamp):
+    """
+        Updates user location timestamp
+    """
+    status = False
+    session = _get_default_db_session()
+    location = get_location(osm_id)
+    dateobj = datetime.strpfmt(timestamp, '%Y-%m-%d')
+    if location:
+        q = session.query(UserLocation).filter(UserLocation.lid == location.id, UserLocation.uid == uid).one()
+        if q != []:
+            q.timestamp = dateobj
+            session.add(q)
+            session.commit()
+            status = True
+    return status
+
+def delete_user_location(uid, osm_id, timestamp):
+    """
+        Deletes the given user location
+    """
+    status = False
+    session = _get_default_db_session()
+    location = get_location(osm_id)
+    dateobj = datetime.strpfmt(timestamp, '%Y-%m-%d')
+    session.query(UserLocation).filter(UserLocation.uid == uid, UserLocation.lid == location.id, UserLocation.timestamp == dateobj).delete()
+    session.commit()
+    session.close()
+
 
 
 def get_location(osm_id):
@@ -251,17 +281,17 @@ def create_location(osm_id, osm_type):
         Creates a new location using given osm_id and osm_type to get 
         valid information from nominatim API
     """
-    ok = True
+    status = True
     session = _get_default_db_session()
     lat, lon, city, country = nominatim.reverse_location_for(osm_id, osm_type)
     if not lat or not lon or not city or not country:
         logger.log_error('Incomplete location returned by Nominatim (lat={0},lon={1},city={2},country={3})'.format(lat,lon,city,country))
-        ok = False
+        status = False
     else:
         session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       
         session.commit()
     session.close()
-    return ok
+    return status
 
 
 def get_user_locations(uid):

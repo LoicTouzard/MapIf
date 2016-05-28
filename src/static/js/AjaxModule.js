@@ -87,7 +87,7 @@ var AjaxModule = {
         });
         $.ajax({
             method: "POST",
-            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/location/add",
+            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/user/location/create",
             data: $params,
             cache: false,
             success: function(json){
