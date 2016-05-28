@@ -53,7 +53,7 @@ var AjaxModule = {
         //ajouter form verification
         $.ajax({
             method: "POST",
-            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/signup",
+            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/account/create",
             data: $this.serialize(),
             cache: false,
             success: function(json){
@@ -87,7 +87,7 @@ var AjaxModule = {
         });
         $.ajax({
             method: "POST",
-            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/addlocation",
+            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/location/add",
             data: $params,
             cache: false,
             success: function(json){
@@ -117,7 +117,7 @@ var AjaxModule = {
     deleteAccount : function(){
         $.ajax({
             method: "DELETE",
-            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/delete/account",
+            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/account/delete",
             cache: false,
             success: function(json){
                 UtilsModule.logger("AJAX OK");
