@@ -47,10 +47,10 @@
 						{% else %}
 							Rechercher
 						{% endif %}</a></li>
-					<li id="menu-about" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
 					{% if session.user %}
 					<li id="menu-profil" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#profilModal">Profil</a></li>
 					{% endif %}
+					<li id="menu-about" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if not session.user %}
@@ -265,12 +265,6 @@
 									Contrairement à certains réseaux sociaux, <b>l'intégralité des données vous concernant seront effacées</b>. 
 									Cette opération est <b class="danger">irrémédiable</b>, réfléchissez donc bien avant de cliquer sur le 
 									<b class="danger">bouton rouge</b> dans la fenêtre accessible en cliquant sur le bouton <b class="menu-ref">Profil</b>.
-								</p>
-								<p>
-									<b class="danger">Attention:</b><span class="danger"> le site n'est pas sécurisé HTTPS (parce que l'hébergement est gratuit). Il est donc vivement conseillé d'utiliser un mot de passe unique pour ce site vulnérable aux attaques de type MITM.</span>
-								</p>
-								<p>
-									<b>Note:</b> le mot de passe stocké dans notre base de données est tout de même hashé.
 								</p>
 						</div>
 					</div>
