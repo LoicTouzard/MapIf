@@ -142,6 +142,19 @@ def logout():
     """
     session.pop('user', None)
     return redirect('/')
+
+# ------------------------------------------ SEARCH RELATED ROUTES -----------------------------------------
+
+@app.route('/search/users', methods=['POST'])
+@internal_error_handler('534RCHU53R5K0')
+@require_connected()
+def search_users():
+    """
+        This route can be used to search users based on given filters
+    """
+    filters = request.form['filters']
+    content = db.get_users(filters)
+    return json_response(Response(False, content).json(), status_code=200)
     
 # ---------------------------------------- ACCOUNT RELATED ROUTES ----------------------------------------
 

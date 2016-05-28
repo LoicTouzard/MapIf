@@ -5,6 +5,7 @@
 #                                    IMPORTS & GLOBALS
 # ------------------------------------------------------------------------------------------
 
+import re
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -220,6 +221,36 @@ def get_user(email, pwd):
     return None if len(result) == 0 else result[0]
 
 
+def normalize_filter(search_filter):
+    """
+        Treat filter content to create a valid 
+    """
+    if search_filter is not None:
+        # remove forbidden characters
+        search_filter = re.sub('[^*a-zA-Z0-9]', '', search_filter)
+        # replace special characters
+        search_filter = search_filter.replace('*', '%')
+    else:
+        search_filter = '%'
+    return search_filter
+
+
+def get_users(filters):
+    """
+        Retrieve user based on search filters
+    """
+    # retrieve and normalize filters
+    promo_filter = normalize_filter(filters.get('promo', None))
+    firstname_filter = normalize_filter(filters.get('firstname', None))
+    lastname_filter = normalize_filter(filters.get('lastname', None))
+    # retrieve session
+    session = _get_default_db_session()
+    return session.query(User).filter(
+        User.promo.ilike(promo_filter),
+        User.firstname.ilike(firstname_filter),
+        User.lastname.ilike(lastname_filter)).all()
+
+
 def create_user_location(uid, osm_id, osm_type):
     """
         Adds location for the user having matching uid
@@ -234,6 +265,7 @@ def create_user_location(uid, osm_id, osm_type):
     session.commit()
     session.close()
     return True
+
 
 def update_user_location(uid, osm_id, timestamp):
     """
@@ -252,6 +284,7 @@ def update_user_location(uid, osm_id, timestamp):
             status = True
     return status
 
+
 def delete_user_location(uid, osm_id, timestamp):
     """
         Deletes the given user location
@@ -263,7 +296,6 @@ def delete_user_location(uid, osm_id, timestamp):
     session.query(UserLocation).filter(UserLocation.uid == uid, UserLocation.lid == location.id, UserLocation.timestamp == dateobj).delete()
     session.commit()
     session.close()
-
 
 
 def get_location(osm_id):
@@ -302,8 +334,8 @@ def get_user_locations(uid):
     session = _get_default_db_session()
     locations = []
     for ul in session.query(UserLocation).filter(UserLocation.uid == uid):
-        l = session.query(Location).filter(Location.id == ul.lid)
-        locations.append({'timestamp': ul.timestamp, 'location': l.first().as_dict()})
+        l = session.query(Location).filter(Location.id == ul.lid).first()
+        locations.append({'timestamp': ul.timestamp, 'location': l.as_dict()})
     session.close()
     return locations
 
