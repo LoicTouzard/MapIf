@@ -5,12 +5,29 @@
 * Dependancies : 
 * 	SETTINGS
 * 	UtilsModule.js
+* 	MapModule.js
 */
 
 PlaceSearchModule = {
-	mymap : undefined,
 	feature : undefined,
 	selected_osm  : 0,
+
+	init : function(){
+		$("#addr-search-submit").click(function(e){
+			e.preventDefault();
+			this.addrSearch();
+			UtilsModule.logger($(this));
+			// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
+			$(this).focusout().blur();
+			return false;
+		});
+
+		$("#addr-search-input-city, #addr-search-input-country").keypress(function(e) {
+		    if(e.which == 13) {
+		        $("#addr-search-submit").click();
+		    }
+		});
+	},
 
 	chooseAddr : function (element, lat1, lng1, lat2, lng2, osm_type, osm_id) {
 		$el = $(element);
@@ -25,16 +42,16 @@ PlaceSearchModule = {
 		var bounds = new L.LatLngBounds(loc1, loc2);
 
 		if (this.feature) {
-			this.mymap.removeLayer(this.feature);
+			MapModule.map.removeLayer(this.feature);
 			this.feature = undefined;
 		}
 
 		var loc3 = new L.LatLng(lat1, lng2);
 		var loc4 = new L.LatLng(lat2, lng1);
 
-		this.feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(this.mymap);
-		this.mymap.fitBounds(bounds);
-		this.mymap.zoomOut();
+		this.feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(MapModule.map);
+		MapModule.map.fitBounds(bounds);
+		MapModule.map.zoomOut();
 
 		return false;
 	},
@@ -151,7 +168,7 @@ PlaceSearchModule = {
 	    $('<h4 class="no-result">').text("Recherche de ville pour \""+city.value+" "+country.value+"\" en cours...").appendTo('#search-results');
 
 	    if (this.feature) {
-			this.mymap.removeLayer(this.feature);
+			MapModule.map.removeLayer(this.feature);
 			this.feature = undefined;
 		}
 	}

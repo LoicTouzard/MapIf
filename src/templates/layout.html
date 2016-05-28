@@ -405,9 +405,10 @@
 		{% endif %}
 		console.log("connected : "+connected)
 	</script>
-	
+
 	<script type="text/javascript" src="{{ url_for('static', filename='js/UtilsModule.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/LeftPanelModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/MapModule.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/AjaxModule.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/PlaceSearchModule.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/FormModule.js') }}"></script>
@@ -427,7 +428,7 @@
 					'WORLD_SOUTHWEST': new L.LatLng(-85, -180),
 					'WORLD_NORTHEAST': new L.LatLng(85, 180)
 				},
-				$("body").trigger("settings-loaded");
+				$(document).trigger("settings-loaded");
 			});
 		});
 	</script>

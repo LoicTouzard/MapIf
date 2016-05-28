@@ -6,6 +6,12 @@
 * 	AjaxModule.js
 */
 var ProfileModule = {
+	init : function(){
+		$("#delete-input").keyup(this.checkAcountDelete).val("");
+
+		$("#delete-button-confirm").attr("disabled", "disabled");
+	},
+
 	checkAcountDelete : function(){
 		// this is the input
 		$input = $(this);

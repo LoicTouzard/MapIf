@@ -6,6 +6,19 @@
 *
 */
 LeftPanelModule = {
+	instance : function(){
+		return this;
+	},
+
+	init : function(){
+		$("#menu-search").click(this.open);
+		$("#menu-map").click(this.close);
+		var _this = this;
+		$("#left-panel .widget-pane-toggle-button-container .btn").on("click",function(){
+			_this.toggle();
+		});
+	},
+
 	open : function(){
 		$("#left-panel").removeClass("closePanel");
 		$("#left-panel .widget-pane-toggle-button-container .btn").focusout().blur()

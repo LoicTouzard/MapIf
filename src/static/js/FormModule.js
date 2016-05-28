@@ -11,6 +11,15 @@ var FormModule = {
 	$p3_block : undefined,
 	$p3_msg : undefined,
 
+	init : function(){
+		this.$p3_block = $("#p3-block").hide();
+		this.$p3_msg = $("#p3-msg").hide();
+
+		$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
+			this.checkPasswords();
+		});
+	},
+
 	addFieldError : function($el){
 		return $el.addClass("has-warning");
 	},
