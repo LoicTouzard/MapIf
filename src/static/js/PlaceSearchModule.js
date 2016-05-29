@@ -13,9 +13,10 @@ PlaceSearchModule = {
 	selected_osm  : 0,
 
 	init : function(){
+		var _this = this;
 		$("#addr-search-submit").click(function(e){
 			e.preventDefault();
-			this.addrSearch();
+			_this.addrSearch();
 			UtilsModule.logger($(this));
 			// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
 			$(this).focusout().blur();
@@ -35,7 +36,6 @@ PlaceSearchModule = {
 		$el.addClass("selected");
 
 		this.selected_osm = osm_id;
-
 
 		var loc1 = new L.LatLng(lat1, lng1);
 		var loc2 = new L.LatLng(lat2, lng2);
@@ -61,7 +61,7 @@ PlaceSearchModule = {
 	    var country = document.getElementById("addr-search-input-country");
 	    UtilsModule.logger("request for "+city.value +" "+country.value)
 	    var num_search = 0;
-	    var that = this;
+	    var _this = this;
 	    var display_result = function(data) {
 	        var items = [];
 	        num_search += 1;
@@ -81,7 +81,7 @@ PlaceSearchModule = {
 			            	.addClass("list-group-item place-result-item media")
 			            	.click(function(e){
 			            		e.preventDefault();
-			            		that.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+			            		_this.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
 			            		return false;
 			            	}).append($("<div></div>")
 			            		.addClass("media-body")
@@ -107,6 +107,7 @@ PlaceSearchModule = {
 					            		$("#change-current-position-validate").on("click",function(){
 					            			e.preventDefault();
 					            			e.stopPropagation();
+					            			console.log("AjaxModule.addLocation("+val.osm_type+", "+val.osm_id+")");
 					            			AjaxModule.addLocation(val.osm_type, val.osm_id);
 					            			return false;
 					            		})
@@ -127,7 +128,7 @@ PlaceSearchModule = {
 			            	.addClass("list-group-item place-result-item")
 			            	.click(function(e){
 			            		e.preventDefault();
-			            		that.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+			            		_this.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
 			            		return false;
 			            	}).append($("<h4></h4>")
 			            		.text(val.address.city+' '+val.address.country.toUpperCase())

@@ -246,7 +246,7 @@ def locations():
     code = 200
     uid = request.form['uid']
     content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
-    if validator.validate(uid, 'int'):
+    if not validator.validate(uid, 'int'):
         uid = int(uid)
         locations = db.get_user_locations(uid)
         content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
@@ -269,8 +269,9 @@ def location_create():
     osm_type = escape(request.form['osm_type'].strip())
     # vérification des champs
     content = {}
-    if validator.validate(osm_id, 'int'):
-        content['osm_id'] = "Le champ osm_id ne doit pas être vide !"
+    err = True
+    if not validator.validate(osm_id, 'int'):
+        content['osm_id'] = "Le champ osm_id doit être un identifiant numérique !"
     if validator.is_empty(osm_type):
         content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
     if len(content.keys()) == 0:
@@ -295,9 +296,10 @@ def location_update():
     timestamp = escape(request.form['timestamp'].strip())
     # vérification des champs
     content = {}
-    if validator.validate(osm_id, 'int'):
+    err = True
+    if not validator.validate(osm_id, 'int'):
         content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
-    if validator.validate(timestamp, 'timestamp'):
+    if not validator.validate(timestamp, 'timestamp'):
         content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
     if len(content.keys()) == 0:
         # update timestamp
@@ -320,9 +322,10 @@ def location_delete():
     timestamp = escape(request.form['timestamp'].strip())
     # vérification des champs
     content = {}
-    if validator.validate(osm_id, 'int'):
+    err = True
+    if not validator.validate(osm_id, 'int'):
         content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
-    if validator.validate(timestamp, 'timestamp'):
+    if not validator.validate(timestamp, 'timestamp'):
         content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
     if len(content.keys()) == 0:
         # delete location 

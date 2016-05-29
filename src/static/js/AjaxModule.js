@@ -18,13 +18,13 @@ var AjaxModule = {
         e.preventDefault();
         e.stopPropagation();
         // this is the form
-        $this = $(this);
+        $form = $(this);
 
         // TODO (or not) add form verification
         $.ajax({
             method: "POST",
             url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/login",
-            data: $this.serialize(),
+            data: $form.serialize(),
             cache: false,
             success: function(json){
                 UtilsModule.logger("AJAX OK");
@@ -54,13 +54,13 @@ var AjaxModule = {
         e.preventDefault();
         e.stopPropagation();
         // this is the form
-        $this = $(this);
+        $form = $(this);
 
         //ajouter form verification
         $.ajax({
             method: "POST",
             url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + "/account/create",
-            data: $this.serialize(),
+            data: $form.serialize(),
             cache: false,
             success: function(json){
                 UtilsModule.logger("AJAX OK");

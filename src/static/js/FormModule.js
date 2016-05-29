@@ -14,9 +14,9 @@ var FormModule = {
 	init : function(){
 		this.$p3_block = $("#p3-block").hide();
 		this.$p3_msg = $("#p3-msg").hide();
-
+		var _this = this;
 		$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
-			this.checkPasswords();
+			_this.checkPasswords();
 		});
 	},
 

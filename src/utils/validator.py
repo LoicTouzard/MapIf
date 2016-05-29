@@ -30,7 +30,7 @@ def validate(field, vtype=None):
         (In)Validates data based on its type using regular expressions
     """
     if vtype in _VALIDATORS_.keys():
-        return True if _VALIDATORS_[vtype].match(field) else False
+        return True if _VALIDATORS_[vtype].match(str(field)) else False
     else:
         return False
 
@@ -38,7 +38,7 @@ def is_empty(field):
     """
         Tests if a field is empty
     """
-    return len(field.strip()) == 0
+    return len(str(field).strip()) == 0
 
 def check_captcha(request):
     """
