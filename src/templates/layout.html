@@ -190,12 +190,12 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="about">À propos de MapIf</h4>
+					<h4 class="modal-title" id="about">À propos de MapIf ...</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
-						<div class="col-sm-6">
-							<h5>MapIf <small>Version <span class="version">X.X.X</span></small></h5>
+						<div class="col-sm-12">
+							<h4>MapIf <small>Version <span class="version">X.X.X</span></small></h4>
 							<p>
 								Ce projet est né de l'esprit de quelques 4IF de la promo 2017, au moment critique qu'est le 
 								stage, veille du départ en échange pour une majorité d'entre eux. Cette
@@ -210,7 +210,7 @@
 								Bon vent les IF !
 							</p>
 							<hr/>
-							<h5>Contributeurs</h5>
+							<h4>Contributeurs</h4>
 							<p>
 								Nous espérons que cette petite appli vous comblera. N'hésitez pas à nous suggérer 
 								des améliorations nous serons toujours disposés à vous écouter. <a href="https://twitter.com/search?q=%23IngénieurHumaniste" target="_blank">#IngénieurHumaniste</a>
@@ -232,40 +232,11 @@
 								<li><a href="https://github.com/pdautry" target="_blank">Paul Dautry</a> - 4IF 2017</li>
 							</ul>
 							<hr/>
-							<h5 id="contribute">Contribuer</h5>
+							<h4 id="contribute">Contribuer</h4>
 							<p>
 								Vous pouvez à tout moment forker le <a href="https://github.com/LoicTouzard/MapIf" target="_blank">dépôt</a> sur Github.<br>
 								Si vous avez <strong>des problèmes ou des propositions</strong> n'hésitez pas à créer une <a href="https://github.com/LoicTouzard/MapIf/issues" target="_blank">issue</a> pour le projet.
 							</p>
-							<hr class="visible-xs"/>
-						</div>
-						<div class="col-sm-6">
-							<h5>Mode d'emploi</h5>
-								<p>
-									Pour commencer, vous devez créer un compte en cliquant sur le bouton <b class="menu-ref">S'inscrire</b> 
-									en haut à droite de la fenêtre. Si vous possédez déjà un compte, connectez vous en cliquant sur le bouton 
-									<b class="menu-ref">Connexion</b> dans cette même zone du menu.
-								</p>
-								<p>
-									Une fois connecté, vous aurez la possibilité d'ajouter une première localisation à votre profil en cliquant sur 
-									le bouton <b class="menu-ref">Rechercher</b> à gauche dans le menu. Renseignez la ville et le pays où elle 
-									se trouve et cliquez sur le bouton avec la loupe. Une fois la recherche effectuée, sélectionnez le résultat le 
-									plus pertinent selon vous et cliquez sur le bouton marqué d'un plus. 
-								</p>
-								<p>
-									Ce premier lieu, une fois ajouté, apparaitra sur la carte sous la forme d'un <b>marqueur</b>.
-								</p>
-								<p>
-									Il vous sera alors possible d'<b>ajouter une localisation à tout moment</b> toujours en cliquant sur le bouton 
-									<b class="menu-ref">Rechercher</b> dans le menu. Ces lieux seront mémorisés datés tel un historique, afin de permettre 
-									à vous et vos amis de suivre votre parcours.
-								</p>
-								<p>
-									Vous pourrez à tout moment vous désinscrire du site. Attention, cette désinscription n'est pas maquillée !
-									Contrairement à certains réseaux sociaux, <b>l'intégralité des données vous concernant seront effacées</b>. 
-									Cette opération est <b class="danger">irrémédiable</b>, réfléchissez donc bien avant de cliquer sur le 
-									<b class="danger">bouton rouge</b> dans la fenêtre accessible en cliquant sur le bouton <b class="menu-ref">Profil</b>.
-								</p>
 						</div>
 					</div>
 				</div>
@@ -373,7 +344,8 @@
 			{% for u in lu.users %}
 				{
 					firstname:"{{ u.firstname }}",
-					lastname:"{{ u.lastname }}"
+					lastname:"{{ u.lastname }}",
+					promo:"{{ u.promo }}"
 				}{% if not loop.last %},{% endif %}
 			{% endfor %}
 			]

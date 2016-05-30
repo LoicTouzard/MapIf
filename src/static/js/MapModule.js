@@ -70,7 +70,7 @@ var MapModule = {
 			var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
 				+" à "+location.city+" "+location.country.toUpperCase()+"</h4><div class='popupUsers'>";
 			for (var j = 0; j < users.length; j++) {
-				popupText += users[j].firstname + " "+users[j].lastname+" "+users[j].promo+"<br>";
+				popupText += users[j].firstname + " "+users[j].lastname+" <small> - IF "+users[j].promo+"</small><br>";
 			};
 			popupText += "</div>";
 

@@ -1,13 +1,12 @@
-## V1.0.0
-        - inscription
-        - connexion
-        - suppression définitive du compte
-        - visualisations des positions actuelles des utilisateurs + utilisateurs concernés
-        - recherche de lieu
-        - mise à jour de la localisation
-        - un super favicon (credits Lisa C.)
-
 ## V1.0.1
-        - fix #3
-        - fix #4
+* fix #3
+* fix #4
         
+## V1.0.0
+* inscription
+* connexion
+* suppression définitive du compte
+* visualisations des positions actuelles des utilisateurs + utilisateurs concernés
+* recherche de lieu
+* mise à jour de la localisation
+* un super favicon (credits Lisa C.)
