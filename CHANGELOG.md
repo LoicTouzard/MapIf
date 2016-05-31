@@ -1,3 +1,10 @@
+## V1.1.0
+* la version en ligne passe en HTTPS
+* #11 ajout du clustering  sur les positions
+* Amélioration de l'UX de navigation (menu et carte)
+* Refactoring du code en back et front
+* fix #6
+
 ## V1.0.1
 * fix #3
 * fix #4
