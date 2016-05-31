@@ -1,6 +1,6 @@
 # MapIf
 ![Mapif-logo](src/static/favicon.png "Mapif-logo")   
-Où sont les IIIIIF ?  ICI --> [mapif en ligne](http://mapif-insa.rhcloud.com)  
+Où sont les IIIIIF ?  ICI --> [mapif en ligne](https://mapif-insa.rhcloud.com)  
 
 ## Le projet
 
@@ -21,7 +21,7 @@ Le back utilise [Flask](http://flask.pocoo.org/), et d'autres librairies python 
   2. Vous aurez besoin également de créer le fichier de configuration `mapif.ini` pour ce, prenez exemple sur le fichier [mapif.ini.dist](mapif.ini.dist).  
   3. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
   4. Pour lancer l'application, un simple `python main.py` devrait suffire.  
-  5. Vous devriez pouvoir y accéder en cliquant [ici](http://localhost:5000).
+  5. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
 
 ### Front
 
