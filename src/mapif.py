@@ -87,8 +87,10 @@ def _load_user(session, email, pwd):
             'promo': usr.promo
         }
 
+
 def _check_connected(session):
     return session.get('user', None)
+
 
 def _hash_pwd(pwd_clear):
     return hashlib.sha256(bytearray(pwd_clear, encoding='utf8')).hexdigest()
@@ -99,6 +101,12 @@ def _hash_pwd(pwd_clear):
 # ------------------------------------------------------------------------------------------
 #                               FLASK ROUTES HANDLERS
 # ------------------------------------------------------------------------------------------
+
+
+@app.before_request
+def beforeRequest():
+    if not app.debug and 'https' not in request.url:
+        return redirect(request.url.replace('http', 'https'))
 
 
 @app.route('/', methods=['GET'])
