@@ -62,7 +62,14 @@ var MapModule = {
 	},
 
 	loadLocations : function(locations){
-			// add markers for locations of users
+		var locationMarker = new L.DivIcon({
+			html: '<i class="material-icons">person_pin</i>',
+			className: 'marker-location',
+			popupAnchor:new L.Point(0, -40, false),
+			iconSize: new L.Point(40, 40, false)
+		});
+
+		// add markers for locations of users
 		for (var i = 0; i < locations.length; i++) {
 			var location = locations[i].location;
 			var users = locations[i].users;
@@ -74,10 +81,9 @@ var MapModule = {
 			};
 			popupText += "</div>";
 
-			var marker = L.marker([location.lat, location.lon]);
+			var marker = L.marker([location.lat, location.lon],{icon: locationMarker});
 			marker.nbIfs = users.length;
 			marker.addTo(this.cluster).bindPopup(popupText);
-
 			// ajouter des binds ?
 		};
 

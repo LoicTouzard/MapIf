@@ -49,7 +49,7 @@ PlaceSearchModule = {
 		var loc3 = new L.LatLng(lat1, lng2);
 		var loc4 = new L.LatLng(lat2, lng1);
 
-		this.feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: 'red'}).addTo(MapModule.map);
+		this.feature = L.polyline( [loc1, loc4, loc2, loc3, loc1], {color: ' #f44336'}).addTo(MapModule.map);
 		MapModule.map.fitBounds(bounds);
 		MapModule.map.zoomOut();
 
