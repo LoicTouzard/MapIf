@@ -1,0 +1,60 @@
+	<!-- inscription modal -->
+	<div class="modal fade" id="inscriptionModal" tabindex="-1" role="dialog" aria-labelledby="inscription">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form id="form-inscription">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="inscription">Inscription</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group label-floating">
+							<label for="form-inscription-input-firstname" class="control-label">Prénom</label>
+							<input class="form-control" id="form-inscription-input-firstname" name="firstname" required="required" type="text">
+							<span class="help-block">Vous avez bien un nom ? non ?</span>
+						</div>
+						<div class="form-group label-floating">
+							<label for="form-inscription-input-lastname" class="control-label">Nom</label>
+							<input class="form-control" id="form-inscription-input-lastname" name="lastname" required="required" type="text">
+							<span class="help-block">C'est bon, c'est bon, je demanderai pas le téléphone...</span>
+						</div>
+						<div class="form-group label-floating">
+							<label for="form-inscription-input-email" class="control-label">Email</label>
+							<input class="form-control" id="form-inscription-input-email" name="email" required="required" type="email">
+							<span class="help-block">Au fait on a un sponsor avec quelques sites peu recommandables, ça vous dérange pas ? Je préfère prévenir hein...</span>
+						</div>
+						<div class="form-group label-floating">
+							<label for="form-inscription-input-password1" class="control-label">Mot de passe</label>
+							<input class="form-control" id="form-inscription-input-password1" name="password1" required="required" type="password">
+							<span class="help-block">Un mot de passe c'est important !</span>
+						</div>
+						<div class="form-group label-floating">
+							<label for="form-inscription-input-password2" class="control-label">Répetez le mot de passe</label>
+							<input class="form-control" id="form-inscription-input-password2" name="password2" required="required" type="password">
+							<span class="help-block">Mais s'en rappeler c'est mieux !</span>
+						</div>
+						<div id="p3-block" class="form-group label-floating">
+							<label for="form-inscription-input-password3" class="control-label">Répetez encore le mot de passe</label>
+							<input class="form-control" id="form-inscription-input-password3" type="password">
+							<span class="help-block">On est jamais trop prudent !</span>
+						</div>
+						<div id="p3-msg" class="alert alert-dismissible alert-success">
+							<button type="button" class="close" data-dismiss="alert">×</button>
+							<strong>Ouaiiiiiis !</strong> Bon par contre ça servait à rien ... Merci quand même !
+						</div>
+						<div class="form-group">
+							<label for="form-inscription-input-promo" class="control-label">Année <del>d'obtention du diplôme</del> de promo</label>
+							<select class="form-control" id="form-inscription-input-promo" name="promo" required="required">
+							</select>
+							<span class="help-block">La fameuse 6IF... !</span>
+						</div>
+						<div class="g-recaptcha" data-sitekey="6Lc_cCATAAAAAB0j0KykFgsWtlN4KtWrX1iYD8Nz"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+						<button type="submit" class="btn btn-primary">S'inscrire</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>

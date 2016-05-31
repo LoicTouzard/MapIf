@@ -108,7 +108,7 @@ def root():
         This is the main application's route. It displays the application main page.
     """
     locations = db.get_locations_with_users()
-    user_locations = None 
+    user_locations = None
     if _check_connected(session):
         user_locations = db.get_user_locations(session['user']['id'])
     return render_template('layout.html', locations=locations, user_locations=user_locations) # users=users)
@@ -127,6 +127,7 @@ def login():
     pwd_clear = request.form['password']
     pwd_hash = _hash_pwd(pwd_clear)
     _load_user(session, email, pwd_hash)
+    err = True
     if _check_connected(session):
         err = False
         content = "Vous êtes maintenant connecté !"
@@ -166,6 +167,7 @@ def account_create():
         This route is used by the application to add a new user to the application
     """
     content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
+    err = True
     if validator.check_captcha(request):
         # recuperation du contenu de la requete
         firstname = escape(request.form['firstname'].strip())

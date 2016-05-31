@@ -57,7 +57,7 @@
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal">S'inscrire</a></li>
 					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal">Connexion</a></li>
 					{% else %}
-					<li><a href="{{ url_for('logout') }}">Deconnexion</a></li>
+					<li><a href="{{ url_for('logout') }}">D&eacute;connexion</a></li>
 					{% endif %}
 				</ul>
 			</div>
@@ -90,231 +90,19 @@
 		</div>
 	</div>
 	{% endblock %}
-	<!-- connexion modal -->
-	<div class="modal fade" id="connexionModal" tabindex="-1" role="dialog" aria-labelledby="connexion">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
+	
+	{% include 'modals/signin.html' with context %}
 
-				<form id="form-connexion">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="connexion">Connexion</h4>
-					</div>
-					<div class="modal-body">
-						<div class="form-group label-floating">
-							<label for="form-connexion-input-username" class="control-label">E-mail</label>
-							<input class="form-control" id="form-connexion-input-username" name="email" required="required" type="text">
-							<span class="help-block">Bon si vous êtes pas trop bête vous vous en souvenez...</span>
-						</div>
+	{% include 'modals/signup.html' with context %}
 
-						<div class="form-group label-floating">
-							<label for="form-connexion-input-password" class="control-label">Mot de passe</label>
-							<input class="form-control" id="form-connexion-input-password" type="password" name="password" required="required">
-							<span class="help-block">Si vous avez oublié votre mot de passe veuillez <abbr title="Oui, j'ai la flemme de dev un truc comme ça...">ne pas en redemander un</abbr></span>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-						<button type="submit" class="btn btn-primary">Se connecter</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-
-	<!-- inscription modal -->
-	<div class="modal fade" id="inscriptionModal" tabindex="-1" role="dialog" aria-labelledby="inscription">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<form id="form-inscription">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="inscription">Inscription</h4>
-					</div>
-					<div class="modal-body">
-						<div class="form-group label-floating">
-							<label for="form-inscription-input-firstname" class="control-label">Prénom</label>
-							<input class="form-control" id="form-inscription-input-firstname" name="firstname" required="required" type="text">
-							<span class="help-block">Vous avez bien un nom ? non ?</span>
-						</div>
-						<div class="form-group label-floating">
-							<label for="form-inscription-input-lastname" class="control-label">Nom</label>
-							<input class="form-control" id="form-inscription-input-lastname" name="lastname" required="required" type="text">
-							<span class="help-block">C'est bon, c'est bon, je demanderai pas le téléphone...</span>
-						</div>
-						<div class="form-group label-floating">
-							<label for="form-inscription-input-email" class="control-label">Email</label>
-							<input class="form-control" id="form-inscription-input-email" name="email" required="required" type="email">
-							<span class="help-block">Au fait on a un sponsor avec quelques sites peu recommandables, ça vous dérange pas ? Je préfère prévenir hein...</span>
-						</div>
-						<div class="form-group label-floating">
-							<label for="form-inscription-input-password1" class="control-label">Mot de passe</label>
-							<input class="form-control" id="form-inscription-input-password1" name="password1" required="required" type="password">
-							<span class="help-block">Un mot de passe c'est important !</span>
-						</div>
-						<div class="form-group label-floating">
-							<label for="form-inscription-input-password2" class="control-label">Répetez le mot de passe</label>
-							<input class="form-control" id="form-inscription-input-password2" name="password2" required="required" type="password">
-							<span class="help-block">Mais s'en rappeler c'est mieux !</span>
-						</div>
-						<div id="p3-block" class="form-group label-floating">
-							<label for="form-inscription-input-password3" class="control-label">Répetez encore le mot de passe</label>
-							<input class="form-control" id="form-inscription-input-password3" type="password">
-							<span class="help-block">On est jamais trop prudent !</span>
-						</div>
-						<div id="p3-msg" class="alert alert-dismissible alert-success">
-							<button type="button" class="close" data-dismiss="alert">×</button>
-							<strong>Ouaiiiiiis !</strong> Bon par contre ça servait à rien ... Merci quand même !
-						</div>
-						<div class="form-group">
-							<label for="form-inscription-input-promo" class="control-label">Année <del>d'obtention du diplôme</del> de promo</label>
-							<select class="form-control" id="form-inscription-input-promo" name="promo" required="required">
-							</select>
-							<span class="help-block">La fameuse 6IF... !</span>
-						</div>
-						<div class="g-recaptcha" data-sitekey="6Lc_cCATAAAAAB0j0KykFgsWtlN4KtWrX1iYD8Nz"></div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-						<button type="submit" class="btn btn-primary">S'inscrire</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	<!-- About modal -->
-	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="about">
-		<div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="about">À propos de MapIf ...</h4>
-				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-sm-12">
-							<h4>MapIf <small>Version <span class="version">X.X.X</span></small></h4>
-							<p>
-								Ce projet est né de l'esprit de quelques 4IF de la promo 2017, au moment critique qu'est le 
-								stage, veille du départ en échange pour une majorité d'entre eux. Cette
-								épreuve qu'est la séparation n'étant pas facile à vivre, ils ont décidé de 
-								développer cette petite application permettant d'avoir une idée précise 
-								(mais pas trop <a href="https://twitter.com/search?q=%23Stalking" target="_blank">#Stalking</a> 
-								<a href="https://twitter.com/search?q=%23NSA" target="_blank">#NSA</a>) 
-								des endroits où se trouvent leurs amis et où ils
-								se trouvent eux mêmes (juste en cas de perte de mémoire <a href="https://twitter.com/search?q=%23FinDeSoiréeDifficile" target="_blank">#FinDeSoiréeDifficile</a>).
-							</p>
-							<p>
-								Bon vent les IF !
-							</p>
-							<hr/>
-							<h4>Contributeurs</h4>
-							<p>
-								Nous espérons que cette petite appli vous comblera. N'hésitez pas à nous suggérer 
-								des améliorations nous serons toujours disposés à vous écouter. <a href="https://twitter.com/search?q=%23IngénieurHumaniste" target="_blank">#IngénieurHumaniste</a>
-							</p>
-							<p>
-								Si vous n'êtes pas content de cette application veuillez ne pas nous le signaler. Merci. 
-								<a href="https://twitter.com/search?q=%23RaisonablementHumaniste" target="_blank">#RaisonablementHumaniste</a>
-							</p>
-							<p>	
-								Rendez vous dans la section <a href="#contribute">Contribuer</a> si vous êtes un (vrai) IF.
-								<a href="https://twitter.com/search?q=%23Geek" target="_blank">#Geek</a>
-								<a href="https://twitter.com/search?q=%23Insomnie" target="_blank">#Insomnie</a>
-								<a href="https://twitter.com/search?q=%23ViveLesClichés" target="_blank">#ViveLesClichés</a>
-							</p>
-							<ul>
-								<li><a href="https://github.com/LoicTouzard" target="_blank">Loïc Touzard</a> - 4IF 2017</li>
-								<li><a href="https://github.com/niosega" target="_blank">Nicolas Bonfante</a> - 4IF 2017</li>
-								<li><a href="https://github.com/KevinBulme" >Kévin Bulmé</a> - 4IF 2017</li>
-								<li><a href="https://github.com/pdautry" target="_blank">Paul Dautry</a> - 4IF 2017</li>
-							</ul>
-							<hr/>
-							<h4 id="contribute">Contribuer</h4>
-							<p>
-								Vous pouvez à tout moment forker le <a href="https://github.com/LoicTouzard/MapIf" target="_blank">dépôt</a> sur Github.<br>
-								Si vous avez <strong>des problèmes ou des propositions</strong> n'hésitez pas à créer une <a href="https://github.com/LoicTouzard/MapIf/issues" target="_blank">issue</a> pour le projet.
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	{% include 'modals/about.html' with context %}
 
 	{% if session.user is defined %}
-	<!-- Confirmation add position modal -->
-	<div class="modal fade" id="positionModal" tabindex="-1" role="dialog" aria-labelledby="position">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="position">Définir un nouvelle position</h4>
-				</div>
-				<div class="modal-body">
-				{% for loc in user_locations[-5:] | reverse %}
-					{% if loop.first %}
-					<h5>Votre position actuelle est {{ loc.location.city }} {{ loc.location.country }} depuis le {{ loc.timestamp.strftime('%d %B %Y') }}</h5>
-					{% else %}
-						{% if loop.last and loop.index is equalto 5 %}
-					<p>...</p>
-						{% else %}
-					<p>Vous étiez à {{ loc.location.city }} {{ loc.location.country }} le {{ loc.timestamp.strftime('%d %B %Y') }}</p>
-						{% endif %}
-					{% endif %}
-				{% else %}
-					<p>Vous n'avez pas encore défini votre position</p>
-				{% endfor %}
 
-					<p class="well">Voulez vous ajouter <strong><span id="position-add-city">city</span> <span id="position-add-country">COUNTRY</span></strong> à votre historique de déplacement ?</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-					<button id="change-current-position-validate" type="button" class="btn btn-primary">Changer ma position actuelle</button>
-				</div>
-			</div>
-		</div>
-	</div>
+		{% include 'modals/addPosition.html' with context %}
 
-	<!-- Profil modal -->
-	<div class="modal fade" id="profilModal" tabindex="-1" role="dialog" aria-labelledby="profil">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="profil">Mon profil</h4>
-				</div>
-				<div class="modal-body">
-					<a href="https://www.facebook.com/"><img id="fb-logo" class="img-responsive center-block" src="{{ url_for('static', filename='image/goto_facebook.png') }}" alt="go to facebook !"></a>
-					<div id="delete-account-panel" class="panel panel-danger">
-					  <div class="panel-heading">
-					    <h3 class="panel-title">Danger !</h3>
-					  </div>
-					  <div class="panel-body">
-					    <p class="text-danger">Attention la suppression du compte entraine la suppression <strong>definitive</strong> de toutes les données qui y sont liées ...</p>
-					    <div class="form-group has-error">
-						  <label class="control-label" for="delete-input">Ecrivez : "<em>je sui 1 gro boloss</em>"</label>
-						  <div class="input-group">
-						    <input id="delete-input" class="form-control" type="text" pattern="je sui 1 gro boloss" required placeholder="C'est qui le boloss ?" >
-						    <span class="input-group-btn">
-						        <button id="delete-button-confirm" disabled="disabled" class="btn btn-raised btn-danger">Supprimer définitivement mon compte</button>
-						    </span>
-						  </div>
-						</div>
-					  </div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-				</div>
-			</div>
-		</div>
-	</div>
+		{% include 'modals/profile.html' with context %}
+		
 	{% endif %}
 
 	{% block scripts %}

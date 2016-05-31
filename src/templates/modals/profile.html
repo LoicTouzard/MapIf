@@ -1,0 +1,34 @@
+<!-- Profil modal -->
+	<div class="modal fade" id="profilModal" tabindex="-1" role="dialog" aria-labelledby="profil">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="profil">Mon profil</h4>
+				</div>
+				<div class="modal-body">
+					<a href="https://www.facebook.com/"><img id="fb-logo" class="img-responsive center-block" src="{{ url_for('static', filename='image/goto_facebook.png') }}" alt="go to facebook !"></a>
+					<div id="delete-account-panel" class="panel panel-danger">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">Danger !</h3>
+					  </div>
+					  <div class="panel-body">
+					    <p class="text-danger">Attention la suppression du compte entraine la suppression <strong>definitive</strong> de toutes les données qui y sont liées ...</p>
+					    <div class="form-group has-error">
+						  <label class="control-label" for="delete-input">Ecrivez : "<em>je sui 1 gro boloss</em>"</label>
+						  <div class="input-group">
+						    <input id="delete-input" class="form-control" type="text" pattern="je sui 1 gro boloss" required placeholder="C'est qui le boloss ?" >
+						    <span class="input-group-btn">
+						        <button id="delete-button-confirm" disabled="disabled" class="btn btn-raised btn-danger">Supprimer définitivement mon compte</button>
+						    </span>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+				</div>
+			</div>
+		</div>
+	</div>
