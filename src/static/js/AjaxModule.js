@@ -87,10 +87,11 @@ var AjaxModule = {
         return false;
     },
 
-    addLocation : function(osm_type, osm_id){
+    addLocation : function(osm_type, osm_id, reason){
         var $params = $.param({
             'osm_id' : osm_id,
-            'osm_type' : osm_type
+            'osm_type' : osm_type,
+            'reason' : reason
         });
         $.ajax({
             method: "POST",

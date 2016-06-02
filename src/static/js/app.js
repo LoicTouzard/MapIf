@@ -12,7 +12,6 @@ $(document).on("settings-loaded",function(){
 	var versionArray = SETTINGS.VERSION.split(".");
 	versionArray.pop();
 	var cookieName = versionArray.join("-");
-	UtilsModule.logger(Cookies.get(cookieName));
 	// show about if it is the first visit
 	if(!Cookies.get(cookieName)){
 		Cookies.set(cookieName, cookieName, { expires: 365 });

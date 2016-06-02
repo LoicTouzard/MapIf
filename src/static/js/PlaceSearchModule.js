@@ -107,10 +107,11 @@ PlaceSearchModule = {
 					            		$("#change-current-position-validate").on("click",function(){
 					            			e.preventDefault();
 					            			e.stopPropagation();
-					            			console.log("AjaxModule.addLocation("+val.osm_type+", "+val.osm_id+")");
-					            			AjaxModule.addLocation(val.osm_type, val.osm_id);
+					            			var reason = $("#position-add-reason").val();
+					            			AjaxModule.addLocation(val.osm_type, val.osm_id, reason);
 					            			return false;
 					            		})
+					            		$("#position-add-reason").val('no');
 					            		$("#position-add-city").text(val.address.city);
 					            		$("#position-add-country").text(val.address.country.toUpperCase());
 					            		$("#positionModal").modal("show");
