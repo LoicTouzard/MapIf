@@ -69,7 +69,7 @@ var MapModule = {
 			iconSize: new L.Point(40, 40, false)
 		});
 
-		var _this = this;
+		var _module = this;
 		// add markers for locations of users
 		for (var i = 0; i < locations.length; i++) {
 			var location = locations[i].location;
@@ -78,18 +78,18 @@ var MapModule = {
 			var popupText = "<h4>"+users.length+" Insalien"+((users.length>1)?"s":"")
 				+" à "+location.city+" "+location.country.toUpperCase()+"</h4><div class='popupUsers'>";
 			for (var j = 0; j < users.length; j++) {
-				popupText += users[j].firstname + " "+users[j].lastname+" <small> - IF "+users[j].promo+"</small><br>";
+				popupText += UtilsModule.toTitleCase(users[j].firstname)+" "+UtilsModule.toTitleCase(users[j].lastname)+" <small> - IF "+users[j].promo+"</small><br>";
 			};
 			popupText += "</div>";
 
 			var marker = L.marker([location.lat, location.lon],{icon: locationMarker});
 			marker.nbIfs = users.length;
 			marker.addTo(this.cluster).bindPopup(popupText).on("click", function(e){
-				/*if(_this.map.getZoom() < 11){
-					_this.map.setView(this.getLatLng(), 11);
+				/*if(_module.map.getZoom() < 11){
+					_module.map.setView(this.getLatLng(), 11);
 				}
 				else{*/
-					_this.map.panTo(this.getLatLng());
+					_module.map.panTo(this.getLatLng());
 				//}
 			});
 			// ajouter des binds ?

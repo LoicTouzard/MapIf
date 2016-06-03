@@ -1,0 +1,56 @@
+<nav class="navbar navbar-inverse noselect">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="{{ url_for('root') }}">MapIF</a>
+		</div>
+		<div id="main-navbar" class="navbar-collapse collapse navbar-inverse-collapse">
+			<ul class="nav navbar-nav">
+				<li id="menu-map" class="navbar-left-item {% if active == "map" %}active{% endif %}"><a href="{% if active == "map" %}javascript:void(0){% else %}{{ url_for('root') }}{% endif %}">Carte</a></li>
+				{% if active == "map" %}
+					<li id="menu-search" class="navbar-left-item"><a href="javascript:void(0)">
+						{% if session.user %}
+							{% if user_locations[0] is not defined %}
+								Ajouter une localisation
+							{% else %}
+								Changer ma localisation
+							{% endif %}
+						{% else %}
+							Rechercher
+						{% endif %}
+					</a></li>
+				{% endif %}
+				{% if session.user %}
+				<li id="menu-profil" class="navbar-left-item {% if active == "profile" %}active{% endif %}"><a href="{{ url_for('profile') }}">Profil</a></li>
+				{% endif %}
+				<li id="menu-about" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				{% if not session.user %}
+				<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal">S'inscrire</a></li>
+				<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal">Connexion</a></li>
+				{% else %}
+				<li><a href="{{ url_for('logout') }}">D&eacute;connexion</a></li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+</nav>
+{% if session.user is not defined %}
+	{% include 'modals/signinModal.html' with context %}
+
+	{% include 'modals/signupModal.html' with context %}
+{% endif %}
+
+
+{% if session.user is defined and active == "map" %}
+	{% include 'modals/addPositionModal.html' with context %}
+
+{#	{% include 'modals/profileModal.html' with context %} #}
+{% endif %}
+
+{% include 'modals/aboutModal.html' with context %}

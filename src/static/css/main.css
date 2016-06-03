@@ -18,6 +18,12 @@ body,
 	padding-top: 50px;
 }
 
+@media (min-width:1200px) {
+	#page-content{
+		padding-top: 60px;
+	}
+}
+
 #page-wrapper{
 	position: relative;
 }
@@ -27,7 +33,7 @@ body,
 	z-index: 1010;
 	width: 100%;
 	opacity: 1;
-	position: absolute;
+	position: fixed;
 }
 
 #left-panel{
@@ -57,12 +63,6 @@ body,
 
 #left-panel.closePanel + #mymap .leaflet-control-zoom{
 	left : 0;
-}
-
-@media (min-width:1200px) {
-	#page-content{
-		padding-top: 60px;
-	}
 }
 
 #left-panel-content{
@@ -248,4 +248,26 @@ body,
 	top : -15px;
 	left : 10px;
 	z-index: -1;
+}
+
+
+
+/***** PROFILE PAGE *****/
+
+#panel-profile-edit .row-content,
+#panel-profile-edit .list-group-separator::before{
+	width : 100%;
+}
+
+#panel-profile-edit .row-content{
+	min-height: 43px;
+}
+
+#panel-profile-edit .list-group{
+	margin-bottom: 0;
+	padding-top: 15px;
+}
+
+.list-group-item-header{
+	cursor: pointer;
 }

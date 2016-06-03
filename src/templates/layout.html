@@ -23,89 +23,15 @@
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body>
-	{% block body %}
-	<nav class="navbar navbar-inverse noselect">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="javascript:void(0)">MapIF</a>
-			</div>
-			<div id="main-navbar" class="navbar-collapse collapse navbar-inverse-collapse">
-				<ul class="nav navbar-nav">
-					<li id="menu-map" class="navbar-left-item active"><a href="javascript:void(0)">Carte</a></li>
-					<li id="menu-search" class="navbar-left-item"><a href="javascript:void(0)">
-						{% if session.user %}
-							{% if user_locations[0] is not defined %}
-								Ajouter une localisation
-							{% else %}
-								Changer ma localisation
-							{% endif %}
-						{% else %}
-							Rechercher
-						{% endif %}</a></li>
-					{% if session.user %}
-					<li id="menu-profil" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#profilModal">Profil</a></li>
-					{% endif %}
-					<li id="menu-about" class="navbar-left-item"><a href="javascript:void(0)" data-toggle="modal" data-target="#aboutModal">À propos</a></li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					{% if not session.user %}
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal">S'inscrire</a></li>
-					<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal">Connexion</a></li>
-					{% else %}
-					<li><a href="{{ url_for('logout') }}">D&eacute;connexion</a></li>
-					{% endif %}
-				</ul>
-			</div>
-		</div>
-	</nav>
+	{% include 'navbar.html' with context %}
 
 	<div id="page-content" class="container-fluid">
 		<div id="page-wrapper">
-			<div id="left-panel" class="closePanel">
-				<div id="left-panel-content">
-					<div id="left-panel-form">
-						<h4>Trouver un lieu</h4>
-						<div class="form-group label-floating">
-							<label class="control-label" for="addr-search-input-city">Ville</label>
-							<input class="form-control" id="addr-search-input-city" type="text">
-						</div>
-						<div class="form-group label-floating">
-							<label class="control-label" for="addr-search-input-country">Pays</label>
-							<input class="form-control" id="addr-search-input-country" type="text">
-						</div>
-						<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab btn-raised"><i class="material-icons">search</i></a>
-					</div>
-					<div id="left-panel-result">
-						<div id="search-results"></div>
-					</div>
-				</div>
-				<div class="widget-pane-toggle-button-container"><button type="button" class="btn btn-raised btn-xs" data-toggle="tooltip" data-placement="right" title="&Eacute;tendre le panneau latéral" data-original-title="Tooltip on right"><span class="glyphicon glyphicon-triangle-right"></span></button> </div>
-			</div>
-			<div id="mymap"></div>
+			{% block body %}
+			{% endblock %}
 		</div>
 	</div>
-	{% endblock %}
-	
-	{% include 'modals/signin.html' with context %}
 
-	{% include 'modals/signup.html' with context %}
-
-	{% include 'modals/about.html' with context %}
-
-	{% if session.user is defined %}
-
-		{% include 'modals/addPosition.html' with context %}
-
-		{% include 'modals/profile.html' with context %}
-		
-	{% endif %}
-
-	{% block scripts %}
 	<!-- Javascript Libs -->
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/jquery-2.2.3/jquery-2.2.3.min.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap-3.3.6/js/bootstrap.min.js') }}"></script>
@@ -116,69 +42,29 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/js-cookie/js-cookie.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='libs/snackbar2/snackbar.js') }}"></script>
 
-	<!-- Personnal -->
-	<script type="text/javascript">
-		//javascript data
-		var locations = [];
-		{% for lu in locations %}
-		locations.push({
-			location:{
-				lat:{{ lu.location.lat }},
-				lon:{{ lu.location.lon }},
-				city:"{{ lu.location.city }}",
-				country:"{{ lu.location.country }}"
-			},
-			users:[
-			{% for u in lu.users %}
-				{
-					firstname:"{{ u.firstname }}",
-					lastname:"{{ u.lastname }}",
-					promo:"{{ u.promo }}"
-				}{% if not loop.last %},{% endif %}
-			{% endfor %}
-			]
-		});
-		{% endfor %}
+	{% block data_script %}
+		{# to set data from python into javascript, before the scripts run #}
+	{% endblock %}
 
-		{# COMMENTED
-			var users = [];
-			{% for user in users %}
-			console.log("{{ user }}");
-			{% if user.location.data %}
-			users.push({
-				id: "{{ user.user.id }}",
-				firstname: "{{ user.user.firstname }}",
-				lastname: "{{ user.user.lastname }}",
-				promo: "{{ user.user.promo }}",
-				lat: "{{ user.location.data.lat }}",
-				lon: "{{ user.location.data.lon }}"
-			});
-			{% endif %}
-			{% endfor %}
-			// console.log(users);
-		#}
-		//cant "var connected = {{ session.user is defined }};" Because python and javascript boolean are different : "False" and "false"
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/UtilsModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/FormModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/LeftPanelModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/MapModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/AjaxModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/PlaceSearchModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/SignInUpModule.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/modules/ProfileModule.js') }}"></script>
+
+	<script type="text/javascript" src="{{ url_for('static', filename='js/app.js') }}"></script>
+	{% block page_script %}
+	{% endblock %}
+	<script type="text/javascript">
+		// Load configuration script and trigger page scripts
 		{% if session.user is defined %}
 		var connected = true;
 		{% else %}
 		var connected = false;
 		{% endif %}
-		console.log("connected : "+connected)
-	</script>
-
-	<script type="text/javascript" src="{{ url_for('static', filename='js/UtilsModule.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/LeftPanelModule.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/MapModule.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/AjaxModule.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/PlaceSearchModule.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/FormModule.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/ProfileModule.js') }}"></script>
-
-	<script type="text/javascript" src="{{ url_for('static', filename='js/app.js') }}"></script>
-	
-	<script type="text/javascript">
-		// Load configuration script and trigger page scripts
-
 		SETTINGS = {};
 		$(function(){			
 			$.getJSON("{{ url_for('static', filename='settings.json') }}",function(data){
@@ -192,6 +78,5 @@
 			});
 		});
 	</script>
-	{% endblock %}
 </body>
 </html>

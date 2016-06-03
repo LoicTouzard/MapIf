@@ -8,12 +8,6 @@
 *   FormModule.js
 */
 var AjaxModule = {
-    init : function(){
-        $('#form-connexion').on('submit', this.login);
-
-        $('#form-inscription').on('submit', this.signup);    
-    },
-
     login : function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -87,10 +81,11 @@ var AjaxModule = {
         return false;
     },
 
-    addLocation : function(osm_type, osm_id){
+    addLocation : function(osm_type, osm_id, reason){
         var $params = $.param({
             'osm_id' : osm_id,
-            'osm_type' : osm_type
+            'osm_type' : osm_type,
+            'reason' : reason
         });
         $.ajax({
             method: "POST",

@@ -119,7 +119,17 @@ def root():
     user_locations = None
     if _check_connected(session):
         user_locations = db.get_user_locations(session['user']['id'])
-    return render_template('layout.html', locations=locations, user_locations=user_locations) # users=users)
+    return render_template('map.html', locations=locations, user_locations=user_locations, active="map") # users=users)
+
+@app.route('/profil', methods=['GET'])
+@internal_error_handler('PR0F1LK0')
+@require_connected()
+def profile():
+    """
+        This is profile view of the current user.
+    """
+    user_locations = db.get_user_locations(session['user']['id'])
+    return render_template('profile.html', user_locations=user_locations, active='profile') # users=users)
 
 # ---------------------------------------- LOGIN RELATED ROUTES ----------------------------------------
 

@@ -3,9 +3,10 @@
 * form functions
 *
 * Dependancies : 
-* 	UtilsModule.js
+* 	FormModule.js
+* 	AjaxModule.js
 */
-var FormModule = {
+var SignInUpModule = {
 	p3_trolled : false,
 	p3_open : false,
 	$p3_block : undefined,
@@ -14,18 +15,29 @@ var FormModule = {
 	init : function(){
 		this.$p3_block = $("#p3-block").hide();
 		this.$p3_msg = $("#p3-msg").hide();
-		var _this = this;
+		var _module = this;
 		$("#form-inscription-input-password1, #form-inscription-input-password2, #form-inscription-input-password3").keyup(function(){
-			_this.checkPasswords();
+			_module.checkPasswords();
 		});
-	},
 
-	addFieldError : function($el){
-		return $el.addClass("has-warning");
-	},
+		// generate the promotions year
+		(function(){
+			var startYear = 1969;
+			var currentYear = new Date().getFullYear();
+			var lastYear = currentYear+4;
+			var $select = $("#form-inscription-input-promo");
+			for (var i = startYear; i < lastYear; i++) {
+				var $option = $('<option value="'+i+'">'+i+'</option>');
+				if(i == currentYear){
+					$option.attr("selected", "selected");
+				}
+				$select.append($option);
+			};
+		})();
 
-	removeFieldError : function($el){
-		return $el.removeClass("has-warning");
+        $('#form-connexion').on('submit', AjaxModule.login);
+
+        $('#form-inscription').on('submit', AjaxModule.signup);  
 	},
 
 	checkPasswords : function(){
@@ -38,10 +50,10 @@ var FormModule = {
 		if($p2.val() != ""){
 			// check similarity with p1
 			if(p1 != p2){
-				this.addFieldError($p2.closest(".form-group"));
+				FormModule.addFieldError($p2.closest(".form-group"));
 			}
 			else{
-				this.removeFieldError($p2.closest(".form-group"));
+				FormModule.removeFieldError($p2.closest(".form-group"));
 				if(!this.p3_open && !this.p3_trolled){
 					//activate the troll not finished
 					this.$p3_block.show(500);
@@ -50,20 +62,20 @@ var FormModule = {
 			}
 		}
 		else{
-			//this.addFieldError($p2.closest(".form-group"));
+			//FormModule.addFieldError($p2.closest(".form-group"));
 		}
 		if(this.p3_open){
 			if(p3 != ""){
 				// check similarity with p1
 				if(p1 != p3){
-					this.addFieldError($p3.closest(".form-group"));
+					FormModule.addFieldError($p3.closest(".form-group"));
 				}
 				else{
-					this.removeFieldError($p3.closest(".form-group"));
+					FormModule.removeFieldError($p3.closest(".form-group"));
 				}
 			}
 			else{
-				// this.addFieldError($p3.closest(".form-group"));
+				// FormModule.addFieldError($p3.closest(".form-group"));
 			}
 		}
 		if(p1 != "" && p1 == p2 && p1 == p3){
@@ -77,26 +89,4 @@ var FormModule = {
 			}
 		}
 	},
-
-	displayFormErrors : function(form, errors){
-	    $form = $(form);
-		// remove the old errors
-		$form.find(".alert.alert-danger").remove();
-		this.removeFieldError($form.find(".has-warning"));
-		if(typeof errors.content == "string"){
-			// single message
-			$form.find(".modal-body").prepend(UtilsModule.createAlert(errors.content));
-		}
-		else{
-			// error is array
-			for (var field in errors.content){
-			    if (errors.content.hasOwnProperty(field)) {
-			    	$fgroup = $(form+"-input-"+field).closest(".form-group");
-			    	this.addFieldError($fgroup);
-			    	$fgroup.prepend(UtilsModule.createAlert(errors.content[field]));
-			    }
-			}
-		}
-	}
-
 };

@@ -29,5 +29,15 @@ var UtilsModule = {
 	menuIsExpanded : function(){
 		// TODO, can we know it another way ? from plugin API ?
 		return ($("#main-navbar").attr("aria-expanded") == "true")?true:false;
+	},
+
+	toTitleCase : function(str)
+	{
+	    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	},
+
+	toggleArrow : function(icon){
+		$icon = $(icon);
+		$icon.text($icon.text()=="keyboard_arrow_right"?"keyboard_arrow_down":"keyboard_arrow_right")
 	}
 }
