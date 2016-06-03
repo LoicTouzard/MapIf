@@ -13,9 +13,9 @@ LeftPanelModule = {
 	init : function(){
 		$("#menu-search").click(this.open);
 		$("#menu-map").click(this.close);
-		var _this = this;
+		var _module = this;
 		$("#left-panel .widget-pane-toggle-button-container .btn").on("click",function(){
-			_this.toggle();
+			_module.toggle();
 		});
 	},
 

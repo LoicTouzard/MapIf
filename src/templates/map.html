@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div id="left-panel" class="closePanel">
+	<div id="left-panel-content">
+		<div id="left-panel-form">
+			<h4>Trouver un lieu</h4>
+			<div class="form-group label-floating">
+				<label class="control-label" for="addr-search-input-city">Ville</label>
+				<input class="form-control" id="addr-search-input-city" type="text">
+			</div>
+			<div class="form-group label-floating">
+				<label class="control-label" for="addr-search-input-country">Pays</label>
+				<input class="form-control" id="addr-search-input-country" type="text">
+			</div>
+			<a href="#" id="addr-search-submit" class="fab btn btn-default btn-fab btn-raised"><i class="material-icons">search</i></a>
+		</div>
+		<div id="left-panel-result">
+			<div id="search-results"></div>
+		</div>
+	</div>
+	<div class="widget-pane-toggle-button-container"><button type="button" class="btn btn-raised btn-xs" data-toggle="tooltip" data-placement="right" title="&Eacute;tendre le panneau latéral" data-original-title="Tooltip on right"><span class="glyphicon glyphicon-triangle-right"></span></button> </div>
+</div>
+<div id="mymap"></div>
+{% endblock %}
+
+
+{% block data_script %}
+<script type="text/javascript">
+	//javascript data
+	var locations = [];
+	{% for lu in locations %}
+	locations.push({
+		location:{
+			lat:{{ lu.location.lat }},
+			lon:{{ lu.location.lon }},
+			city:"{{ lu.location.city }}",
+			country:"{{ lu.location.country }}"
+		},
+		users:[
+		{% for u in lu.users %}
+			{
+				firstname:"{{ u.firstname }}",
+				lastname:"{{ u.lastname }}",
+				promo:"{{ u.promo }}"
+			}{% if not loop.last %},{% endif %}
+		{% endfor %}
+		]
+	});
+	{% endfor %}
+
+	{# COMMENTED
+		var users = [];
+		{% for user in users %}
+		console.log("{{ user }}");
+		{% if user.location.data %}
+		users.push({
+			id: "{{ user.user.id }}",
+			firstname: "{{ user.user.firstname }}",
+			lastname: "{{ user.user.lastname }}",
+			promo: "{{ user.user.promo }}",
+			lat: "{{ user.location.data.lat }}",
+			lon: "{{ user.location.data.lon }}"
+		});
+		{% endif %}
+		{% endfor %}
+		// console.log(users);
+	#}
+	//cant "var connected = {{ session.user is defined }};" Because python and javascript boolean are different : "False" and "false"
+</script>
+{% endblock %}
+
+{% block page_script %}
+	<script type="text/javascript" src="{{ url_for('static', filename='js/pages/mapPage.js') }}"></script>
+{% endblock %}

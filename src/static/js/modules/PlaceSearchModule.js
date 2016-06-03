@@ -13,10 +13,10 @@ PlaceSearchModule = {
 	selected_osm  : 0,
 
 	init : function(){
-		var _this = this;
+		var _module = this;
 		$("#addr-search-submit").click(function(e){
 			e.preventDefault();
-			_this.addrSearch();
+			_module.addrSearch();
 			UtilsModule.logger($(this));
 			// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
 			$(this).focusout().blur();
@@ -61,7 +61,7 @@ PlaceSearchModule = {
 	    var country = document.getElementById("addr-search-input-country");
 	    UtilsModule.logger("request for "+city.value +" "+country.value)
 	    var num_search = 0;
-	    var _this = this;
+	    var _module = this;
 	    var display_result = function(data) {
 	        var items = [];
 	        num_search += 1;
@@ -81,7 +81,7 @@ PlaceSearchModule = {
 			            	.addClass("list-group-item place-result-item media")
 			            	.click(function(e){
 			            		e.preventDefault();
-			            		_this.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+			            		_module.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
 			            		return false;
 			            	}).append($("<div></div>")
 			            		.addClass("media-body")
@@ -129,7 +129,7 @@ PlaceSearchModule = {
 			            	.addClass("list-group-item place-result-item")
 			            	.click(function(e){
 			            		e.preventDefault();
-			            		_this.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
+			            		_module.chooseAddr(this, bb[0], bb[2], bb[1], bb[3], val.osm_type, val.osm_id);
 			            		return false;
 			            	}).append($("<h4></h4>")
 			            		.text(val.address.city+' '+val.address.country.toUpperCase())

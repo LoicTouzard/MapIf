@@ -1,0 +1,138 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container">
+	<h1>Votre profil</h1>
+	<p>Editez ici vos informations : nom, mot de passe, anciennes localisation...</p>
+	<div class="alert alert-warning">
+	  <h4>Work in progress!</h4>
+
+	  <p>Le profil est en cours de construction. Toutes ses fonctionnalités ne sont pas terminées</p>
+	</div>
+	<div class="row">
+		<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+			<div class="panel panel-default">
+			  <div class="panel-body" id="panel-profile-edit">
+			    <ul class="list-group">
+			    	<li class="list-group-item">
+						<div class="row-content">
+							<div class="list-group-item-header">
+								<div class="least-content"><i class="material-icons">keyboard_arrow_right</i></div>
+								<h4 class="list-group-item-heading">Nom</h4>
+							</div>
+							<form action="/nom">
+								<div class="list-group-item-text collapse" aria-expanded="false">
+									<div class="col-sm-10 col-sm-offset-1">
+										<div class="form-group">
+											<input class="form-control" required="required" type="text" placeholder="Prénom" value="{{ session.user.firstname }}" name="firstname">
+										</div>
+										<div class="form-group">
+											<input class="form-control" required="required" type="text" placeholder="Nom" value="{{ session.user.lastname }}" name="lastname">
+										</div>
+									</div>
+									<div class="col-xs-12">
+										<button class="btn btn-raised btn-info pull-right" disabled="disabled">Changer</button>
+									</div>
+								</div>
+							</form>
+						</div>
+			    	</li>
+			    	<li class="list-group-separator"></li>
+			    	<li class="list-group-item">
+			    		<div class="row-content">
+			    			<div class="list-group-item-header">
+								<div class="least-content"><i class="material-icons">keyboard_arrow_right</i></div>
+								<h4 class="list-group-item-heading">Email</h4>
+							</div>
+							<form action="/email">
+								<div class="list-group-item-text collapse" aria-expanded="false">
+									<div class="col-sm-10 col-sm-offset-1">
+										<div class="form-group">
+											<input class="form-control" required="required" type="email" placeholder="Adresse Email" value="{{ session.user.email }}" name="email">
+										</div>
+									</div>
+									<div class="col-xs-12">
+										<button class="btn btn-raised btn-info pull-right" disabled="disabled">Changer</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</li>
+			    	<li class="list-group-separator"></li>
+			    	<li class="list-group-item">
+			    		<div class="row-content">
+			    			<div class="list-group-item-header">
+								<div class="least-content"><i class="material-icons">keyboard_arrow_right</i></div>
+								<h4 class="list-group-item-heading">Mot de passe</h4>
+							</div>
+							<form action="/password">
+								<div class="list-group-item-text collapse" aria-expanded="false">
+									<div class="col-sm-10 col-sm-offset-1">
+										<div class="form-group">
+											<input class="form-control" required="required" type="password" placeholder="Ancien mot de passe" name="pwd1">
+										</div>
+										<div class="form-group">
+											<input class="form-control" required="required" type="password" placeholder="Nouveau mot de passe" name="pwd2">
+										</div>
+									</div>
+									<div class="col-xs-12">
+										<button class="btn btn-raised btn-info pull-right" disabled="disabled">Changer</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</li>
+			    	<li class="list-group-separator"></li>
+			    	<li class="list-group-item">
+						<div class="row-content">
+							<div class="list-group-item-header">
+								<div class="least-content"><i class="material-icons">keyboard_arrow_right</i></div>
+								<h4 class="list-group-item-heading">Promotion</h4>
+							</div>
+							<form action="/promo">
+								<div class="list-group-item-text collapse" aria-expanded="false">
+									<div class="col-sm-10 col-sm-offset-1">
+										<div class="form-group">
+										</div>
+									</div>
+									<div class="col-xs-12">
+										<button class="btn btn-raised btn-info pull-right" disabled="disabled">Changer</button>
+									</div>
+								</div>
+							</form>
+						</div>
+			    	</li>
+			    </ul>
+			  </div>
+			</div>
+		</div>
+	</div>
+
+	<div id="delete-account-panel" class="panel panel-danger">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">Danger !</h3>
+	  </div>
+	  <div class="panel-body">
+	    <p class="text-danger">Attention la suppression du compte entraine la suppression <strong>definitive</strong> de toutes les données qui y sont liées ...</p>
+	    <div class="form-group has-error">
+		  <label class="control-label" for="delete-input">Ecrivez : "<em>Je reviens tout de suite !</em>"</label>
+		  <div class="input-group">
+		    <input id="delete-input" class="form-control" type="text" pattern="Je reviens tout de suite !" required placeholder="Je reviens tout de suite !" >
+		    <span class="input-group-btn">
+		        <button id="delete-button-confirm" disabled="disabled" class="btn btn-raised btn-danger">Supprimer définitivement mon compte</button>
+		    </span>
+		  </div>
+		</div>
+	  </div>
+	</div>
+</div>
+{% endblock %}
+
+{% block data_script %}
+<script type="text/javascript">
+	//javascript data
+</script>
+{% endblock %}
+
+{% block page_script %}
+	<script type="text/javascript" src="{{ url_for('static', filename='js/pages/profilePage.js') }}"></script>
+{% endblock %}

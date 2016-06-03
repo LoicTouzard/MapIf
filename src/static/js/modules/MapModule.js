@@ -69,7 +69,7 @@ var MapModule = {
 			iconSize: new L.Point(40, 40, false)
 		});
 
-		var _this = this;
+		var _module = this;
 		// add markers for locations of users
 		for (var i = 0; i < locations.length; i++) {
 			var location = locations[i].location;
@@ -85,11 +85,11 @@ var MapModule = {
 			var marker = L.marker([location.lat, location.lon],{icon: locationMarker});
 			marker.nbIfs = users.length;
 			marker.addTo(this.cluster).bindPopup(popupText).on("click", function(e){
-				/*if(_this.map.getZoom() < 11){
-					_this.map.setView(this.getLatLng(), 11);
+				/*if(_module.map.getZoom() < 11){
+					_module.map.setView(this.getLatLng(), 11);
 				}
 				else{*/
-					_this.map.panTo(this.getLatLng());
+					_module.map.panTo(this.getLatLng());
 				//}
 			});
 			// ajouter des binds ?

@@ -8,12 +8,6 @@
 *   FormModule.js
 */
 var AjaxModule = {
-    init : function(){
-        $('#form-connexion').on('submit', this.login);
-
-        $('#form-inscription').on('submit', this.signup);    
-    },
-
     login : function(e) {
         e.preventDefault();
         e.stopPropagation();
