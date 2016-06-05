@@ -184,6 +184,21 @@ def create_user(firstname, lastname, email, pwd, promo):
     session.close()
     return status
 
+def update_user(uid, **kwargs):
+    """
+        Updates a user in the database
+    """
+    status = False
+    session = _get_default_db_session()
+    user = session.query(User).filter(User.id == uid).one()
+    if user != []:
+        for key,value in kwargs.items():
+            if key in ['firstname','lastname','email','pwd','promo'] and value is not None:
+                setattr(user, key, value)
+        session.add(user)
+        session.commit()
+        status = True
+    return status
 
 def get_all_users():
     """
@@ -216,6 +231,17 @@ def get_user(email, pwd):
     session = _get_default_db_session()
     result = []
     for row in session.query(User).filter(User.email == email, User.pwd == pwd):
+        result.append(row)
+    session.close()
+    return None if len(result) == 0 else result[0]
+
+def get_user_by_id(uid):
+    """
+        Returns the user having the given uid or None
+    """
+    session = _get_default_db_session()
+    result = []
+    for row in session.query(User).filter(User.id == uid):
         result.append(row)
     session.close()
     return None if len(result) == 0 else result[0]

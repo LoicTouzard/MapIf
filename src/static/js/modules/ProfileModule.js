@@ -11,13 +11,18 @@ var ProfileModule = {
 
 		$("#delete-button-confirm").attr("disabled", "disabled");
 
+		var $select = $("#form-profile-input-promo");
+		UtilsModule.generatePromotion($select).val($select.data("value"));
+
 		$("#panel-profile-edit .list-group-item-header").click(this.toggleItem);
+
+		$(".profile-form").on("submit", this.sendProfileField);
 	},
 
 	checkAcountDelete : function(){
 		// this is the input
-		$input = $(this);
-		$confirm = $("#delete-button-confirm");
+		var $input = $(this);
+		var $confirm = $("#delete-button-confirm");
 		if($input.val() === "Je reviens tout de suite !"){
 			$confirm.removeAttr("disabled");
 			$confirm.bind("click", AjaxModule.deleteAccount);
@@ -29,11 +34,17 @@ var ProfileModule = {
 	},
 
 	toggleItem : function(e){
-		e.preventDefault();
 		// this, is the clicked icon
 		var $this = $(this);
 		var $item = $this.closest(".list-group-item");
 		$item.find(".list-group-item-text").collapse("toggle");
 		UtilsModule.toggleArrow($item.find(".least-content i"));
+	},
+
+	sendProfileField : function(e){
+		e.preventDefault();
+		AjaxModule.editProfile(this)
+		return false
 	}
+
 };

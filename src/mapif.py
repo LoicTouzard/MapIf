@@ -87,6 +87,17 @@ def _load_user(session, email, pwd):
             'promo': usr.promo
         }
 
+def _update_user(session, uid):
+    usr = db.get_user_by_id(uid)
+    if usr:
+        session['user'] = {
+            'id': usr.id,
+            'firstname': usr.firstname,
+            'lastname': usr.lastname,
+            'email': usr.email,
+            'promo': usr.promo
+        }
+
 
 def _check_connected(session):
     return session.get('user', None)
@@ -225,19 +236,32 @@ def account_create():
     return json_response(Response(err, content).json(), status_code=200)
 
 
-@app.route('/account/update', methods=['POST'])
-@internal_error_handler('4CC0U7UPD4T3K0')
-def account_update():
+@app.route('/account/update/names', methods=['PATCH'])
+@internal_error_handler('4CC0U7UPD4T3NAM35K0')
+@require_connected()
+def account_update_names():
     """
-        This route will be used to update user profile
+        This route will be used to update user profile firstname and lastname
     """
     err = True
-    content = "Opération interdite, vous n'êtes pas connecté !"
-    if not _check_connected(session):
-        return json_response(Response(err, content).json(), status_code=403)
-    else:
-        pass # TODO modification profil utilisateur
-        return render_template('profil.html')
+    firstname = escape(request.form['firstname'].strip())
+    lastname = escape(request.form['lastname'].strip())
+    # verification des champs
+    content = {}
+    if validator.is_empty(firstname):
+        content['firstname'] = "Le champ prénom ne doit pas être vide !"
+    if validator.is_empty(lastname):
+        content['lastname'] = "Le champ nom ne doit pas être vide !"
+    # realisation si pas d'erreur
+    if len(content.keys()) == 0:
+        content = "La mise à jour du profil a échouée"
+        # verification de l'existence de l'utilisateur
+        if db.update_user(session['user']['id'], firstname=firstname, lastname=lastname):
+            _update_user(session, session['user']['id'])
+            # mise à jour des variables de réponse 
+            err = False
+            content = 'ok'
+    return json_response(Response(err, content).json(), status_code=200)
 
 
 @app.route('/account/delete', methods=['DELETE'])

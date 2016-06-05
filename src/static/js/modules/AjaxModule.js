@@ -29,7 +29,7 @@ var AjaxModule = {
                     location.reload(true);
                 }
                 else{
-                    FormModule.displayFormErrors("#form-connexion", json);
+                    FormModule.displayModalFormErrors("#form-connexion", json);
                 }
             },
             error: function(resp, statut, erreur){
@@ -65,7 +65,7 @@ var AjaxModule = {
                     location.reload(true);
                 }
                 else{
-                    FormModule.displayFormErrors("#form-inscription", json);
+                    FormModule.displayModalFormErrors("#form-inscription", json);
                     grecaptcha.reset();
                 }
             },
@@ -139,5 +139,35 @@ var AjaxModule = {
             }
         });
         return false;
+    },
+
+    editProfile : function(form){
+        var $form = $(form);
+        $.ajax({
+            method: "PATCH",
+            url: SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR + $form.attr("action"),
+            data: $form.serialize(),
+            cache: false,
+            success: function(json){
+                UtilsModule.logger("AJAX OK");
+                UtilsModule.logger(json);
+                if(!json.has_error){
+                    FormModule.displayFormSucess(form, "Modification enregistrée !");
+                    //refresh en etant connecté au server
+                    UtilsModule.logger("MODIFIED");
+                }
+                else{
+                    FormModule.displayFieldFormErrors(form, json);
+                }
+            },
+            error: function(resp, statut, erreur){
+                UtilsModule.logger("AJAX NOK");
+                jsonResp = JSON.parse(resp.responseText);
+                UtilsModule.handleServerError(jsonResp.code)
+            },
+            complete: function(){
+                UtilsModule.logger("AJAX DONE");
+            }
+        });
     }
 };

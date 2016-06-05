@@ -21,19 +21,7 @@ var SignInUpModule = {
 		});
 
 		// generate the promotions year
-		(function(){
-			var startYear = 1969;
-			var currentYear = new Date().getFullYear();
-			var lastYear = currentYear+4;
-			var $select = $("#form-inscription-input-promo");
-			for (var i = startYear; i < lastYear; i++) {
-				var $option = $('<option value="'+i+'">'+i+'</option>');
-				if(i == currentYear){
-					$option.attr("selected", "selected");
-				}
-				$select.append($option);
-			};
-		})();
+		UtilsModule.generatePromotion("#form-inscription-input-promo").val(2016);
 
         $('#form-connexion').on('submit', AjaxModule.login);
 
