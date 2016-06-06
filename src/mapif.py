@@ -264,6 +264,60 @@ def account_update_names():
     return json_response(Response(err, content).json(), status_code=200)
 
 
+@app.route('/account/update/email', methods=['PATCH'])
+@internal_error_handler('4CC0U7UPD4T33MA1LK0')
+@require_connected()
+def account_update_email():
+    """
+        This route will be used to update user email
+    """
+    err = True
+    email = request.form['email'].strip()
+    # verification des champs
+    content = {}
+    if not validator.validate(email, 'email'):
+        content['email'] = "L'email ne respecte pas le format attendu !"
+        
+    # realisation si pas d'erreur
+    if len(content.keys()) == 0:
+        content['email'] = "Cette adresse email est déjà attribuée à un utilisateur."
+        # verification de l'existence de l'utilisateur
+        if not db.user_exists(email):
+            content = "La mise à jour du profil a échouée"
+            # verification de l'existence de l'utilisateur
+            if db.update_user(session['user']['id'], email=email):
+                _update_user(session, session['user']['id'])
+                # mise à jour des variables de réponse 
+                err = False
+                content = 'ok'
+    return json_response(Response(err, content).json(), status_code=200)
+
+
+@app.route('/account/update/promo', methods=['PATCH'])
+@internal_error_handler('4CC0U7UPD4T3PR0M0K0')
+@require_connected()
+def account_update_promo():
+    """
+        This route will be used to update user promotion
+    """
+    err = True
+    promo = request.form['promo'].strip()
+    # verification des champs
+    content = {}
+    if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+        content['promo'] = "La promo n'est pas une année correctement formaté !"
+    # realisation si pas d'erreur
+    if len(content.keys()) == 0:
+        content = "La mise à jour du profil a échouée"
+        # verification de l'existence de l'utilisateur
+        if db.update_user(session['user']['id'], promo=promo):
+            _update_user(session, session['user']['id'])
+            # mise à jour des variables de réponse 
+            err = False
+            content = 'ok'
+    return json_response(Response(err, content).json(), status_code=200)
+
+
 @app.route('/account/delete', methods=['DELETE'])
 @internal_error_handler('4CC0UN7D3L3T3K0')
 @require_connected()
