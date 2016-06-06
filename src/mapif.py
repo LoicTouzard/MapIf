@@ -401,6 +401,9 @@ def location_create():
     uid = session['user']['id']
     osm_id = escape(request.form['osm_id'].strip())
     osm_type = escape(request.form['osm_type'].strip())
+    # construction du bloc de metadonnées
+    metadata = {}
+    metadata['reason'] = escape(request.form['reason'].strip())
     # vérification des champs
     content = {}
     err = True
@@ -408,10 +411,11 @@ def location_create():
         content['osm_id'] = "Le champ osm_id doit être un identifiant numérique !"
     if validator.is_empty(osm_type):
         content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
+    # aucune validation concernant les métadonnées (explicite)
     if len(content.keys()) == 0:
         # create user - location mapping record in db
         content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."
-        if db.create_user_location(uid, osm_id, osm_type):
+        if db.create_user_location(uid, osm_id, osm_type, metadata):
             err = False
             content = "La nouvelle localisation a été enregistrée."
     return json_response(Response(err, content).json(), status_code=200)

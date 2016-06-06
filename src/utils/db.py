@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy import DateTime
 from sqlalchemy import Boolean
 from sqlalchemy import Float
@@ -87,17 +88,20 @@ class UserLocation(_BASE_):
     uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
     lid = Column(Integer, ForeignKey('location.id'), primary_key=True)
     timestamp = Column(DateTime, default=func.now(), primary_key=True)
+    meta = Column(Text, default='{}')
 
     def as_dict(self):
         return {
             'uid': self.uid,
             'lid': self.lid,
-            'timestamp': self.timestamp
+            'timestamp': self.timestamp,
+            'meta': self.meta # the ugliest thing ever => I don't care.
         }
 
     def __repr__(self):
-        return "<UserLocation(id='{0}',timestamp='{1}')>".format(
-            self.id, self.timestamp)
+        return "<UserLocation(uid='{0}', lid='{1}', timestamp='{2}')>".format(
+            self.uid, self.lid, self.timestamp)
+
 
 # ------------------------------------------------------------------------------------------
 #                               INTERNAL FUNCTIONS 
@@ -178,7 +182,7 @@ def create_user(firstname, lastname, email, pwd, promo):
     status = False
     session = _get_default_db_session()
     if not user_exists(email):
-        session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd,promo=promo))       
+        session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd, promo=promo))       
         session.commit()
         status = True
     session.close()
@@ -277,7 +281,7 @@ def get_users(filters):
         User.lastname.ilike(lastname_filter)).all()
 
 
-def create_user_location(uid, osm_id, osm_type):
+def create_user_location(uid, osm_id, osm_type, metadata):
     """
         Adds location for the user having matching uid
     """
@@ -287,7 +291,7 @@ def create_user_location(uid, osm_id, osm_type):
         if not create_location(osm_id, osm_type):
             return False # interrupt here
     location = get_location(osm_id)
-    session.add(UserLocation(uid=uid, lid=location.id))
+    session.add(UserLocation(uid=uid, lid=location.id, meta=json.dumps([metadata])))
     session.commit()
     session.close()
     return True
