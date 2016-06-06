@@ -293,6 +293,42 @@ def account_update_email():
     return json_response(Response(err, content).json(), status_code=200)
 
 
+@app.route('/account/update/password', methods=['PATCH'])
+@internal_error_handler('4CC0U7UPD4T3PA55W0RDK0')
+@require_connected()
+def account_update_password():
+    """
+        This route will be used to update user password
+    """
+    err = True
+    pwd_old = request.form['password_old']
+    pwd_clear = request.form['password1']
+    pwd_clear2 = request.form['password2']
+    # verification des champs
+    content = {}
+    # if pwd_old != ancien mdp
+    if _hash_pwd(pwd_old) != db.get_user_by_id(session['user']['id']).pwd:
+        content['password_old'] = "Le mot de passe est incorrect !"
+    if len(pwd_clear) < 6:
+        content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
+    if pwd_clear2 != pwd_clear:
+        content['password2'] = "Les deux mots de passe doivent être identiques !"
+    # hash password
+    pwd_hash = _hash_pwd(pwd_clear)
+   
+        
+    # realisation si pas d'erreur
+    if len(content.keys()) == 0:
+        content = "La mise à jour du profil a échouée"
+        # verification de l'existence de l'utilisateur
+        if db.update_user(session['user']['id'], pwd=pwd_hash):
+            # _update_user(session, session['user']['id'])
+            # mise à jour des variables de réponse 
+            err = False
+            content = 'ok'
+    return json_response(Response(err, content).json(), status_code=200)
+
+
 @app.route('/account/update/promo', methods=['PATCH'])
 @internal_error_handler('4CC0U7UPD4T3PR0M0K0')
 @require_connected()

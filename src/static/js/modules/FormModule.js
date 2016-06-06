@@ -36,7 +36,7 @@ var FormModule = {
 			    	UtilsModule.createDangerAlert(errors.content[field])
 			    		.hide()
 			    		.prependTo($fgroup)
-			    		.show("slow");
+			    		.slideDown("slow");
 			    }
 			}
 		}
@@ -58,7 +58,7 @@ var FormModule = {
 			    	UtilsModule.createDangerAlert(errors.content[field])
 			    		.hide()
 			    		.prependTo($fgroup)
-			    		.show("slow");
+			    		.slideDown("slow");
 			    }
 			}
 		}
@@ -68,14 +68,14 @@ var FormModule = {
 	    var $form = $(form);
 	    this.cleanFormMessages($form);
 	    var $alert = UtilsModule.createSuccessAlert(message).hide();
-	    $alert.prependTo($form).show("slow");
+	    $alert.prependTo($form).slideDown("slow");
 	},
 
 	displayFormError : function(form, message){
 	    var $form = $(form);
 	    this.cleanFormMessages($form);
 		var $alert = UtilsModule.createDangerAlert(message).hide();
-	    $alert.prependTo($form).show("slow");
+	    $alert.prependTo($form).slideDown("slow");
 
 	}
 };
