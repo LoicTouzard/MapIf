@@ -213,7 +213,7 @@ def account_create():
             content['lastname'] = "Le champ nom ne doit pas être vide !"
         if not validator.validate(email, 'email'):
             content['email'] = "L'email ne respecte pas le format attendu !"
-        if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+        if not validator.validate(promo, 'year'):
             content['promo'] = "La promo n'est pas une année correctement formaté !"
         if len(pwd_clear) < 6:
             content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
@@ -340,7 +340,7 @@ def account_update_promo():
     promo = request.form['promo'].strip()
     # verification des champs
     content = {}
-    if not validator.validate(promo, 'year') and int(promo) <= date.today().year:
+    if not validator.validate(promo, 'year'):
         content['promo'] = "La promo n'est pas une année correctement formaté !"
     # realisation si pas d'erreur
     if len(content.keys()) == 0:
