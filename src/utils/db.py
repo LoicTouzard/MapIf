@@ -6,6 +6,7 @@
 # ------------------------------------------------------------------------------------------
 
 import re
+import json
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -16,7 +17,8 @@ from sqlalchemy import Boolean
 from sqlalchemy import Float
 from sqlalchemy import func
 from sqlalchemy import ForeignKey
-from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy_utils import database_exists
+from sqlalchemy_utils import create_database
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import exists
 from sqlalchemy.schema import MetaData
