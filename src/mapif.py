@@ -411,7 +411,8 @@ def location_create():
         content['osm_id'] = "Le champ osm_id doit être un identifiant numérique !"
     if validator.is_empty(osm_type):
         content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
-    # aucune validation concernant les métadonnées (explicite)
+    if metadata['reason'] not in ['no', 'internship', 'exchange', 'dd', 'job']:
+        content['meta']['reason'] = "La valeur de la métadonnée raison est invalide."
     if len(content.keys()) == 0:
         # create user - location mapping record in db
         content = "L'ajout de la localisation a échoué. La localisation n'a pas été confirmée par Nominatim."

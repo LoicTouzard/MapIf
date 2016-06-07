@@ -101,12 +101,12 @@ var AjaxModule = {
                     location.reload(true);
                 }
                 else{
-                    alert("une erreur est survenue has_error")
+                    UtilsModule.handleServerError("N0M1N4T1M."+osm_id);
                 }
             },
             error: function(resp, statut, erreur){
                 jsonResp = JSON.parse(resp.responseText);
-                UtilsModule.handleServerError(jsonResp.code)
+                UtilsModule.handleServerError(jsonResp.code);
                 UtilsModule.logger("AJAX NOK");
             },
             complete: function(){
