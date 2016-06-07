@@ -9,7 +9,7 @@
 var UtilsModule = {
 	// create an alert element with given content
 	createDangerAlert : function(msg){
-		return $('<div class="alert alert-dismissible alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Bah alors ?!</strong> '+msg+'</div>');
+		return $('<div class="alert alert-dismissible alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button> <strong>Oups !</strong> '+msg+'</div>');
 	},
 
 	createSuccessAlert : function(msg){

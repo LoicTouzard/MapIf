@@ -1,3 +1,9 @@
+## V1.2.0
+* ajout de la page de profil
+* edition du profil disponible
+* #9 selection d'une raison de mobilité
+* #7 ajout d'un filtre par promotion
+
 ## V1.1.0
 * la version en ligne passe en HTTPS
 * #11 ajout du clustering  sur les positions (Credits Mohamed H.)
