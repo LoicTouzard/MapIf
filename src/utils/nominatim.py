@@ -71,7 +71,11 @@ def reverse_location_for(osm_id, osm_type):
         if address: 
             city = address.get('city', None)
             if not city:
+                # problem for Dublin Issue #4 (osm_id=3473474851, osm_type=N)
                 city = address.get('county', None)
+                if not city:
+                    # problem for New York City (osm_id=175905, osm_type=R)
+                    city = address.get('state_district', None)
             country = address.get('country', None)
     return (lat, lon, city, country)
 
