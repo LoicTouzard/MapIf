@@ -70,6 +70,7 @@ class Location(_BASE_):
     lat = Column(Float)
     lon = Column(Float)
     pint_price = Column(Float)
+    number_pint_prices = Column(Integer)
     
     def as_dict(self):
         return {
@@ -189,7 +190,11 @@ def update_pint_price(loc_id, price):
     current_price = location.pint_price
     if not current_price:
         current_price = 0
-    new_price = ( current_prince + price ) / 2
+    number_of_pints = location.pint_price
+    if not number_of_pints:
+        number_of_pints = 0
+    new_price = ( current_prince + price ) / number_pint_prices
+    session.update(Location).where(Location.id==loc_ic).values(number_pint_prices=number_of_pints+1)
     session.update(Location).where(Location.id==loc_ic).values(pint_price=new_price)
     session.commit()
     status = True
