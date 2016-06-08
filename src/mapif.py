@@ -474,6 +474,23 @@ def location_delete():
             content = "La localisation a été supprimée de votre historique."
     return json_response(Response(err, content).json(), status_code=200)
     
+@app.route('/location/pint_price/update', methods=['POST'])
+@require_connected()
+def location_update_pint_price():
+    """ This route can be used to update location pint price."""
+    # get post datas
+    osm_id = escape(request.form['osm_id'].strip())
+    pint_price = escape(request.form['price'].strip())
+    content = {}
+    err = True
+    if not validator.validate(osm_id, 'int'):
+        content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
+    if not validator.validate(pint_price, 'double'):
+       content['pint_price'] = "Le prix de la pinte transmis ne respecte pas le format attendu: nombre flottant."
+    if db.update_pint_price(osm_id, pint_price):
+        err = False
+        content = "Le prix de la pinte a bien été modifié !"
+    return json_response(Response(err, content).json(), status_code=200)
 
 # ---------------------------------------- FLASK ERROR HANDLERS ----------------------------------------
 

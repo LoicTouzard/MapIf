@@ -69,7 +69,8 @@ class Location(_BASE_):
     country = Column(String)
     lat = Column(Float)
     lon = Column(Float)
-
+    pint_price = Column(Float)
+    
     def as_dict(self):
         return {
             'osm_id': self.osm_id,
@@ -177,6 +178,23 @@ def init_db():
         logger.log_error('init_db error: details below.', e)
 
 
+def update_pint_price(loc_id, price):
+    status = False
+    session = _get_default_db_session()
+    location = get_location(loc_id)
+
+    if not location:
+        return status
+    
+    current_price = location.pint_price
+    if not current_price:
+        current_price = 0
+    new_price = ( current_prince + price ) / 2
+    session.update(Location).where(Location.id==loc_ic).values(pint_price=new_price)
+    session.commit()
+    status = True
+    return status
+    
 def create_user(firstname, lastname, email, pwd, promo):
     """
         Creates a user and insert it in the database
