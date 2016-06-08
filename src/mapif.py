@@ -492,6 +492,23 @@ def location_update_pint_price():
         content = "Le prix de la pinte a bien été modifié !"
     return json_response(Response(err, content).json(), status_code=200)
 
+@app.route('/location/pint_price/get', methods=['GET'])
+@require_connected()
+def location_get_pint_price():
+    """This route can be used to get pint price for a location."""
+    osm_id = escape(request.form['osm_id'].strip())
+    content = {}
+    err = True
+    if not validator.validate(osm_id, 'int'):
+        content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
+    
+    price = db.get_pint_price(osm_id):
+    if price:
+        err = False
+        content = price
+
+    return json_response(Response(err, content).json(), status_code=200)
+
 # ---------------------------------------- FLASK ERROR HANDLERS ----------------------------------------
 
 @app.errorhandler(404)

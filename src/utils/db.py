@@ -178,7 +178,15 @@ def init_db():
     except Exception as e:
         logger.log_error('init_db error: details below.', e)
 
+def get_pint_price(loc_id):
+    status = None
+    session = _get_default_db_session()
+    location = get_location(loc_id)
 
+    if not location:
+        return status
+    return location.pint_price
+    
 def update_pint_price(loc_id, price):
     status = False
     session = _get_default_db_session()
