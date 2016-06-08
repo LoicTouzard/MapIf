@@ -12,7 +12,7 @@ from src.utils import ini
 from src.utils import logger
 
 _VALIDATORS_ = {
-    'email': re.compile('^[\w\.\_\-]+@[\w\.\_\-]+\.\w{2,3}$'),
+    'email': re.compile('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
     'alphanum': re.compile('^\w+$'),
     'int': re.compile('^\d+$'),
     'double': re.compile('^\d+(\.\d+)?$'),
