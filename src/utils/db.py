@@ -7,6 +7,7 @@
 
 import re
 import json
+import bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -229,28 +230,29 @@ def user_exists(email):
     session.close()
     return len(result) != 0
 
-    
-def get_user(email, pwd):
+
+def get_user(email, sha_pwd):
     """
         Returns the user matching both email and password (hashed) or None
     """
     session = _get_default_db_session()
-    result = []
-    for row in session.query(User).filter(User.email == email, User.pwd == pwd):
-        result.append(row)
+    # retrieve user using email
+    user = session.query(User).filter(User.email == email).one_or_none()
     session.close()
-    return None if len(result) == 0 else result[0]
+    if user is not None:
+        # fix issue #14: safe password storage with salt and blowfish encryption
+        if user.pwd != bcrypt.hashpw(sha_pwd.encode(), user.pwd.encode()).decode():
+            user = None
+    return user
 
 def get_user_by_id(uid):
     """
         Returns the user having the given uid or None
     """
     session = _get_default_db_session()
-    result = []
-    for row in session.query(User).filter(User.id == uid):
-        result.append(row)
+    user = session.query(User).filter(User.id == uid).one_or_none()
     session.close()
-    return None if len(result) == 0 else result[0]
+    return user
 
 
 def normalize_filter(search_filter):
@@ -425,6 +427,17 @@ def delete_user(uid):
     session.commit()
     session.close()
     return True
+
+# --------------------------- MAINTENANCE ZONE BELOW THIS LINE -----------------------------
+
+# fix issue #14: safe password storage with salt and blowfish encryption
+def update_user_password(uid):
+    session = _get_default_db_session()
+    user = session.query(User).filter(User.id == uid).one_or_none()
+    user.pwd = bcrypt.hashpw(user.pwd.encode(), bcrypt.gensalt()).decode()
+    session.add(user)
+    session.commit()
+    session.close()
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 

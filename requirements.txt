@@ -5,3 +5,4 @@ flask-responses
 flask-cors
 requests
 psycopg2
+flask-bcrypt
