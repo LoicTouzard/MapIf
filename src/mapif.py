@@ -305,7 +305,7 @@ def account_update_password():
     # verification des champs
     content = {}
     # if pwd_old != ancien mdp
-    if _hash_pwd(pwd_old) != db.get_user_by_id(session['user']['id']).pwd:
+    if db.check_user_password(session['user']['id'], _hash_pwd(pwd_old)):
         content['password_old'] = "Le mot de passe est incorrect !"
     if len(pwd_clear) < 6:
         content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"

@@ -185,7 +185,8 @@ def create_user(firstname, lastname, email, pwd, promo):
     status = False
     session = _get_default_db_session()
     if not user_exists(email):
-        session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=pwd, promo=promo))       
+        hashedpwd = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt()).decode()
+        session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=hashedpwd, promo=promo))       
         session.commit()
         status = True
     session.close()
@@ -201,6 +202,8 @@ def update_user(uid, **kwargs):
     if user != []:
         for key,value in kwargs.items():
             if key in ['firstname','lastname','email','pwd','promo'] and value is not None:
+                if key == 'pwd':
+                    value = bcrypt.hashpw(value.encode(), bcrypt.gensalt()).decode()
                 setattr(user, key, value)
         session.add(user)
         session.commit()
@@ -254,6 +257,11 @@ def get_user_by_id(uid):
     session.close()
     return user
 
+def check_user_password(uid, sha_pwd):
+    user = get_user_by_id(uid)
+    if user is not None:
+        return (user.pwd != bcrypt.hashpw(sha_pwd.encode(), user.pwd.encode()).decode())
+    return False
 
 def normalize_filter(search_filter):
     """
