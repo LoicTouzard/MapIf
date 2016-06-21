@@ -1,6 +1,12 @@
 from src.utils import db
 from src.utils import ini
 
+# ask for confirmation
+print("Do you really want to run this script ? [y/n]: ", end='')
+resp=input("");
+if resp != 'y':
+    exit()
+
 # load ini file
 _APP_ROOT_=ini.getenv('OPENSHIFT_REPO_DIR', '')
 if not ini.init_config(_APP_ROOT_+'mapif.ini'):
