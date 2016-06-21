@@ -10,7 +10,7 @@ import binascii
 import uuid
 import os
 import locale
-from datetime import date
+import datetime
 from flask import Flask
 from flask import request
 from flask import session
@@ -213,6 +213,8 @@ def account_create():
             content['email'] = "L'email ne respecte pas le format attendu !"
         if not validator.validate(promo, 'year'):
             content['promo'] = "La promo n'est pas une année correctement formaté !"
+        if int(promo) < 1969 or int(promo) >= (datetime.datetime.now().year+4):
+            content['promo'] = "L'année est en dehors de l'intervalle autorisé !"
         if len(pwd_clear) < 6:
             content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
         if pwd_clear2 != pwd_clear:
@@ -340,6 +342,8 @@ def account_update_promo():
     content = {}
     if not validator.validate(promo, 'year'):
         content['promo'] = "La promo n'est pas une année correctement formaté !"
+    if int(promo) < 1969 or int(promo) >= (datetime.datetime.now().year+4):
+        content['promo'] = "L'année est en dehors de l'intervalle autorisé !"
     # realisation si pas d'erreur
     if len(content.keys()) == 0:
         content = "La mise à jour du profil a échouée"
