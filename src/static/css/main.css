@@ -242,6 +242,7 @@ body,
 .marker-location i::after{
 	content : '';
 	background : white;
+	border-radius : 100%;
 	width : 20px;
 	height : 28px;
 	position: absolute;
