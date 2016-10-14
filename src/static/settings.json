@@ -1,6 +1,6 @@
 {
 	"MAPBOXTOKEN":"pk.eyJ1IjoibHRvdXphcmQiLCJhIjoiY2lvMGV5OTJhMDB2Y3dka2xrZHpycGlrZiJ9.70MUkG_bCx7MPyIOhwfcKA",
-	"SERVER_ADDR":"46.101.193.203:5000",
+	"SERVER_ADDR":"localhost:5000",
 	"VERSION" : "1.2.0",
 	"DEBUG":true,
 	"PROTOCOL": "http"

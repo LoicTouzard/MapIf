@@ -527,7 +527,7 @@ def run():
         Start the application (dev only)
     """
     logger.mprint("Starting MapIf flask application...")
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='localhost', port=5000)
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
