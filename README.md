@@ -24,6 +24,7 @@ Le back utilise [Flask](http://flask.pocoo.org/), et d'autres librairies python 
   5. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
   6. Pour lancer l'application, un simple `python main.py` devrait suffire.  
   7. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
+  8. Si vous souhaitez que le serveur écoute les connexions extérieures, remplacez `localhost` par `0.0.0.0` dans `src/mapif.py`, et entrez l'adresse IP du serveur suivie de `:5000` dans `src/static/settings.json` (champ SERVER_ADDR)
 
 ### Front
 
