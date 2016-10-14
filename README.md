@@ -19,10 +19,11 @@ Le back utilise [Flask](http://flask.pocoo.org/), et d'autres librairies python 
 
   1. Installez les dépendances en executant `pip install -r requirements.txt`.
   2. En cas d'erreur de dépendances pip concernant PostgreSQL, exécutez les commandes suivantes : `sudo apt-get install postgresql`, `sudo apt-get install python-psycopg2`, `sudo apt-get install libpq-dev`, puis relancez l'installation des dépendances `pip install -r requirements.txt`.
-  3. Vous aurez besoin également de créer le fichier de configuration `mapif.ini` pour ce, prenez exemple sur le fichier [mapif.ini.dist](mapif.ini.dist).  
-  4. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
-  5. Pour lancer l'application, un simple `python main.py` devrait suffire.  
-  6. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
+  3. Vous aurez besoin également de créer le fichier de configuration `mapif.ini` pour ce, prenez exemple sur le fichier [mapif.ini.dist](mapif.ini.dist).
+  4. Pour faire fonctionner reCAPTCHA, il vous faudra entrer votre clé secrète reCAPTCHA dans [mapif.ini.dist](mapif.ini.dist), ainsi que la clé de site dans `src/templates/modals/signupModal.html`, dans l'attribut `data-sitekey`.
+  5. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
+  6. Pour lancer l'application, un simple `python main.py` devrait suffire.  
+  7. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
 
 ### Front
 
