@@ -70,7 +70,7 @@ body,
 	overflow: auto;
 }
 
-#left-panel-form{
+#left-panel-form, #left-panel-form-pint{
 	background-color: #5C6BC0;
 	color : white;
 	padding-top : 15px;
@@ -80,6 +80,27 @@ body,
 	padding-right: 15px;
 	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
+
+#left-panel-form-pint .form-group.is-focused .form-control{
+    background-image: linear-gradient(#fff,#fff),linear-gradient(#D2D2D2,#D2D2D2);
+    color : white;
+}
+
+#left-panel-form-pint .form-group.is-focused label,
+#left-panel-form-pint .form-group.is-focused label.control-label {
+    color : white;
+}
+
+#pint-price-submit{
+        position : absolute;
+        top : 100%;
+        right : 15px;
+    margin-top: -28px;
+        z-index: 1017;
+        background-color: #EEE;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
 
 #left-panel-form .form-group.is-focused .form-control{
     background-image: linear-gradient(#fff,#fff),linear-gradient(#D2D2D2,#D2D2D2);

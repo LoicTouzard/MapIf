@@ -478,7 +478,7 @@ def location_delete():
 @require_connected()
 def location_update_pint_price():
     """ This route can be used to update location pint price."""
-    # get post datas
+    # get post data
     osm_id = escape(request.form['osm_id'].strip())
     pint_price = escape(request.form['price'].strip())
     content = {}
@@ -502,7 +502,7 @@ def location_get_pint_price():
     if not validator.validate(osm_id, 'int'):
         content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
     
-    price = db.get_pint_price(osm_id):
+    price = db.get_pint_price(osm_id)
     if price:
         err = False
         content = price
@@ -527,7 +527,7 @@ def run():
         Start the application (dev only)
     """
     logger.mprint("Starting MapIf flask application...")
-    app.run(host='localhost', port=5000)
+    app.run(host='0.0.0.0', port=5000)
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
