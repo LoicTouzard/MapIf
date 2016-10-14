@@ -8,7 +8,8 @@ Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le stage
 
 ## Contribuer
 
-Si vous avez une idée de fonctionnalité, n'hésitez pas à l'implémenter ou à la partager dans les [issues](https://github.com/LoicTouzard/MapIf/issues).  
+Allez faire un tour sur le [CONTRIBUTING.md](CONTRIBUTING.md) tout y est expliqué !
+Si vous avez une seulement une idée de fonctionnalité n'hésitez pas à la partager dans les [issues](https://github.com/LoicTouzard/MapIf/issues).  
 
 ## Environnement de développement
 
