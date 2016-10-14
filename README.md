@@ -8,7 +8,7 @@ Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le stage
 
 ## Contribuer
 
-Si vous avez une idée de fonctionnalité, n'hésitez pas a l'implémenter ou à la partager dans les [issues](https://github.com/LoicTouzard/MapIf/issues).  
+Si vous avez une idée de fonctionnalité, n'hésitez pas à l'implémenter ou à la partager dans les [issues](https://github.com/LoicTouzard/MapIf/issues).  
 
 ## Environnement de développement
 
@@ -17,11 +17,12 @@ Si vous avez une idée de fonctionnalité, n'hésitez pas a l'implémenter ou à
 Le code du serveur est développé en [Python 3](https://www.python.org/downloads/) compatible avec la version `3.3` pour permettre son déploiement sur [OpenShift](https://www.openshift.com).  
 Le back utilise [Flask](http://flask.pocoo.org/), et d'autres librairies python renseignées dans le fichier [requirements.txt](requirements.txt).  
 
-  1. Installez les dépendance en executant `pip install -r requirements.txt`.  
-  2. Vous aurez besoin également de créer le fichier de configuration `mapif.ini` pour ce, prenez exemple sur le fichier [mapif.ini.dist](mapif.ini.dist).  
-  3. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
-  4. Pour lancer l'application, un simple `python main.py` devrait suffire.  
-  5. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
+  1. Installez les dépendances en executant `pip install -r requirements.txt`.
+  2. En cas d'erreur de dépendances pip concernant PostgreSQL, exécutez les commandes suivantes : `sudo apt-get install postgresql`, `sudo apt-get install python-psycopg2`, `sudo apt-get install libpq-dev`, puis relancez l'installation des dépendances `pip install -r requirements.txt`.
+  3. Vous aurez besoin également de créer le fichier de configuration `mapif.ini` pour ce, prenez exemple sur le fichier [mapif.ini.dist](mapif.ini.dist).  
+  4. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
+  5. Pour lancer l'application, un simple `python main.py` devrait suffire.  
+  6. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
 
 ### Front
 

@@ -1,3 +1,7 @@
+#### V1.2.1
+* fix de la reverse search nominatim
+* fix de la validation d'email
+
 ## V1.2.0
 * ajout de la page de profil
 * edition du profil disponible
@@ -11,7 +15,7 @@
 * Refactoring du code en back et front
 * fix #6
 
-## V1.0.1
+#### V1.0.1
 * fix #3
 * fix #4
         

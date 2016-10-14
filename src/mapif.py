@@ -10,7 +10,7 @@ import binascii
 import uuid
 import os
 import locale
-from datetime import date
+import datetime
 from flask import Flask
 from flask import request
 from flask import session
@@ -76,8 +76,8 @@ CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}}
 # ------------------------------------------------------------------------------------------
 
 
-def _load_user(session, email, pwd):
-    usr = db.get_user(email, pwd)
+def _load_user(session, email, sha_pwd):
+    usr = db.get_user(email, sha_pwd)
     if usr:
         session['user'] = {
             'id': usr.id,
@@ -104,10 +104,8 @@ def _check_connected(session):
 
 
 def _hash_pwd(pwd_clear):
-    return hashlib.sha256(bytearray(pwd_clear, encoding='utf8')).hexdigest()
-    # unsupported Python 3.3 hash operation
-    #dk = hashlib.pbkdf2_hmac('sha256', bytearray(pwd_clear, 'utf-8'), b'dev_salt', 100000)
-    #return binascii.hexlify(dk).decode('utf-8')
+    return hashlib.sha256(pwd_clear.encode()).hexdigest()
+
 
 # ------------------------------------------------------------------------------------------
 #                               FLASK ROUTES HANDLERS
@@ -215,6 +213,8 @@ def account_create():
             content['email'] = "L'email ne respecte pas le format attendu !"
         if not validator.validate(promo, 'year'):
             content['promo'] = "La promo n'est pas une année correctement formaté !"
+        if int(promo) < 1969 or int(promo) >= (datetime.datetime.now().year+4):
+            content['promo'] = "L'année est en dehors de l'intervalle autorisé !"
         if len(pwd_clear) < 6:
             content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
         if pwd_clear2 != pwd_clear:
@@ -307,7 +307,7 @@ def account_update_password():
     # verification des champs
     content = {}
     # if pwd_old != ancien mdp
-    if _hash_pwd(pwd_old) != db.get_user_by_id(session['user']['id']).pwd:
+    if db.check_user_password(session['user']['id'], _hash_pwd(pwd_old)):
         content['password_old'] = "Le mot de passe est incorrect !"
     if len(pwd_clear) < 6:
         content['password1'] = "Le mot de passe doit faire au minimum 6 caractères !"
@@ -342,6 +342,8 @@ def account_update_promo():
     content = {}
     if not validator.validate(promo, 'year'):
         content['promo'] = "La promo n'est pas une année correctement formaté !"
+    if int(promo) < 1969 or int(promo) >= (datetime.datetime.now().year+4):
+        content['promo'] = "L'année est en dehors de l'intervalle autorisé !"
     # realisation si pas d'erreur
     if len(content.keys()) == 0:
         content = "La mise à jour du profil a échouée"
