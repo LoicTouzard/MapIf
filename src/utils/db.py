@@ -8,6 +8,8 @@
 import re
 import json
 import bcrypt
+import hashlib
+from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -105,6 +107,18 @@ class UserLocation(_BASE_):
         return "<UserLocation(uid='{0}', lid='{1}', timestamp='{2}')>".format(
             self.uid, self.lid, self.timestamp)
 
+
+class PasswordReset(_BASE_):
+    __tablename__ = 'password_reset'
+    __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
+    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    token = Column(Text)
+    timestamp = Column(DateTime, default=func.now())
+    used = Column(Boolean)
+
+    def __repr__(self):
+        return "<PasswordReset(user='{0}', token='{1}', timestamp='{2}', used='{3}')>".format(
+            self.uid, self.token, self.timestamp, self.used)
 
 # ------------------------------------------------------------------------------------------
 #                               INTERNAL FUNCTIONS 
@@ -257,11 +271,38 @@ def get_user_by_id(uid):
     session.close()
     return user
 
+
+def get_user_by_email(email):
+    """
+        Returns the user having the given email or None
+    """
+    session = _get_default_db_session()
+    user = session.query(User).filter(User.email == email).one_or_none()
+    session.close()
+    return user
+
+
 def check_user_password(uid, sha_pwd):
     user = get_user_by_id(uid)
     if user is not None:
         return (user.pwd != bcrypt.hashpw(sha_pwd.encode(), user.pwd.encode()).decode())
     return False
+
+
+def get_password_reset_by_token_and_uid(token, user_id):
+    session = _get_default_db_session()
+    pwd_reset = session.query(PasswordReset).filter(PasswordReset.token == token).filter(PasswordReset.uid == user_id).one_or_none()
+    session.close()
+    return pwd_reset
+
+
+def set_password_reset_used(password_reset):
+    session = _get_default_db_session()
+    setattr(password_reset, 'used', True)
+    session.add(password_reset)
+    session.commit()
+    session.close()
+
 
 def normalize_filter(search_filter):
     """
@@ -436,6 +477,27 @@ def delete_user(uid):
     session.close()
     return True
 
+
+def create_or_update_password_reset(email, additional_hashing_key):
+    session = _get_default_db_session()
+    current_timestamp = datetime.now()
+    hashed_value = hashlib.sha1(("{0}{1}{2}".format(email, current_timestamp, additional_hashing_key)).encode()).hexdigest()
+
+    user = get_user_by_email(email)
+    passwd_reset = session.query(PasswordReset).filter(PasswordReset.uid == user.id).one_or_none()
+    if passwd_reset is None:  # Create object
+        session.add(PasswordReset(uid=user.id, token=hashed_value, timestamp=current_timestamp, used=False))
+    else:  # Update object
+        setattr(passwd_reset, 'token', hashed_value)
+        setattr(passwd_reset, 'timestamp', current_timestamp)
+        setattr(passwd_reset, 'used', False)
+        session.add(passwd_reset)
+
+    session.commit()
+    session.close()
+    return hashed_value
+
+
 # --------------------------- MAINTENANCE ZONE BELOW THIS LINE -----------------------------
 
 # fix issue #14: safe password storage with salt and blowfish encryption
@@ -446,6 +508,7 @@ def update_user_password(uid):
     session.add(user)
     session.commit()
     session.close()
+
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 

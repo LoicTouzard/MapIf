@@ -6,3 +6,4 @@ flask-cors
 requests
 psycopg2
 flask-bcrypt
+markupsafe

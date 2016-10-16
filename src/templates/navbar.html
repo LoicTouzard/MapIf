@@ -41,9 +41,11 @@
 	</div>
 </nav>
 {% if session.user is not defined %}
-	{% include 'modals/signinModal.html' with context %}
+    {% include 'modals/signinModal.html' with context %}
 
-	{% include 'modals/signupModal.html' with context %}
+    {% include 'modals/signupModal.html' with context %}
+
+    {% include 'modals/forgottenPasswordModal.html' with context %}
 {% endif %}
 
 

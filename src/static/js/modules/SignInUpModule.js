@@ -26,6 +26,8 @@ var SignInUpModule = {
         $('#form-connexion').on('submit', AjaxModule.login);
 
         $('#form-inscription').on('submit', AjaxModule.signup);  
+
+        $('#form-password-forgotten').on('submit', AjaxModule.password_forgotten);
 	},
 
 	checkPasswords : function(){

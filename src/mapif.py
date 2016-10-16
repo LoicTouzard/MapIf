@@ -171,6 +171,82 @@ def logout():
     session.pop('user', None)
     return redirect('/')
 
+
+@app.route('/password', methods=['POST'])
+@internal_error_handler('PA55W0RDK0')
+@require_disconnected()
+def password_reset():
+    email = request.form['email']
+    logger.mprint('Asking for password reset for: {0}'.format(email))
+    if not db.user_exists(email):
+        error = True
+        content = "Cette adresse électronique est associée à aucun utilisateur."
+        logger.mprint('{0} does not exist'.format(email))
+        return json_response(Response(error, content).json(), status_code=200)
+    token = db.create_or_update_password_reset(email, app.secret_key)
+    logger.mprint("Created/updated user's password reset object with token '{0}'".format(token))
+
+    reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
+    # TODO send email with reset link
+    logger.mprint("Send email to {0} with link '{1}'".format(email, reset_link))
+
+    error = False
+    return json_response(Response(error, {}).json(), status_code=200)
+
+
+@app.route('/password-reset', methods=['GET', 'POST'])
+@internal_error_handler('PA55W0RDK0R3S3T')
+@require_disconnected()
+def password_reset_page():
+    # Get parameters: email + token (must both be setted)
+    if 'token' not in request.args or 'email' not in request.args:
+        logger.mprint("Leaving password reset: no 'token' and 'email'")
+        return page_not_found(None)
+    token = request.args['token']
+    email = request.args['email']
+
+    # Find if user exists (must exist)
+    if not db.user_exists(email):
+        logger.mprint("Leaving password reset: user does not exist")
+        return page_not_found(None)
+    user = db.get_user_by_email(email)
+
+    # Find PasswordReset instance from this user with this token exists (must exist)
+    password_reset = db.get_password_reset_by_token_and_uid(token, user.id)
+    if password_reset is None:
+        logger.mprint("Leaving password reset: PasswordReset instance doesn't exist")
+        return page_not_found(None)
+
+    # Test if PasswordReset intance is not used (must not be used)
+    if password_reset.used is True:
+        logger.mprint("Leaving password reset: PasswordReset instance has been used already")
+        return page_not_found(None)
+
+    # Test if PasswordReset instance if not too old (5 minutes)
+    reset_timestamp = password_reset.timestamp
+    now_timestamp = datetime.datetime.now()
+    if (now_timestamp - reset_timestamp) > datetime.timedelta(minutes = 5):
+        logger.mprint("Leaving password reset: PasswordReset instance is too old ({0} and now is {1})".format(reset_timestamp, now_timestamp))
+        return page_not_found(None)
+
+    # If method is GET, return template
+    if request.method == 'GET':
+        logger.mprint("Getting password reset page")
+        return render_template('password-reset.html', reset_form=True)
+    # Else if POST, update password of user
+    elif request.method == 'POST':
+        logger.mprint("Updating password")
+        if 'password1' not in request.form or 'password2' not in request.form or request.form['password1'] != request.form['password2']:
+            return render_template('password-reset.html', reset_form=True, error='Deux fois le même mot de passe on a dit...')
+        new_pass = request.form['password1']
+        hashed_pass = _hash_pwd(new_pass)
+        if db.update_user(user.id, pwd=hashed_pass):
+            db.set_password_reset_used(password_reset)
+            return render_template('password-reset.html', reset_form=False)
+        else:
+            return render_template('password-reset.html', reset_form=True, error='A merde, y a eu une couille.')
+
+
 # ------------------------------------------ SEARCH RELATED ROUTES -----------------------------------------
 
 @app.route('/search/users', methods=['POST'])

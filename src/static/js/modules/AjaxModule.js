@@ -81,6 +81,34 @@ var AjaxModule = {
         return false;
     },
 
+    password_forgotten: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $form = $(this);
+        $.ajax({
+            method: 'POST',
+            url: SETTINGS.PROTOCOL + '://' + SETTINGS.SERVER_ADDR + '/password',
+            data: $form.serialize(),
+            cache: false,
+            success: function(data) {
+                UtilsModule.logger("AJAX OK");
+                if (!data.has_error) {
+                    UtilsModule.logger('OKAY');
+                    FormModule.cleanFormMessages($form);
+                    FormModule.displayFormSucess($form, "Si tout s'est bien passé, tu as reçu un mail de notre part <3.");
+                } else {
+                    FormModule.displayModalFormErrors('#form-password-forgotten', data);
+                }
+            },
+            error: function(resp, status, error) {
+                console.log(resp);
+                UtilsModule.logger("Ajax error: " + resp.responseText);
+            }
+        });
+        return false;
+    },
+
     addLocation : function(osm_type, osm_id, reason){
         var $params = $.param({
             'osm_id' : osm_id,
