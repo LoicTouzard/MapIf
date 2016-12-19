@@ -64,3 +64,7 @@ perf_log=mapif.perf.log
 # Enable/Disable perf logs
 #
 log_perf= # (false|true) useless
+
+[EMAILS]
+# Elastic Mail API Key
+elasticmail_apikey= # necessary for sending emails

@@ -28,6 +28,7 @@ from src.utils.response import Response
 from src.utils import validator
 from src.utils import ini
 from src.utils import logger
+from src.utils import emails
 from src.utils.wrappers import internal_error_handler
 from src.utils.wrappers import require_connected
 from src.utils.wrappers import require_disconnected
@@ -48,6 +49,9 @@ logger.init_logs()
 # initialize DB module
 logger.mprint("Starting DB module...")
 db.init_db()
+
+# initialise emails module
+emails.init_emails()
 
 # set locale
 locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
@@ -187,8 +191,8 @@ def password_reset():
     logger.mprint("Created/updated user's password reset object with token '{0}'".format(token))
 
     reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
-    # TODO send email with reset link
-    logger.mprint("Send email to {0} with link '{1}'".format(email, reset_link))
+    emails.send_password_reset_mail(email, reset_link)
+    logger.mprint("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
 
     error = False
     return json_response(Response(error, {}).json(), status_code=200)
