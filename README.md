@@ -45,4 +45,4 @@ Pour la compatibilité, tout n'a pas été testé, mais cela fonctionne correcte
 
 Projet à l'initiative de [Nicolas Bonfante](https://github.com/niosega).  
 Réalisation par [Loïc Touzard](https://github.com/LoicTouzard) (Responsable Front), [Paul Dautry](https://github.com/pdautry) (Responsable Back) et [Kévin Bulmé](https://github.com/KevinBulme).  
-Remerciements aux contributeurs [Lisa Courant](https://github.com/lisacourant) pour le logo et [Mohamed HAIDARA](https://github.com/haidaraM/).  
+Remerciements aux contributeurs [Lisa Courant](https://github.com/lisacourant) pour le logo, [Mohamed Haidara](https://github.com/haidaraM/) et [David Wobrock](https://github.com/David-Wobrock).  
