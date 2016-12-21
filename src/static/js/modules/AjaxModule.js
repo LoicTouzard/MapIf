@@ -81,7 +81,7 @@ var AjaxModule = {
         return false;
     },
 
-    password_forgotten: function(e) {
+    passwordForgotten: function(e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -94,16 +94,18 @@ var AjaxModule = {
             success: function(data) {
                 UtilsModule.logger("AJAX OK");
                 if (!data.has_error) {
-                    UtilsModule.logger('OKAY');
-                    FormModule.cleanFormMessages($form);
-                    FormModule.displayFormSucess($form, "Si tout s'est bien passé, tu as reçu un mail de notre part <3.");
+                    FormModule.displayModalFormSuccess('#form-password-forgotten', data);
+                    var $submitButton = $form.find('button[type="submit"]')
+                    $submitButton.attr("disabled","disabled");
+                    setTimeout(function() {$submitButton.removeAttr("disabled");}, 30*1000);// prevent from click flooding within 30 seconds
                 } else {
                     FormModule.displayModalFormErrors('#form-password-forgotten', data);
                 }
             },
             error: function(resp, status, error) {
-                console.log(resp);
-                UtilsModule.logger("Ajax error: " + resp.responseText);
+                jsonResp = JSON.parse(resp.responseText);
+                UtilsModule.handleServerError(jsonResp.code);
+                UtilsModule.logger("AJAX NOK");
             }
         });
         return false;

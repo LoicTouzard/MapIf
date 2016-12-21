@@ -180,11 +180,14 @@ def logout():
 @internal_error_handler('PA55W0RDK0')
 @require_disconnected()
 def password_reset():
+    """
+        This route is used to generate a token for the given user, and send it to him via email
+    """
     email = request.form['email']
     logger.mprint('Asking for password reset for: {0}'.format(email))
     if not db.user_exists(email):
         error = True
-        content = "Cette adresse électronique est associée à aucun utilisateur."
+        content = "Cette adresse électronique n'est associée à aucun utilisateur."
         logger.mprint('{0} does not exist'.format(email))
         return json_response(Response(error, content).json(), status_code=200)
     token = db.create_or_update_password_reset(email, app.secret_key)
@@ -195,7 +198,8 @@ def password_reset():
     logger.mprint("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
 
     error = False
-    return json_response(Response(error, {}).json(), status_code=200)
+    content = "Un lien pour modifier ton mot de passe a été envoyé à cette adresse, il expirera dans 10 minutes."
+    return json_response(Response(error, content).json(), status_code=200)
 
 
 @app.route('/password-reset', methods=['GET', 'POST'])
@@ -226,12 +230,13 @@ def password_reset_page():
         logger.mprint("Leaving password reset: PasswordReset instance has been used already")
         return page_not_found(None)
 
-    # Test if PasswordReset instance if not too old (5 minutes)
+    # Test if PasswordReset instance if not too old
     reset_timestamp = password_reset.timestamp
     now_timestamp = datetime.datetime.now()
-    if (now_timestamp - reset_timestamp) > datetime.timedelta(minutes = 5):
+    delay_minutes = 10
+    if (now_timestamp - reset_timestamp) > datetime.timedelta(minutes=delay_minutes):
         logger.mprint("Leaving password reset: PasswordReset instance is too old ({0} and now is {1})".format(reset_timestamp, now_timestamp))
-        return page_not_found(None)
+        return page_not_found("Autorisation expirée (plus de {0} minutes). Redemandes une nouvelle autorisation.".format(delay_minutes))
 
     # If method is GET, return template
     if request.method == 'GET':
@@ -560,11 +565,11 @@ def location_delete():
 # ---------------------------------------- FLASK ERROR HANDLERS ----------------------------------------
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(msg):
     """
         This is an error handler for 404 NOT FOUND exception
     """
-    return render_template('404.html'), 404
+    return render_template('404.html', message=msg), 404
 
 # ------------------------------------------------------------------------------------------
 #                               SERVER RUN FUNCTION

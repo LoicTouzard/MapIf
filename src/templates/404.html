@@ -4,10 +4,10 @@
     <title>Tu te prends pour qui ?</title>
     <style> 
 
-    div {
+    #fenouil {
        animation: 
-          example 4s infinite, 
-          infinite-spinning 1s infinite;
+          example 5s infinite, 
+          infinite-spinning 2s infinite;
     }
 
     /* Chrome, Safari, Opera */
@@ -40,9 +40,12 @@
 </head>
 
 <body>
+    {% if message %}<h3>{{ message }}</h3>{% endif %}
     <a href={{url_for('root')}}>Pardon, je suis désolé(e), je retourne à la page d'accueil.</a>
-    <div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Fenouil.jpg/240px-Fenouil.jpg">
+    <div id="fenouil">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Fenouil.jpg/240px-Fenouil.jpg" style="float:left;">
+        <h1 style="font-size:3em;color:white;">VIVE LES FENOUILS LIBRES</h1>
+        <div style="clear:both"></div>
     </div>
 </body>
 
