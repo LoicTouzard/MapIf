@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------------------
 
 import time
-from flask.ext.responses import json_response
+from flask_responses import json_response
 from flask import session
 from functools import wraps
 from src.utils.response import Response
