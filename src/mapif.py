@@ -19,10 +19,10 @@ from flask import abort
 from flask import render_template
 from flask import flash
 from flask import escape
-from flask.ext.responses import json_response
-from flask.ext.responses import xml_response
-from flask.ext.responses import auto_response
-from flask.ext.cors import CORS
+from flask_responses import json_response
+from flask_responses import xml_response
+from flask_responses import auto_response
+from flask_cors import CORS
 from src.utils import db
 from src.utils.response import Response
 from src.utils import validator
