@@ -51,7 +51,7 @@ logger.mprint("Starting DB module...")
 db.init_db()
 
 # initialise emails module
-emails.init_emails()
+emails.init_emails(_APP_ROOT_)
 
 # set locale
 locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
@@ -194,7 +194,8 @@ def password_reset():
     logger.mprint("Created/updated user's password reset object with token '{0}'".format(token))
 
     reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
-    emails.send_password_reset_mail(email, reset_link)
+    user = db.get_user_by_email(email)
+    emails.send_password_reset_mail(email, user.firstname, reset_link)
     logger.mprint("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
 
     error = False

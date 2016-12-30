@@ -1,6 +1,6 @@
-##
-##  Flask Application configuration
-##
+#===============================================================================
+#  Flask Application configuration
+#===============================================================================
 [APP]
 #
 # Enable/Disable Flask and app debugging
@@ -11,19 +11,22 @@ debug= # (true|false)
 #
 locale= # ex: fr_FR.UTF-8 for Linux or fra_fra for Windows
 #
-# Secret key used by flask
+# Secret key used by Flask
 #
 secret_key= # something secret
-
-##
-##  Google ReCaptcha configuration
-##
+#
+#===============================================================================
+#  Google ReCaptcha configuration
+#===============================================================================
 [RECAPTCHA]
-recaptcha_secret_key= # another secret given by the google API (https://www.google.com/recaptcha/admin#list)
-
-##
-##  Database configuration
-##
+#
+#   Google API's secret (https://www.google.com/recaptcha/admin#list)
+#
+recaptcha_secret_key= # google API's secret
+#
+#===============================================================================
+#  Database configuration
+#===============================================================================
 [DB]
 #
 # Database name
@@ -39,10 +42,10 @@ engine= # ex: postgre
 postgre_user= # ex: dummy
 postgre_pass= # ex: 123456 - this is a bad idea
 postgre_host= # your postgre host
-
-##
-##  Logs configuration
-##
+#
+#===============================================================================
+#  Logs configuration
+#===============================================================================
 [LOGGER]
 #
 # Relative path to logs storage directory
@@ -64,7 +67,12 @@ perf_log=mapif.perf.log
 # Enable/Disable perf logs
 #
 log_perf= # (false|true) useless
-
+#
+#===============================================================================
+#   Email API configuration 
+#===============================================================================
 [EMAILS]
+#
 # Elastic Mail API Key
+#
 elasticmail_apikey= # necessary for sending emails
