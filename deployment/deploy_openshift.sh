@@ -18,6 +18,10 @@ ko() { recho "failed!"; }
 # -------------------------------------------------------------------
 #       MAIN SCRIPT
 # -------------------------------------------------------------------
+becho "trying to update rhc..."
+(sudo gem update rhc && ok) ||ko
+becho "creating a snapshot of current version before deploying new version..."
+(ssh 574062732d5271a2070001e8@mapif-insa.rhcloud.com 'snapshot' > ./mapif_$(date -Iseconds |tr ":+-" "_").tar.gz && ok) ||ko
 becho "calling git to push latest commit to openshift..."
 (git push openshift ${BRANCH} && ok) ||ko
 becho "calling rhc to stop app..."
