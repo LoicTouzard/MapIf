@@ -17,7 +17,7 @@ PlaceSearchModule = {
 		$("#addr-search-submit").click(function(e){
 			e.preventDefault();
 			_module.addrSearch();
-			UtilsModule.logger($(this));
+
 			// TODO focusout not working, need to find why. --> Okay nvm may depend on the browser
 			$(this).focusout().blur();
 			return false;
@@ -68,11 +68,16 @@ PlaceSearchModule = {
 	        UtilsModule.logger("request num"+num_search);
 	    	UtilsModule.logger(data)
 	        $.each(data, function(key, val) {
+	    		UtilsModule.logger(val)
+	    		// homogenizing the data
+	    		val.address.city = val.address.city || val.address.town || val.address.village || val.address.county;
 	        	if(((val.class == "place" && (val.type == "city" || val.type == "town" || val.type == "village" || val.type == "county"))
 	        		|| (val.class == "boundary" && val.type == "administrative"))
-	        		&& val.address.city && val.address.country
+	        		&& val.address.city
+	        		&& val.address.country
 	        		&& val.osm_type!= "way"){
-	    			UtilsModule.logger(val)
+
+	    			UtilsModule.logger("Place accepted")
 		            var bb = val.boundingbox;
 					var $item;
 					if(connected){
