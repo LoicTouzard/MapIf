@@ -1,6 +1,9 @@
 import requests
+import re
+import html
 
 from flask import escape
+from flask import render_template
 
 from src.utils import ini
 from src.utils import logger
@@ -28,27 +31,16 @@ def init_emails(app_root):
     except Exception as ex:
         logger.mprint("Could not load ElasticEmail API KEY")
 
-def send_email(to, subject, template, params):
+def send_email(to, subject, template, template_params):
     global _APIKEY_
     global _APIURL_
-    # prepare mail
-    try:
-        email_html = ''
-        email_html_body = ''
-        # retrieve mapif automatic mail template
-        with open(_EMAIL_TEMPLATE_DIR_ + 'mapif_mail.html') as f:
-            email_html = f.read()
-        # retrieve mail-specific content
-        with open(_EMAIL_TEMPLATE_DIR_ + template) as f:
-            email_html_body = f.read()
-        # substitute parameters
-        for key, value in params.items():
-            email_html_body = email_html_body.replace('[[{0}]]'.format(key), value)
-        # substitute mail-specific body in common template
-        email_html = email_html.replace('[[email_html_body]]', email_html_body)
-    except Exception as e:
-        logger.log_error('[ERR]: send_mail exception! Details: {0}'.format(e))
+    # prepare parameters
+    template_params = {k: html.escape(v) for k, v in template_params.items()}
     # try to send mail
+    email_html = render_template(template, **template_params)
+    # print(len(email_html))
+    email_html = re.sub(r">\s+<", r"><", email_html)
+    # print(len(email_html))
     params = {
         'apikey': _APIKEY_,
         'bodyHtml': email_html,
@@ -58,8 +50,12 @@ def send_email(to, subject, template, params):
         'fromName': _SENDER_NAME_,
         'subject': '[MapIf] - '+subject
     }
+    # print(params)
     response = requests.get(_APIURL_, params=params)
+    # print(response.url)
+    # print(response)
     resp_json = response.json()
+    # print(resp_json)
     if resp_json['success']:
         logger.mprint('Sent email successfully to {0}'.format(to))
     else:
@@ -70,5 +66,5 @@ def send_password_reset_mail(email, firstname, reset_link):
         'firstname': firstname,
         'reset_link': reset_link
     }
-    send_email(email, 'Mot de passe oublié', 'password_reset.html', params)
+    send_email(email, 'Mot de passe oublié', 'emails/password_reset_simple.html', params)
 

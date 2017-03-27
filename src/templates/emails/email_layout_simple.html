@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+  </head>
+  <body style="margin:0;font-family:Helvetica,sans-serif;">
+    <center style="width:100%">
+      <table border="0" cellpadding="20" cellspacing="0" width="600" bgcolor="#F8F8F8">
+        <tr>
+          <td style="color:#FFFFFF;background:#3F51B5 url('https://mapif-insa.rhcloud.com/static/favicon.png') no-repeat center;text-align:center;">
+            <h1 style="line-height:100%;margin-bottom:5px;">{% block header %}MapIf{% endblock %}</h1>
+            {% block subheader %}<h2 style="font-size:23px;margin-bottom:10px;color:#BDBDBD;line-height:135%;">SubHeader</h2>{% endblock %}
+            {% block header_introduction %}<div style="font-size:15px;margin-bottom:0;line-height:135%;">Quick introduction</div>{% endblock %}
+          </td>
+        </tr>
+        {% block email_body %}
+        {% endblock %}
+        <tr>
+          <td bgcolor="#E1E1E1">
+            <div style="font-size:13px;color:#828282!important;text-align:center;line-height:120%;">
+              <a href="mailto:team.mapif@gmail.com">Contact</a> - <a href="{{ url_for('root') }}">MapIf</a> - <a href="https://github.com/LoicTouzard/MapIf">MapIf sur Github</a>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>
