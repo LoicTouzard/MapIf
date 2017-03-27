@@ -1,3 +1,8 @@
+## V1.3.0
+* #23 amélioration du filtre de recherche de lieu
+* #22 ajout de la fonctionnalité : mot de passe oublié (Credits David W.)
+* #14 nouveau chiffrement du mot de passe
+
 #### V1.2.1
 * fix de la reverse search nominatim
 * fix de la validation d'email
