@@ -195,7 +195,7 @@ def password_reset():
 
     reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
     user = db.get_user_by_email(email)
-    emails.send_password_reset_mail(email, user.firstname, reset_link)
+    emails.send_password_reset_mail(email, user.firstname, token)
     logger.mprint("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
 
     error = False

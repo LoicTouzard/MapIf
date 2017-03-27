@@ -61,10 +61,11 @@ def send_email(to, subject, template, template_params):
     else:
         logger.log_error(resp_json['error'])
 
-def send_password_reset_mail(email, firstname, reset_link):
+def send_password_reset_mail(email, firstname, token):
     params = {
         'firstname': firstname,
-        'reset_link': reset_link
+        'token': token,
+        'email': email
     }
     send_email(email, 'Mot de passe oublié', 'emails/password_reset_simple.html', params)
 

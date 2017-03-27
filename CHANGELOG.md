@@ -1,3 +1,6 @@
+### V1.3.1
+* Small Hot-fix on reset password url generation
+
 ## V1.3.0
 * #23 amélioration du filtre de recherche de lieu
 * #22 ajout de la fonctionnalité : mot de passe oublié (Credits David W.)
