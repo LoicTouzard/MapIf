@@ -7,6 +7,7 @@ resp=input("");
 if resp != 'y':
     exit()
 
+
 # load ini file
 _APP_ROOT_=ini.getenv('OPENSHIFT_REPO_DIR', '')
 if not ini.init_config(_APP_ROOT_+'mapif.ini'):
@@ -15,9 +16,10 @@ if not ini.init_config(_APP_ROOT_+'mapif.ini'):
 # initialize database
 db.init_db()
 
-# fix issue #14: safe password storage with salt and blowfish encryption
-for u in db.get_all_users():
-    print("Updating: ", u, "...", end='')
-    db.update_user_password(u.id)
-    print("done!")
-
+## -------------------------- PATCH DB V1.3.0 ------------------------------- ##
+## fix issue #14: safe password storage with salt and blowfish encryption
+#for u in db.get_all_users():
+#    print("Updating: ", u, "...", end='')
+#    db.update_user_password(u.id)
+#    print("done!")
+## -------------------------- PATCH DB V1.3.0 ------------------------------- ##
