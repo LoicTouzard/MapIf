@@ -580,8 +580,10 @@ def run():
     """
         Start the application (dev only)
     """
+    port = 5000
     logger.mprint("Starting MapIf flask application...")
-    app.run(host='localhost', port=5000)
+    logger.mprint("Launching server on localhost, port {0}".format(port))
+    app.run(host='localhost', port=port)
 
 # ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
 
