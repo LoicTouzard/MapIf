@@ -281,7 +281,7 @@ def account_create():
     """
     content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
     err = True
-    if validator.check_captcha(request):
+    if app.debug or validator.check_captcha(request):
         # recuperation du contenu de la requete
         firstname = escape(request.form['firstname'].strip())
         lastname = escape(request.form['lastname'].strip())
