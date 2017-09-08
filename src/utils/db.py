@@ -254,7 +254,7 @@ def get_user(email, sha_pwd):
     """
     session = _get_default_db_session()
     # retrieve user using email
-    user = session.query(User).filter(User.email == email).one_or_none()
+    user = session.query(User).filter(func.lower(User.email) == email.lower()).one_or_none()
     session.close()
     if user is not None:
         # fix issue #14: safe password storage with salt and blowfish encryption
