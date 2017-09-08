@@ -6,7 +6,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{{ url_for('root') }}">MapIF</a>
+			<a class="navbar-brand" href="{{ url_for('root') }}">MapIF<small class="hidden-sm"> - {{ session.user.firstname }}&nbsp;{{ session.user.lastname }}</small></a>
 		</div>
 		<div id="main-navbar" class="navbar-collapse collapse navbar-inverse-collapse">
 			<ul class="nav navbar-nav">
@@ -34,6 +34,7 @@
 				<li><a href="javascript:void(0)" data-toggle="modal" data-target="#inscriptionModal">S'inscrire</a></li>
 				<li><a href="javascript:void(0)" data-toggle="modal" data-target="#connexionModal">Connexion</a></li>
 				{% else %}
+				<li class="visible-sm"><a href="{{ url_for('profile') }}">{{ session.user.firstname }}&nbsp;{{ session.user.lastname }}</a></li>
 				<li><a href="{{ url_for('logout') }}">D&eacute;connexion</a></li>
 				{% endif %}
 			</ul>
