@@ -200,7 +200,7 @@ def create_user(firstname, lastname, email, pwd, promo):
     session = _get_default_db_session()
     if not user_exists(email):
         hashedpwd = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt()).decode()
-        session.add(User(firstname=firstname, lastname=lastname, email=email, pwd=hashedpwd, promo=promo))       
+        session.add(User(firstname=firstname, lastname=lastname, email=email.lower(), pwd=hashedpwd, promo=promo))
         session.commit()
         status = True
     session.close()
@@ -242,7 +242,7 @@ def user_exists(email):
     """
     session = _get_default_db_session()
     result = []
-    for row in session.query(User).filter(User.email == email):
+    for row in session.query(User).filter(User.email == email.lower()):
         result.append(row)
     session.close()
     return len(result) != 0
@@ -254,7 +254,7 @@ def get_user(email, sha_pwd):
     """
     session = _get_default_db_session()
     # retrieve user using email
-    user = session.query(User).filter(User.email == email).one_or_none()
+    user = session.query(User).filter(User.email == email.lower()).one_or_none()
     session.close()
     if user is not None:
         # fix issue #14: safe password storage with salt and blowfish encryption
@@ -277,7 +277,7 @@ def get_user_by_email(email):
         Returns the user having the given email or None
     """
     session = _get_default_db_session()
-    user = session.query(User).filter(User.email == email).one_or_none()
+    user = session.query(User).filter(User.email == email.lower()).one_or_none()
     session.close()
     return user
 
