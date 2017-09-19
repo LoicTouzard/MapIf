@@ -6,7 +6,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{{ url_for('root') }}">MapIF<small class="hidden-sm"> - {{ session.user.firstname }}&nbsp;{{ session.user.lastname }}</small></a>
+			<a class="navbar-brand" href="{{ url_for('root') }}">MapIF{% if session.user %}<small class="hidden-sm"> - {{ session.user.firstname }}&nbsp;{{ session.user.lastname }}{% endif %}</small></a>
 		</div>
 		<div id="main-navbar" class="navbar-collapse collapse navbar-inverse-collapse">
 			<ul class="nav navbar-nav">
