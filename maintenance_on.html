@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <title>Tu te prends pour qui ?</title>
+        <meta charset="utf-8"/>
+        <style> 
+            #fenouil {
+                animation: example 5s infinite, infinite-spinning 2s infinite;
+            }
+            /* Chrome, Safari, Opera */
+            @-webkit-keyframes example {
+            0%   {background-color:red; left:0px; top:0px;}
+            25%  {background-color:yellow; left:200px; top:0px;}
+            50%  {background-color:blue; left:200px; top:200px;}
+            75%  {background-color:green; left:0px; top:200px;}
+            100% {background-color:red; left:0px; top:0px;}
+            }
+            /* Standard syntax */
+            @keyframes example {
+                0%   {background-color:red; left:0px; top:0px;}
+                25%  {background-color:yellow; left:200px; top:0px;}
+                50%  {background-color:blue; left:200px; top:200px;}
+                75%  {background-color:green; left:0px; top:200px;}
+                100% {background-color:red; left:0px; top:0px;}
+            }
+            @keyframes infinite-spinning {
+                from {
+                    transform: rotate(0deg);
+                } to {
+                    transform: rotate(360deg);
+                }      
+            }
+        </style>
+    </head>
+    <body>
+        <h3>BIENTOT DE RETOUR</h3>
+        <p>Nous somme actuellement en </b>maintenance</b></p>
+        <div id="fenouil">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Fenouil.jpg/240px-Fenouil.jpg" style="float:left;"/>
+            <h1 style="font-size:3em;color:white;">VIVE LES FENOUILS LIBRES</h1>
+            <div style="clear:both"></div>
+        </div>
+            <p> Et comme le dit notre cher Cloclo ... les maintenances ça s'en va et ça revient !</p>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/yPL2l7jpN8Y?start=43" frameborder="0" allowfullscreen></iframe>                     
+        </body>
+</html>
+
