@@ -1,4 +1,0 @@
-gecho() { echo -e "\033[32m[action_hooks.deploy]> ${1}\033[0m"; }
-
-gecho "patching deployed files..."
-(python $OPENSHIFT_REPO_DIR/deployment/deploy_patch.py && gecho "done!") ||gecho "failed!"
