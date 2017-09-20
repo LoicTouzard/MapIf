@@ -1,6 +1,6 @@
 ## V1.4.0
-* Resurrection de mapif sur [mapif.fr](https://mapif.fr) nouvel hebergement, nouveau scripts de déploiement 
-* L'email est desormais insensible à la case pour la connection et l'inscription 
+* Résurrection de mapif sur [mapif.fr](https://mapif.fr) nouvel hébergement, nouveaux scripts de déploiement 
+* #24 L'email est désormais insensible à la case pour la connexion et l'inscription 
 * Le nom de la personne est affichée dans le menu
 
 #### V1.3.1
