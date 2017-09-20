@@ -1,6 +1,6 @@
 # MapIf
 ![Mapif-logo](src/static/favicon.png "Mapif-logo")   
-Où sont les IF ?  ICI --> [mapif en ligne](https://mapif-insa.rhcloud.com)  
+Où sont les IF ?  ICI --> [mapif en ligne](https://mapif.fr)  
 
 ## Le projet
 
