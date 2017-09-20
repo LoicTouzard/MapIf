@@ -1,5 +1,10 @@
-### V1.3.1
-* Small Hot-fix on reset password url generation
+## V1.4.0
+* Resurrection de mapif sur [mapif.fr](https://mapif.fr) nouvel hebergement, nouveau scripts de déploiement 
+* L'email est desormais insensible à la case pour la connection et l'inscription 
+* Le nom de la personne est affichée dans le menu
+
+#### V1.3.1
+* Small Hot-fix on reset password url generation 
 
 ## V1.3.0
 * #23 amélioration du filtre de recherche de lieu
