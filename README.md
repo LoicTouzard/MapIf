@@ -4,7 +4,7 @@ Où sont les IF ?  ICI --> [mapif en ligne](https://mapif-insa.rhcloud.com)
 
 ## Le projet
 
-Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le stage, veille du départ en échange pour une majorité d'entre eux. Cette épreuve qu'est la séparation n'étant pas facile à vivre, ils ont décidé de développer cette petite application permettant de connaître la position d'autres IF des endroits où se trouvent leurs amis et où ils se trouvent eux mêmes.  
+Ce projet est né de l'esprit de quelques 4IF au moment critique qu'est le stage, veille du départ en échange pour une majorité d'entre eux. Cette épreuve qu'est la séparation n'étant pas facile à vivre, ils ont décidé de développer cette petite application permettant de connaître les endroits où se trouvent leurs amis et où ils se trouvent eux mêmes.  
 
 ## Contribuer
 
@@ -15,17 +15,24 @@ Si vous avez une seulement une idée de fonctionnalité n'hésitez pas à la par
 
 ### Back
 
-Le code du serveur est développé en [Python 3](https://www.python.org/downloads/) compatible avec la version `3.3` pour permettre son déploiement sur [OpenShift](https://www.openshift.com).  
+Le code du serveur est développé en [Python 3](https://www.python.org/downloads/) actuellement en version `3.5.3`.
 Le back utilise [Flask](http://flask.pocoo.org/), et d'autres librairies python renseignées dans le fichier [requirements.txt](requirements.txt).  
 
   1. Installez les dépendances en executant `pip install -r requirements.txt`.
-  2. En cas d'erreur de dépendances pip concernant PostgreSQL, exécutez les commandes suivantes : `sudo apt-get install postgresql`, `sudo apt-get install python-psycopg2`, `sudo apt-get install libpq-dev`, puis relancez l'installation des dépendances `pip install -r requirements.txt`.
+  2. En cas d'erreur de dépendances pip concernant PostgreSQL, exécutez la commande suivante : 
+      1. `sudo apt-get install postgresql python-psycopg2 libpq-dev`,
+      2. puis relancez l'installation des dépendances `pip install -r requirements.txt`.
   3. Vous aurez besoin également de créer le fichier de configuration `mapif.ini` pour ce, prenez exemple sur le fichier [mapif.ini.dist](mapif.ini.dist).
   4. Pour faire fonctionner reCAPTCHA, il vous faudra entrer votre [clé secrète reCAPTCHA](https://www.google.com/recaptcha/admin#list) dans [mapif.ini.dist](mapif.ini.dist) (votre propre fichier `mapif.ini`, pas le `mapif.ini.dist`), ainsi que la clé de site dans `src/templates/modals/signupModal.html`, dans l'attribut `data-sitekey`.
-  5. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).  
-  6. Pour lancer l'application, un simple `python main.py` devrait suffire.  
-  7. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
-  8. Si vous souhaitez que le serveur écoute les connexions extérieures, remplacez `localhost` par `0.0.0.0` dans `src/mapif.py`, et entrez l'adresse IP du serveur suivie de `:5000` dans `src/static/settings.json` (champ SERVER_ADDR)
+  5. Vous devez également créer au choix le fichier `database/mapif.sqlite` à la racine du projet ou mettre en place une base [PostgreSQL](https://www.postgresql.org).
+  
+Concernant le lancement de l'application deux possibilités :
+  1. Pour les développeurs : 
+      1. Lancer l'application avec un simple `python3 main.py` devrait suffire.  
+      2. Vous devriez pouvoir y accéder sur [http://localhost:5000](http://localhost:5000).
+      3. Si vous souhaitez que le serveur écoute les connexions extérieures, remplacez `localhost` par `0.0.0.0` dans     
+      `src/mapif.py`, et entrez l'adresse IP du serveur suivie de `:5000` dans `src/static/settings.json` (champ SERVER_ADDR).
+  2. Pour un déploiement en production utilisez uWSGI via le script [mapif.sh](mapif.sh).
 
 ### Front
 
@@ -39,7 +46,6 @@ Le javascript est organisé de la manière suivante :
   * Le code particulier à une page se trouve dans les fichiers [pages](src\static\js\pages). Les modules y sont chargés, ainsi que leur dépendances, et initialisés si besoin.
 
 Pour la compatibilité, tout n'a pas été testé, mais cela fonctionne correctement sur la majorité des navigateurs récents.
-
 
 ## Contributeurs / Remerciements
 
