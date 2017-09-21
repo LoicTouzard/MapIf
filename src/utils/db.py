@@ -79,12 +79,14 @@ class Location(_BASE_):
             'city': self.city,
             'country': self.country,
             'lat': self.lat,
-            'lon': self.lon
+            'lon': self.lon,
+            'pint_price': self.pint_price,
+            'number_pint_prices': self.number_pint_prices
         }
 
     def __repr__(self):
-        return "<Location(id='{0}',osm_id='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(
-            self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
+        return "<Location(id='{0}',osm_id='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}',pint_price='{6}',number_pint_prices='{7}')>".format(
+            self.id, self.osm_id, self.city, self.country, self.lat, self.lon, self.pint_price, self.number_pint_prices)
 
 
 class UserLocation(_BASE_):

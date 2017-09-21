@@ -2,6 +2,17 @@
 {% block body %}
 <div id="left-panel" class="closePanel">
 	<div id="left-panel-content">
+		<div id="left-panel-form-pint">
+			<h4>Prix de la pinte</h4>
+			<div class="form-group label-floating">
+				<label class="control-label" for="pint-price-input">Prix de la pinte dans votre ville (€)</label>
+				<input class="form-control" id="pint-price-input" type="number" step="0.01">
+			</div>
+			<a href="#" id="pint-price-submit" class="fab btn btn-default btn-fab btn-raised"><i class="material-icons">check</i></a>
+		</div>
+		<div id="left-panel-pint-scoreboard">
+			<a href="#" id="pint-scoreboard-button" class="btn btn-raised btn-default">Voir le classement</a>
+		</div>
 		<div id="left-panel-form">
 			<h4>Trouver un lieu</h4>
 			<div class="form-group label-floating">
@@ -34,7 +45,8 @@
 			lat:{{ lu.location.lat }},
 			lon:{{ lu.location.lon }},
 			city:"{{ lu.location.city }}",
-			country:"{{ lu.location.country }}"
+			country:"{{ lu.location.country }}"{% if lu.pint_price %},
+			pint_price:{{ lu.pint_price }}{% endif %}
 		},
 		users:[
 		{% for u in lu.users %}
