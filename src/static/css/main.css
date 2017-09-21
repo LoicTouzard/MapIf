@@ -114,6 +114,11 @@ body,
 	cursor: pointer;
 }
 
+#search-results .list-group .list-group-item-text{
+	max-width: 211px;
+	word-wrap: break-word;
+}
+
 .place-result-item:hover{
 	background-color: #B0BEC5;
 }
