@@ -20,7 +20,9 @@
 				{% else %}
 					<p>Vous n'avez pas encore défini votre position</p>
 				{% endfor %}
-					
+
+					<p class="well">Voulez vous ajouter <strong><span id="position-add-city">city</span> <span id="position-add-country">COUNTRY</span></strong> à votre historique de déplacement ?
+					</p>
 					<div class="form-group">
 						<label for="position-add-reason" class="control-label">Pour quelle raison êtes vous là ?</label>
 						<select class="form-control" id="position-add-reason" name="reason" required="required">
@@ -29,11 +31,9 @@
 							<option value="exchange">&Eacute;change</option>
 							<option value="dd">Double Diplôme</option>
 							<option value="job">Emploi</option>
+							<option value="vacation">Vacances</option>
 						</select>
 					</div>
-
-					<p class="well">Voulez vous ajouter <strong><span id="position-add-city">city</span> <span id="position-add-country">COUNTRY</span></strong> à votre historique de déplacement ?
-					</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
