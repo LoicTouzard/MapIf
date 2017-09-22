@@ -514,17 +514,16 @@ def location_create():
 def location_update():
     # recupération des données du post
     uid = session['user']['id']
-    osm_id = escape(request.form['osm_id'].strip())
+    ulid = escape(request.form['ulid'].strip())
     timestamp = escape(request.form['timestamp'].strip())
-    new_timestamp = escape(request.form['new_timestamp'].strip())
     # construction du bloc de metadonnées
     metadata = {}
     metadata['reason'] = escape(request.form['reason'].strip())
     # vérification des champs
     content = {}
     err = True
-    if not validator.validate(osm_id, 'int'):
-        content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
+    if not validator.validate(ulid, 'int'):
+        content['ulid'] = "L'ulid transmis ne respecte pas le format attendu: nombre entier."
     if not validator.validate(timestamp, 'timestamp'):
         content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
     if metadata['reason'] not in db.META_REASON_ENUM:
@@ -532,7 +531,7 @@ def location_update():
     if len(content.keys()) == 0:
         # update timestamp
         content = "La mise à jour de la localisation est un échec. Une erreur de persistence s'est produite."
-        if db.update_user_location(uid, osm_id, timestamp, new_timestamp, metadata):
+        if db.update_user_location(uid, ulid, timestamp, metadata):
             err = False
             content = "La localisation a été mise à jour."
     return json_response(Response(err, content).json(), status_code=200)
@@ -545,19 +544,16 @@ def location_update():
 def location_delete():
     # recupération des données du post
     uid = session['user']['id']
-    osm_id = escape(request.form['osm_id'].strip())
-    timestamp = escape(request.form['timestamp'].strip())
+    ulid = escape(request.form['ulid'].strip())
     # vérification des champs
     content = {}
     err = True
-    if not validator.validate(osm_id, 'int'):
-        content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
-    if not validator.validate(timestamp, 'timestamp'):
-        content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
+    if not validator.validate(ulid, 'int'):
+        content['ulid'] = "L'ulid transmis ne respecte pas le format attendu: nombre entier."
     if len(content.keys()) == 0:
         # delete location 
         content = "La suppression de la localisation n'a pas aboutie !"
-        if db.delete_user_location(uid, osm_id, timestamp):
+        if db.delete_user_location(uid, ulid):
             err = False
             content = "La localisation a été supprimée de votre historique."
     return json_response(Response(err, content).json(), status_code=200)

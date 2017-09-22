@@ -41,6 +41,7 @@ from sqlalchemy import Boolean
 from sqlalchemy import Float
 from sqlalchemy import func
 from sqlalchemy import ForeignKey
+from sqlalchemy import UniqueConstraint
 from sqlalchemy_utils import database_exists
 from sqlalchemy_utils import create_database
 from sqlalchemy.orm import sessionmaker
@@ -55,7 +56,14 @@ from src.utils import logger
 #===============================================================================
 _BASE_ = declarative_base()
 _SESSIONMAKER_DEFAULT_ = None
-META_REASON_ENUM = ['no', 'internship', 'exchange', 'dd', 'job', 'vacation']
+META_REASON_ENUM = [
+    'no', 
+    'internship', 
+    'exchange', 
+    'dd', 
+    'job', 
+    'vacation'
+]
 #===============================================================================
 # MODEL OBJECTS
 #===============================================================================
@@ -64,7 +72,10 @@ META_REASON_ENUM = ['no', 'internship', 'exchange', 'dd', 'job', 'vacation']
 #-------------------------------------------------------------------------------
 class User(_BASE_):
     __tablename__ = 'user'
-    __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
+    __table_args__ = {
+        'useexisting': True, 
+        'sqlite_autoincrement': True # <!> SQLITE <!>
+    }
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
@@ -95,7 +106,10 @@ class User(_BASE_):
 #-------------------------------------------------------------------------------
 class Location(_BASE_):
     __tablename__ = 'location'
-    __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
+    __table_args__ = {
+            'useexisting': True, 
+            'sqlite_autoincrement': True # <!> SQLITE <!>
+    }
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
@@ -127,19 +141,27 @@ class Location(_BASE_):
 #-------------------------------------------------------------------------------
 class UserLocation(_BASE_):
     __tablename__ = 'user_location'
-    __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
+    __table_args__ = (
+        UniqueConstraint('uid', 'timestamp'),
+        {
+            'useexisting': True, 
+            'sqlite_autoincrement': True # <!> SQLITE <!>
+        }
+    )
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
-    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    lid = Column(Integer, ForeignKey('location.id'), primary_key=True)
-    timestamp = Column(DateTime, default=func.now(), primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
+    uid = Column(Integer, ForeignKey('user.id'))
+    lid = Column(Integer, ForeignKey('location.id'))
+    timestamp = Column(DateTime, default=func.now())
     meta = Column(Text, default='{}')
     #---------------------------------------------------------------------------
     # as_dict
     #---------------------------------------------------------------------------
     def as_dict(self):
         return {
+            'ulid': self.id,
             'uid': self.uid,
             'lid': self.lid,
             'timestamp': self.timestamp,
@@ -149,14 +171,17 @@ class UserLocation(_BASE_):
     # __repr__
     #---------------------------------------------------------------------------
     def __repr__(self):
-        return "<UserLocation(uid='{0}', lid='{1}', timestamp='{2}')>".format(
-            self.uid, self.lid, self.timestamp)
+        return "<UserLocation(id='{0}', uid='{1}', lid='{2}', timestamp='{3}')>".format(
+            self.id, self.uid, self.lid, self.timestamp)
 #-------------------------------------------------------------------------------
 # PasswordReset
 #-------------------------------------------------------------------------------
 class PasswordReset(_BASE_):
     __tablename__ = 'password_reset'
-    __table_args__ = {'useexisting': True, 'sqlite_autoincrement': True} # <!> SQLITE <!>
+    __table_args__ = {
+        'useexisting': True, 
+        'sqlite_autoincrement': True # <!> SQLITE <!>
+    }
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
@@ -396,33 +421,34 @@ def create_user_location(uid, osm_id, osm_type, metadata):
 # update_user_location
 #   Updates user location timestamp
 #-------------------------------------------------------------------------------
-def update_user_location(uid, osm_id, timestamp, new_timestamp, metadata):
+def update_user_location(uid, ulid, timestamp, metadata):
     status = False
     session = _get_default_db_session()
-    location = get_location(osm_id)
-    dateobj = datetime.strpfmt(new_timestamp, '%Y-%m-%d')
-    if location:
-        q = session.query(UserLocation).filter(
-            UserLocation.lid == location.id, 
-            UserLocation.uid == uid,
-            UserLocation.timestamp == timestamp).one()
-        if q != []:
-            q.timestamp = dateobj
-            q.meta = json.dumps([metadata])
-            session.add(q)
-            session.commit()
-            status = True
+    dateobj = datetime.strpfmt(timestamp, '%Y-%m-%d')
+    # SEC-NOTE: test ulid and uid, even if uid is a foreign key, to prevent a 
+    #           user updating a record of another user.
+    q = session.query(UserLocation).filter(
+        UserLocation.id == ulid, 
+        UserLocation.uid == uid).one()
+    if q != []:
+        q.timestamp = dateobj
+        q.meta = json.dumps([metadata])
+        session.add(q)
+        session.commit()
+        status = True
     return status
 #-------------------------------------------------------------------------------
 # delete_user_location
 #   Deletes the given user location
 #-------------------------------------------------------------------------------
-def delete_user_location(uid, osm_id, timestamp):
+def delete_user_location(uid, ulid):
     status = False
     session = _get_default_db_session()
-    location = get_location(osm_id)
-    dateobj = datetime.strpfmt(timestamp, '%Y-%m-%d')
-    session.query(UserLocation).filter(UserLocation.uid == uid, UserLocation.lid == location.id, UserLocation.timestamp == dateobj).delete()
+    # SEC-NOTE: test ulid and uid, even if uid is a foreign key, to prevent a 
+    #           user deleting a record of another user.
+    session.query(UserLocation).filter(
+        UserLocation.id == ulid, 
+        UserLocation.uid == uid).delete()
     session.commit()
     session.close()
 #-------------------------------------------------------------------------------
