@@ -55,6 +55,7 @@ from src.utils import logger
 #===============================================================================
 _BASE_ = declarative_base()
 _SESSIONMAKER_DEFAULT_ = None
+META_REASON_ENUM = ['no', 'internship', 'exchange', 'dd', 'job', 'vacation']
 #===============================================================================
 # MODEL OBJECTS
 #===============================================================================
@@ -395,15 +396,19 @@ def create_user_location(uid, osm_id, osm_type, metadata):
 # update_user_location
 #   Updates user location timestamp
 #-------------------------------------------------------------------------------
-def update_user_location(uid, osm_id, timestamp):
+def update_user_location(uid, osm_id, timestamp, new_timestamp, metadata):
     status = False
     session = _get_default_db_session()
     location = get_location(osm_id)
-    dateobj = datetime.strpfmt(timestamp, '%Y-%m-%d')
+    dateobj = datetime.strpfmt(new_timestamp, '%Y-%m-%d')
     if location:
-        q = session.query(UserLocation).filter(UserLocation.lid == location.id, UserLocation.uid == uid).one()
+        q = session.query(UserLocation).filter(
+            UserLocation.lid == location.id, 
+            UserLocation.uid == uid,
+            UserLocation.timestamp == timestamp).one()
         if q != []:
             q.timestamp = dateobj
+            q.meta = json.dumps([metadata])
             session.add(q)
             session.commit()
             status = True

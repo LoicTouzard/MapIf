@@ -495,7 +495,7 @@ def location_create():
         content['osm_id'] = "Le champ osm_id doit être un identifiant numérique !"
     if validator.is_empty(osm_type):
         content['osm_type'] =  "Le champ osm_type ne doit pas être vide !"
-    if metadata['reason'] not in ['no', 'internship', 'exchange', 'dd', 'job', 'vacation']:
+    if metadata['reason'] not in db.META_REASON_ENUM:
         content['meta']['reason'] = "La valeur de la métadonnée raison est invalide."
     if len(content.keys()) == 0:
         # create user - location mapping record in db
@@ -516,6 +516,10 @@ def location_update():
     uid = session['user']['id']
     osm_id = escape(request.form['osm_id'].strip())
     timestamp = escape(request.form['timestamp'].strip())
+    new_timestamp = escape(request.form['new_timestamp'].strip())
+    # construction du bloc de metadonnées
+    metadata = {}
+    metadata['reason'] = escape(request.form['reason'].strip())
     # vérification des champs
     content = {}
     err = True
@@ -523,10 +527,12 @@ def location_update():
         content['osm_id'] = "L'osm_id transmis ne respecte pas le format attendu: nombre entier."
     if not validator.validate(timestamp, 'timestamp'):
         content['timestamp'] =  "Le timestamp ne respecte pas le format attendu: YYYY-mm-dd"
+    if metadata['reason'] not in db.META_REASON_ENUM:
+        content['meta']['reason'] = "La valeur de la métadonnée raison est invalide."
     if len(content.keys()) == 0:
         # update timestamp
         content = "La mise à jour de la localisation est un échec. Une erreur de persistence s'est produite."
-        if db.update_user_location(uid, osm_id, timestamp):
+        if db.update_user_location(uid, osm_id, timestamp, new_timestamp, metadata):
             err = False
             content = "La localisation a été mise à jour."
     return json_response(Response(err, content).json(), status_code=200)
