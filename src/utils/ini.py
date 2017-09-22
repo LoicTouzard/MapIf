@@ -1,24 +1,45 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -!- encoding:utf8 -!-
-
-# ------------------------------------------------------------------------------------------
-#                                    IMPORTS & GLOBALS
-# ------------------------------------------------------------------------------------------
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#    file: ini.py
+#    date: 2017-09-22
+# authors: paul.dautry, ...
+# purpose:
+#       Load configuration variables
+# license:
+#    MapIF - Where are INSA de Lyon IF students right now ?
+#    Copyright (C) 2017  Loic Touzard
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#===============================================================================
+# IMPORTS 
+#===============================================================================
 import configparser
 import os
-
+#===============================================================================
+# GLOBALS 
+#===============================================================================
 _CONFIG_ = None
-
-# ------------------------------------------------------------------------------------------
-#                               EXTERN FUNCTIONS
-# ------------------------------------------------------------------------------------------
-
-
+#===============================================================================
+# FUNCTIONS
+#===============================================================================
+#-------------------------------------------------------------------------------
+# init_config
+#   Initializes configuration loading it from INI file
+#-------------------------------------------------------------------------------
 def init_config(filename):
-    """
-        Initializes configuration loading it from INI file
-    """
     global _CONFIG_
     ok = False
     if not _CONFIG_:
@@ -31,26 +52,23 @@ def init_config(filename):
     else:
         print('[mapif.ini](ERR)> Configuration file has already been loaded !')
     return ok
-
-
+#-------------------------------------------------------------------------------
+# getenv
+#   Returns a configuration value from an environnement variable
+#-------------------------------------------------------------------------------
 def getenv(env_var, default=None):
-    """
-        Returns a configuration value from an environnement variable
-    """
     return os.getenv(env_var, default)
-
-
+#-------------------------------------------------------------------------------
+# config
+#   Tries to retrieve configuration from:
+#       1. an environement variable 
+#       2. then falls back to INI file
+#       3. finally return default value if the previous operations failed.
+#-------------------------------------------------------------------------------
 def config(section, option, env_var=None, default=None, boolean=False):
-    """
-        Tries to retrieve configuration from environement vriable if not None and 
-        then search INI file for the config finally return default value if the first
-        two operations failed
-    """
     res = None
-    # try to search for environement var if not None
     if env_var:
         res = getenv(env_var)
-    # then search in INI config if env var not found
     if not res:
         if _CONFIG_:
             if section in _CONFIG_.sections():
@@ -74,15 +92,11 @@ def config(section, option, env_var=None, default=None, boolean=False):
             if default:
                 print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
                 res = default
-    # finally return res
     return res
-
-# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
-
+#===============================================================================
+# TESTS
+#===============================================================================
 def test():
-    """
-        Module unit tests
-    """
     out = 'Configuration loaded from mapif.ini\n'
     for section in _CONFIG_.sections():
         out += ' + {0}\n'.format(section)

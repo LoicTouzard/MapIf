@@ -1,15 +1,39 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -!- encoding:utf8 -!-
-
-# ------------------------------------------------------------------------------------------
-#                                    IMPORTS & GLOBALS
-# ------------------------------------------------------------------------------------------
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#    file: nominatim.py
+#    date: 2017-09-22
+# authors: paul.dautry, ...
+# purpose:
+#       Defines some functions to interact with Nominatim API 
+#       (an OpenStreetMap service)
+# license:
+#    MapIF - Where are INSA de Lyon IF students right now ?
+#    Copyright (C) 2017  Loic Touzard
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#===============================================================================
+# IMPORTS
+#===============================================================================
 import requests
 from urllib.parse import quote
 import json
 from src.utils import logger
-
+#===============================================================================
+# GLOBALS 
+#===============================================================================
 _SEARCH_BASE_URL_ = "http://nominatim.openstreetmap.org/search/"
 _SEARCH_PARAMS_ = {
     'format': 'json',
@@ -26,15 +50,15 @@ _OSM_TYPES_ = {
     'node': 'N',
     'relation': 'R'
 }
-
-# ------------------------------------------------------------------------------------------
-#                               EXTERN FUNCTIONS
-# ------------------------------------------------------------------------------------------
-
+#===============================================================================
+# FUNCTIONS
+#===============================================================================
+#-------------------------------------------------------------------------------
+# location_for
+#   Search a latitude and longitude for the given city and country using 
+#   Nominatim API
+#-------------------------------------------------------------------------------
 def location_for(city, country):
-    """
-        Search a latitude and longitude for the given city and country using Nominatim API
-    """
     url = _SEARCH_BASE_URL_ + quote('{city} {country}'.format(city=city, country=country))
     resp = requests.get(url, params=_SEARCH_PARAMS_)
     data = json.loads(resp.text)
@@ -50,11 +74,12 @@ def location_for(city, country):
             city = address.get('city', None)
             country = address.get('country', None)
     return (lat, lon, city, country) 
-
+#-------------------------------------------------------------------------------
+# reverse_location_for
+#   Retrieve information related with the given osm_id and osm_type using 
+#   Nominatim API
+#-------------------------------------------------------------------------------
 def reverse_location_for(osm_id, osm_type):
-    """
-        Retrieve information related with the given osm_id and osm_type using Nominatim API
-    """
     params = _REVERSE_PARAMS_
     params['osm_id'] = osm_id
     params['osm_type'] = _OSM_TYPES_.get(osm_type, None)
@@ -78,13 +103,10 @@ def reverse_location_for(osm_id, osm_type):
                     city = address.get('state_district', None)
             country = address.get('country', None)
     return (lat, lon, city, country)
-
-# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
-
+#===============================================================================
+# TESTS
+#===============================================================================
 def test():
-    """
-        Module unit tests
-    """
     lat, lon, city, country = location_for('Lyon', 'France')
     out = 'NOMINATIM result for location_for(Lyon, France)\n'+json.dumps({'lat': lat, 'lon': lon, 'city': city, 'country': country}, indent=4)
     print(out)

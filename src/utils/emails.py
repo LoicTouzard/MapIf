@@ -1,27 +1,56 @@
+#!/usr/bin/env python3
+# -!- encoding:utf8 -!-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#    file: emails.py
+#    date: 2017-09-22
+# authors: david.wobrock, paul.dautry, ...
+# purpose:
+#       Mailing module based on Elasticemail API
+# license:
+#    MapIF - Where are INSA de Lyon IF students right now ?
+#    Copyright (C) 2017  Loic Touzard
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#===============================================================================
+# IMPORTS 
+#===============================================================================
 import requests
 import re
 import html
-
 from flask import escape
 from flask import render_template
-
 from src.utils import ini
 from src.utils import logger
-
+#===============================================================================
+# GLOBALS 
+#===============================================================================
 # See http://api.elasticemail.com/public/help#Email_Send for documentation
 _APIURL_ = 'https://api.elasticemail.com/v2/email/send'
 _APIKEY_ = None
-_APP_ROOT_=''
 _EMAIL_TEMPLATE_DIR_ = 'src/templates/emails/'
 _EMAIL_ENCODING_ = 'utf-8'
 _SENDER_EMAIL_ = 'noreply@mapif.com'
 _SENDER_NAME_ = 'MapIf'
-
-
-def init_emails(app_root):
+#===============================================================================
+# FUNCTIONS
+#===============================================================================
+#-------------------------------------------------------------------------------
+# init_emails
+#-------------------------------------------------------------------------------
+def init_emails():
     global _APIKEY_
-    global _APP_ROOT_
-    _APP_ROOT_ = app_root
     try:
         _APIKEY_ = ini.config('EMAILS', 'elasticmail_apikey', default=None)
         if _APIKEY_ is None or _APIKEY_ == '':
@@ -30,7 +59,9 @@ def init_emails(app_root):
             logger.mprint('Email APIKEY: {0}'.format(_APIKEY_))
     except Exception as ex:
         logger.mprint("Could not load ElasticEmail API KEY")
-
+#-------------------------------------------------------------------------------
+# send_email
+#-------------------------------------------------------------------------------
 def send_email(to, subject, template, template_params):
     global _APIKEY_
     global _APIURL_
@@ -60,7 +91,9 @@ def send_email(to, subject, template, template_params):
         logger.mprint('Sent email successfully to {0}'.format(to))
     else:
         logger.log_error(resp_json['error'])
-
+#-------------------------------------------------------------------------------
+# send_password_reset_mail
+#-------------------------------------------------------------------------------
 def send_password_reset_mail(email, firstname, token):
     params = {
         'firstname': firstname,
@@ -68,4 +101,8 @@ def send_password_reset_mail(email, firstname, token):
         'email': email
     }
     send_email(email, 'Mot de passe oublié', 'emails/password_reset_simple.html', params)
-
+#===============================================================================
+# TESTS
+#===============================================================================
+def test():
+    print('EMAILS - TESTS NOT IMPLEMENTED')

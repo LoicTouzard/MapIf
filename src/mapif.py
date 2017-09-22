@@ -1,10 +1,31 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -!- encoding:utf8 -!-
-
-# ------------------------------------------------------------------------------------------
-#                       IMPORTS, GLOBALS AND MODULES INITIALIZATION
-# ------------------------------------------------------------------------------------------
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#    file: mapif.py
+#    date: 2017-09-22
+# authors: loic.touzard, david.wobrock, paul.dautry, ...
+# purpose:
+#       MapIF Flask application 
+# license:
+#    MapIF - Where are INSA de Lyon IF students right now ?
+#    Copyright (C) 2017  Loic Touzard
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#===============================================================================
+# IMPORTS
+#===============================================================================
 import hashlib
 import binascii
 import uuid
@@ -32,54 +53,47 @@ from src.utils import emails
 from src.utils.wrappers import internal_error_handler
 from src.utils.wrappers import require_connected
 from src.utils.wrappers import require_disconnected
-
+#===============================================================================
+# GLOBALS
+#===============================================================================
 # print current root for debugging
 logger.mprint("Running from {0}".format(os.getcwd()))
 # load config file and exit on error
 logger.mprint("Loading configuration file...")
-_APP_ROOT_=ini.getenv('OPENSHIFT_REPO_DIR', '')
-if not ini.init_config(_APP_ROOT_+'mapif.ini'):
+if not ini.init_config('mapif.ini'):
     logger.mprint("Configuration file is missing. Server can't be started !")
     exit(-1)
-
 # initialize logging module
 logger.mprint("Starting logging module...")
 logger.init_logs()
-
 # initialize DB module
 logger.mprint("Starting DB module...")
 db.init_db()
-
 # initialise emails module
-emails.init_emails(_APP_ROOT_)
-
+emails.init_emails()
 # set locale
 locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
-
 # create our little application :)
 app = Flask(__name__)
-
 # check Configuration section for more details
 app.config.from_object(__name__)
-
 # load secret key from configuration file or generated a UUID and use it as secret key
 app.secret_key = ini.config('APP', 'secret_key', default=str(uuid.uuid4()))
-
 # enable/disable debug
 app.debug = ini.config('APP', 'debug', default=False, boolean=True)
 if not app.debug:
     logger.mprint("Debugger is disabled !")
 else:
     logger.mprint("Debugger is enabled.")
-
 # allow cross origin requests on this application
 CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}})
-
-# ------------------------------------------------------------------------------------------
-#                               PRIVATE FUNCTIONS
-# ------------------------------------------------------------------------------------------
-
-
+#===============================================================================
+# FUNCTIONS
+#===============================================================================
+#-------------------------------------------------------------------------------
+# _load_user
+#   set user in session
+#-------------------------------------------------------------------------------
 def _load_user(session, email, sha_pwd):
     usr = db.get_user(email, sha_pwd)
     if usr:
@@ -90,7 +104,10 @@ def _load_user(session, email, sha_pwd):
             'email': usr.email,
             'promo': usr.promo
         }
-
+#-------------------------------------------------------------------------------
+# _update_user
+#   update user information in session
+#-------------------------------------------------------------------------------
 def _update_user(session, uid):
     usr = db.get_user_by_id(uid)
     if usr:
@@ -101,58 +118,59 @@ def _update_user(session, uid):
             'email': usr.email,
             'promo': usr.promo
         }
-
-
+#-------------------------------------------------------------------------------
+# _check_connected
+#   check if user is connected (user in session)
+#-------------------------------------------------------------------------------
 def _check_connected(session):
     return session.get('user', None)
-
-
+#-------------------------------------------------------------------------------
+# _hash_pwd
+#   hash given password using SHA-256 algorithm from hashlib
+#-------------------------------------------------------------------------------
 def _hash_pwd(pwd_clear):
     return hashlib.sha256(pwd_clear.encode()).hexdigest()
-
-
-# ------------------------------------------------------------------------------------------
-#                               FLASK ROUTES HANDLERS
-# ------------------------------------------------------------------------------------------
-
-
+#===============================================================================
+# FLASK ROUTES
+#===============================================================================
+#-------------------------------------------------------------------------------
+# beforeRequest
+#   override of Flask.beforeRequest method to ensure client is using HTTPS !
+#-------------------------------------------------------------------------------
 @app.before_request
 def beforeRequest():
     if not app.debug and 'https' not in request.url:
         return redirect(request.url.replace('http', 'https'))
-
-
+#-------------------------------------------------------------------------------
+# root
+#   This is the main application's route. It displays the application main page.
+#-------------------------------------------------------------------------------
 @app.route('/', methods=['GET'])
 @internal_error_handler('R00TK0')
 def root():
-    """
-        This is the main application's route. It displays the application main page.
-    """
     locations = db.get_locations_with_users()
     user_locations = None
     if _check_connected(session):
         user_locations = db.get_user_locations(session['user']['id'])
     return render_template('map.html', locations=locations, user_locations=user_locations, active="map") # users=users)
-
+#-------------------------------------------------------------------------------
+# profile
+#   This is profile view of the current user.
+#-------------------------------------------------------------------------------
 @app.route('/profil', methods=['GET'])
 @internal_error_handler('PR0F1LK0')
 @require_connected()
 def profile():
-    """
-        This is profile view of the current user.
-    """
     user_locations = db.get_user_locations(session['user']['id'])
     return render_template('profile.html', user_locations=user_locations, active='profile') # users=users)
-
-# ---------------------------------------- LOGIN RELATED ROUTES ----------------------------------------
-
+#-------------------------------------------------------------------------------
+# login
+#   This route is used to authenticate a user in the application
+#-------------------------------------------------------------------------------
 @app.route('/login', methods=['POST'])
 @internal_error_handler('L0G1NK0')
 @require_disconnected()
 def login():
-    """
-        This route is used to authenticate a user in the application
-    """
     content = "L'utilisateur et/ou le mot de passe est érroné."
     email = request.form['email']
     pwd_clear = request.form['password']
@@ -163,26 +181,25 @@ def login():
         err = False
         content = "Vous êtes maintenant connecté !"
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# logout
+#   This route is used to close the session of a connected user
+#-------------------------------------------------------------------------------
 @app.route('/logout')
 @internal_error_handler('L0G0U7K0')
 @require_connected()
 def logout():
-    """
-        This route is used to close the session of a connected user
-    """
     session.pop('user', None)
     return redirect('/')
-
-
+#-------------------------------------------------------------------------------
+# password_reset
+#   This route can be used to generate a token for the given user, and send it 
+#   to him via email
+#-------------------------------------------------------------------------------
 @app.route('/password', methods=['POST'])
 @internal_error_handler('PA55W0RDK0')
 @require_disconnected()
 def password_reset():
-    """
-        This route is used to generate a token for the given user, and send it to him via email
-    """
     email = request.form['email']
     logger.mprint('Asking for password reset for: {0}'.format(email))
     if not db.user_exists(email):
@@ -192,17 +209,17 @@ def password_reset():
         return json_response(Response(error, content).json(), status_code=200)
     token = db.create_or_update_password_reset(email, app.secret_key)
     logger.mprint("Created/updated user's password reset object with token '{0}'".format(token))
-
     reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
     user = db.get_user_by_email(email)
     emails.send_password_reset_mail(email, user.firstname, token)
     logger.mprint("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
-
     error = False
     content = "Un lien pour modifier ton mot de passe a été envoyé à cette adresse, il expirera dans 10 minutes."
     return json_response(Response(error, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# password_reset_page
+#   
+#-------------------------------------------------------------------------------
 @app.route('/password-reset', methods=['GET', 'POST'])
 @internal_error_handler('PA55W0RDK0R3S3T')
 @require_disconnected()
@@ -213,24 +230,20 @@ def password_reset_page():
         return page_not_found(None)
     token = request.args['token']
     email = request.args['email']
-
     # Find if user exists (must exist)
     if not db.user_exists(email):
         logger.mprint("Leaving password reset: user does not exist")
         return page_not_found(None)
     user = db.get_user_by_email(email)
-
     # Find PasswordReset instance from this user with this token exists (must exist)
     password_reset = db.get_password_reset_by_token_and_uid(token, user.id)
     if password_reset is None:
         logger.mprint("Leaving password reset: PasswordReset instance doesn't exist")
         return page_not_found(None)
-
     # Test if PasswordReset intance is not used (must not be used)
     if password_reset.used is True:
         logger.mprint("Leaving password reset: PasswordReset instance has been used already")
         return page_not_found(None)
-
     # Test if PasswordReset instance if not too old
     reset_timestamp = password_reset.timestamp
     now_timestamp = datetime.datetime.now()
@@ -238,7 +251,6 @@ def password_reset_page():
     if (now_timestamp - reset_timestamp) > datetime.timedelta(minutes=delay_minutes):
         logger.mprint("Leaving password reset: PasswordReset instance is too old ({0} and now is {1})".format(reset_timestamp, now_timestamp))
         return page_not_found("Autorisation expirée (plus de {0} minutes). Redemandes une nouvelle autorisation.".format(delay_minutes))
-
     # If method is GET, return template
     if request.method == 'GET':
         logger.mprint("Getting password reset page")
@@ -255,30 +267,25 @@ def password_reset_page():
             return render_template('password-reset.html', reset_form=False)
         else:
             return render_template('password-reset.html', reset_form=True, error='A merde, y a eu une couille.')
-
-
-# ------------------------------------------ SEARCH RELATED ROUTES -----------------------------------------
-
+#-------------------------------------------------------------------------------
+# search_users
+#   This route can be used to search users based on given filters
+#-------------------------------------------------------------------------------
 @app.route('/search/users', methods=['POST'])
 @internal_error_handler('534RCHU53R5K0')
 @require_connected()
 def search_users():
-    """
-        This route can be used to search users based on given filters
-    """
     filters = request.form['filters']
     content = db.get_users(filters)
     return json_response(Response(False, content).json(), status_code=200)
-    
-# ---------------------------------------- ACCOUNT RELATED ROUTES ----------------------------------------
-
+#-------------------------------------------------------------------------------
+# account_create
+#   This route can be used by the application to add a new user to the application
+#-------------------------------------------------------------------------------
 @app.route('/account/create', methods=['POST'])
 @internal_error_handler('4CC0U7CR34T3K0')
 @require_disconnected()
 def account_create():
-    """
-        This route is used by the application to add a new user to the application
-    """
     content = "Captcha invalide. Annulation de l'inscription ! Encore un bot..."
     err = True
     if app.debug or validator.check_captcha(request):
@@ -320,15 +327,14 @@ def account_create():
                 err = False
                 content = 'ok'
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# account_update_names
+#   This route can be used to update user profile firstname and lastname
+#-------------------------------------------------------------------------------
 @app.route('/account/update/names', methods=['PATCH'])
 @internal_error_handler('4CC0U7UPD4T3NAM35K0')
 @require_connected()
 def account_update_names():
-    """
-        This route will be used to update user profile firstname and lastname
-    """
     err = True
     firstname = escape(request.form['firstname'].strip())
     lastname = escape(request.form['lastname'].strip())
@@ -348,22 +354,20 @@ def account_update_names():
             err = False
             content = 'ok'
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# account_update_email
+#   This route can be used to update user email
+#-------------------------------------------------------------------------------
 @app.route('/account/update/email', methods=['PATCH'])
 @internal_error_handler('4CC0U7UPD4T33MA1LK0')
 @require_connected()
 def account_update_email():
-    """
-        This route will be used to update user email
-    """
     err = True
     email = request.form['email'].strip()
     # verification des champs
     content = {}
     if not validator.validate(email, 'email'):
         content['email'] = "L'email ne respecte pas le format attendu !"
-        
     # realisation si pas d'erreur
     if len(content.keys()) == 0:
         content['email'] = "Cette adresse email est déjà attribuée à un utilisateur."
@@ -377,15 +381,14 @@ def account_update_email():
                 err = False
                 content = 'ok'
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# account_update_password
+#   This route can be used to update user password
+#-------------------------------------------------------------------------------
 @app.route('/account/update/password', methods=['PATCH'])
 @internal_error_handler('4CC0U7UPD4T3PA55W0RDK0')
 @require_connected()
 def account_update_password():
-    """
-        This route will be used to update user password
-    """
     err = True
     pwd_old = request.form['password_old']
     pwd_clear = request.form['password1']
@@ -401,8 +404,6 @@ def account_update_password():
         content['password2'] = "Les deux mots de passe doivent être identiques !"
     # hash password
     pwd_hash = _hash_pwd(pwd_clear)
-   
-        
     # realisation si pas d'erreur
     if len(content.keys()) == 0:
         content = "La mise à jour du profil a échouée"
@@ -413,15 +414,14 @@ def account_update_password():
             err = False
             content = 'ok'
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# account_update_promo
+#   This route can be used to update user promotion
+#-------------------------------------------------------------------------------
 @app.route('/account/update/promo', methods=['PATCH'])
 @internal_error_handler('4CC0U7UPD4T3PR0M0K0')
 @require_connected()
 def account_update_promo():
-    """
-        This route will be used to update user promotion
-    """
     err = True
     promo = request.form['promo'].strip()
     # verification des champs
@@ -440,30 +440,27 @@ def account_update_promo():
             err = False
             content = 'ok'
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# account_delete
+#   This route can be used to delete completly a user account and all its data
+#-------------------------------------------------------------------------------
 @app.route('/account/delete', methods=['DELETE'])
 @internal_error_handler('4CC0UN7D3L3T3K0')
 @require_connected()
 def account_delete():
-    """
-        This route is used to delete completly a user account and all its data
-    """
     uid = session['user']['id']
     db.delete_user(uid)
     session.pop('user', None)
     err = False
     content = "Le compte a été supprimé avec succès."
     return json_response(Response(err, content).json(), status_code=200)
-
-# ---------------------------------------- LOCATION RELATED ROUTES ----------------------------------------
-
+#-------------------------------------------------------------------------------
+# locations
+#   This route can be used to retrieve all locations for a given user 
+#-------------------------------------------------------------------------------
 @app.route('/locations', methods=['POST'])
 @internal_error_handler('L0C4T10N5K0')
 def locations():
-    """
-        This route is used to retrieve all locations for a given user 
-    """
     err = True
     code = 200
     uid = request.form['uid']
@@ -476,15 +473,14 @@ def locations():
             err = False
             content = locations
     return json_response(Response(err, content).json(), status_code=code)
-
-
+#-------------------------------------------------------------------------------
+# location_create
+#   This route can be used to add a new location for a user
+#-------------------------------------------------------------------------------
 @app.route('/user/location/create', methods=['POST'])
 @internal_error_handler('L0C4T10N4DDK0')
 @require_connected()
 def location_create():
-    """
-        This route is used to add a new location for a user
-    """
     # recupération des données du post
     uid = session['user']['id']
     osm_id = escape(request.form['osm_id'].strip())
@@ -508,15 +504,14 @@ def location_create():
             err = False
             content = "La nouvelle localisation a été enregistrée."
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# location_update
+#   This route can be used to update a user location
+#-------------------------------------------------------------------------------
 @app.route('/user/location/update', methods=['POST'])
 @internal_error_handler('L0C4T10NUPD4T3K0')
 @require_connected()
 def location_update():
-    """
-        This route can be used to update a user location
-    """
     # recupération des données du post
     uid = session['user']['id']
     osm_id = escape(request.form['osm_id'].strip())
@@ -535,14 +530,13 @@ def location_update():
             err = False
             content = "La localisation a été mise à jour."
     return json_response(Response(err, content).json(), status_code=200)
-
-
+#-------------------------------------------------------------------------------
+# location_delete
+#   This route can be used to delete a user location
+#-------------------------------------------------------------------------------
 @app.route('/user/location/delete', methods=['DELETE'])
 @internal_error_handler('L0C4T10ND3L3T3K0')
 def location_delete():
-    """
-        This route can be used to delete a user location
-    """
     # recupération des données du post
     uid = session['user']['id']
     osm_id = escape(request.form['osm_id'].strip())
@@ -561,34 +555,27 @@ def location_delete():
             err = False
             content = "La localisation a été supprimée de votre historique."
     return json_response(Response(err, content).json(), status_code=200)
-    
-
-# ---------------------------------------- FLASK ERROR HANDLERS ----------------------------------------
-
+#-------------------------------------------------------------------------------
+# page_not_found
+#   This is an error handler for 404 NOT FOUND exception
+#-------------------------------------------------------------------------------
 @app.errorhandler(404)
 def page_not_found(msg):
-    """
-        This is an error handler for 404 NOT FOUND exception
-    """
     return render_template('404.html', message=msg), 404
-
-# ------------------------------------------------------------------------------------------
-#                               SERVER RUN FUNCTION
-# ------------------------------------------------------------------------------------------
-    
+#===============================================================================
+# SERVER FUNCTIONS
+#===============================================================================
+#-------------------------------------------------------------------------------
+# run
+#   Start the application (dev only, production should use uWSGI with wsgi.py)
+#-------------------------------------------------------------------------------
 def run():
-    """
-        Start the application (dev only)
-    """
     port = 5000
     logger.mprint("Starting MapIf flask application...")
     logger.mprint("Launching server on localhost, port {0}".format(port))
     app.run(host='localhost', port=port)
-
-# ------------------------------ TEST ZONE BELOW THIS LINE ---------------------------------
-
+#===============================================================================
+# TESTS
+#===============================================================================
 def test():
-    """
-        Module unit tests
-    """
     print('MAPIF - TESTS NOT IMPLEMENTED')
