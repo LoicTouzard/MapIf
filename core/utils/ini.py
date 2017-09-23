@@ -36,10 +36,10 @@ _CONFIG_ = None
 # FUNCTIONS
 #===============================================================================
 #-------------------------------------------------------------------------------
-# init_config
+# init
 #   Initializes configuration loading it from INI file
 #-------------------------------------------------------------------------------
-def init_config(filename):
+def init(filename):
     global _CONFIG_
     ok = False
     if not _CONFIG_:

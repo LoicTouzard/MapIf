@@ -27,10 +27,9 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import requests
 import json
 from urllib.parse import quote
-from core.utils import logger
+from core.utils import request
 #===============================================================================
 # GLOBALS
 #===============================================================================
@@ -60,7 +59,7 @@ _OSM_TYPES_ = {
 #-------------------------------------------------------------------------------
 def location_for(city, country):
     url = _SEARCH_BASE_URL_ + quote('{city} {country}'.format(city=city, country=country))
-    resp = requests.get(url, params=_SEARCH_PARAMS_)
+    resp = request.get(url, params=_SEARCH_PARAMS_)
     data = json.loads(resp.text)
     lat = None
     lon = None
@@ -83,7 +82,7 @@ def reverse_location_for(osm_id, osm_type):
     params = _REVERSE_PARAMS_
     params['osm_id'] = osm_id
     params['osm_type'] = _OSM_TYPES_.get(osm_type, None)
-    resp = requests.get(_REVERSE_BASE_URL_, params=params)
+    resp = request.get(_REVERSE_BASE_URL_, params=params)
     data = json.loads(resp.text)
     lat = None
     lon = None

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: validator.py
-#    date: 2017-09-22
-# authors: paul.dautry, ...
+#    file: notification.py
+#    date: 2017-09-23
+#  author: paul.dautry
 # purpose:
-#       Defines several functions used for user input validation. 
+#   
 # license:
 #    MapIF - Where are INSA de Lyon IF students right now ?
 #    Copyright (C) 2017  Loic Touzard
@@ -26,62 +26,71 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import re
-import json
-from core.utils import ini
 from core.utils import logger
+from core.utils import ini
 from core.utils import request
 #===============================================================================
-# GLOBALS
+# GLOBALS / CONFIG
 #===============================================================================
-_VALIDATORS_ = {
-    'email': re.compile('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
-    'alphanum': re.compile('^\w+$'),
-    'int': re.compile('^\d+$'),
-    'double': re.compile('^\d+(\.\d+)?$'),
-    'phone': re.compile('^(\+\d{2}(\s)?\d|\d{2})(\s)?(\d{2}(\s)?){4}$'),
-    'year': re.compile('^\d{4}$'),
-    'timestamp': re.compile('^\d{4}(-\d{2}){2}$')
-}
+SLACK_WEBHOOK = None
+LVL_ERR = 0
+LVL_INF = 1
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
 #-------------------------------------------------------------------------------
-# validate
-#   (In)Validates data based on its type using regular expressions
+# init
 #-------------------------------------------------------------------------------
-def validate(field, vtype=None):
-    if vtype in _VALIDATORS_.keys():
-        return True if _VALIDATORS_[vtype].match(str(field)) else False
-    else:
-        return False
+def init():
+    global SLACK_WEBHOOK
+    SLACK_WEBHOOK = ini.config('NOTIFICATION', 'slack_webhook', 'MAPIF_SLACK_WEBHOOK')
+    if SLACK_WEBHOOK is None:
+        logger.mprint('No SLACK_WEBHOOK configured. You will not be notified.')
 #-------------------------------------------------------------------------------
-# is_empty
-#   Tests if a field is empty
+# __notify
 #-------------------------------------------------------------------------------
-def is_empty(field):
-    return len(str(field).strip()) == 0
-#-------------------------------------------------------------------------------
-# check_captcha 
-#   Google ReCaptcha validation process
-#-------------------------------------------------------------------------------
-def check_captcha(request):
-    payload = {
-        'secret': ini.config('RECAPTCHA','recaptcha_secret_key'),
-        'response': request.form['g-recaptcha-response'],
-        'remoteip': request.remote_addr
+def __notify(lvl, value):
+    if SLACK_WEBHOOK is None:
+        return
+    if lvl is LVL_ERR: 
+        title = "An error occurred!"
+        pretext = 'MapIF [ERR]'
+        color = '#D00000'
+    else: 
+        title = "Breaking news !"
+        pretext = 'MapIF [INF]'
+        color = '#00D000'
+    # prepare payload
+    pld = {
+        "attachments":[
+            {
+                "fallback": pretext,
+                "pretext": pretext,
+                "color": color,
+                "fields":[
+                    {
+                        "title": title,
+                        "value": value,
+                        "short": False
+                    }
+                ]
+            }
+        ]
     }
-    resp = request.post('https://www.google.com/recaptcha/api/siteverify', params=payload)
-    data = json.loads(resp.text)
-    if not data['success']:
-        logger.log_error("from validator: {0} may be a bot !".format(request.remote_addr))
-    return data['success']
+    # send payload
+    request.post(SLACK_WEBHOOK, data=pld, timeout=1)
+#-------------------------------------------------------------------------------
+# notify_err
+#-------------------------------------------------------------------------------
+def notify_err(value):
+    __notify(LVL_ERR, value)
+#-------------------------------------------------------------------------------
+# notify_inf 
+#-------------------------------------------------------------------------------
+def notify_inf(value):
+    __notify(LVL_INF, value)
 #===============================================================================
-# TESTS 
+# TESTS
 #===============================================================================
 def test():
-    print('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
-    print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
-    print('VALIDATOR - validate(doe@hotmail.fr, email) returned {0}'.format(validate('doe@hotmail.fr', 'email')))
-    print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
-    print('VALIDATOR - add tests here <!>')
+    print('NOTIFICATION - TESTS NOT IMPLEMENTED')

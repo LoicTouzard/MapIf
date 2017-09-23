@@ -250,7 +250,7 @@ def _get_default_db_session():
 # init_db
 #   Initializes MapIf database.
 #-------------------------------------------------------------------------------
-def init_db():
+def init():
     #_database_op(ini.config('DB', 'db_name'), action='create') # DEPRECATED : ensure database exists before launching application
     engine = create_engine(_get_default_database_name())
     global _SESSIONMAKER_DEFAULT_

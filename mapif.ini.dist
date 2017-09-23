@@ -76,3 +76,13 @@ log_perf= # (false|true) useless
 # Elastic Mail API Key
 #
 elasticmail_apikey= # necessary for sending emails
+#
+#===============================================================================
+#  Notification
+#===============================================================================
+[NOTIFICATION]
+#
+# Slack webhook
+#
+slack_webhook= # your slack webhook here
+#

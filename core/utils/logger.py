@@ -101,10 +101,10 @@ def mprint(msg):
     log_trace(logline)
     print(logline)
 #-------------------------------------------------------------------------------
-# init_logs
+# init
 #   Initializes logging module, creating missing log files if needed
 #-------------------------------------------------------------------------------
-def init_logs():
+def init():
     global _LOGS_
     global _LOG_PERF_
     global _LOG_DIR_

@@ -26,13 +26,13 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import requests
 import re
 import html
 from flask import escape
 from flask import render_template
 from core.utils import ini
 from core.utils import logger
+from core.utils import request
 #===============================================================================
 # GLOBALS
 #===============================================================================
@@ -49,7 +49,7 @@ _SENDER_NAME_ = 'MapIf'
 #-------------------------------------------------------------------------------
 # init_emails
 #-------------------------------------------------------------------------------
-def init_emails():
+def init():
     global _APIKEY_
     try:
         _APIKEY_ = ini.config('EMAILS', 'elasticmail_apikey', default=None)
@@ -82,7 +82,7 @@ def send_email(to, subject, template, template_params):
         'subject': '[MapIf] - '+subject
     }
     # print(params)
-    response = requests.get(_APIURL_, params=params)
+    response = request.get(_APIURL_, params=params)
     # print(response.url)
     # print(response)
     resp_json = response.json()

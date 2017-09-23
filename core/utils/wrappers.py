@@ -32,6 +32,7 @@ from flask import session
 from functools import wraps
 from core.utils.response import Response
 from core.utils import logger
+from core.utils import notification
 #===============================================================================
 # DECORATORS
 #===============================================================================
@@ -46,8 +47,16 @@ def internal_error_handler(err_code):
                 return f(*args, **kwargs)
             except Exception as e:
                 timestamp = time.strftime('%d%m%H%M%S')
-                logger.log_error('mapif.{0}() at {1} error: details below.'.format(f.__name__, timestamp), e)
+                desc = 'mapif.{0}() at {1} error: details below.'.format(
+                    f.__name__, timestamp
+                )
+                logger.log_error(desc, e)
                 code = '{0}.{1}'.format(err_code, timestamp)
+                value = """internal error code: %s
+function: %s
+exception: `%s` cf. traceback in mapif.err.log.
+""" % (code, desc, e)
+                notification.notify_err(value)
                 resp = Response(has_error=True, code=code, content='')
                 return json_response(resp.json(), status_code=500)
         return wrapped_f

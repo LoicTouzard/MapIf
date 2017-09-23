@@ -44,6 +44,7 @@ from flask_responses import json_response
 from flask_responses import xml_response
 from flask_responses import auto_response
 from flask_cors import CORS
+from core.utils import notification
 from core.utils import db
 from core.utils.response import Response
 from core.utils import validator
@@ -60,17 +61,21 @@ from core.utils.wrappers import require_disconnected
 logger.mprint("Running from {0}".format(os.getcwd()))
 # load config file and exit on error
 logger.mprint("Loading configuration file...")
-if not ini.init_config('mapif.ini'):
+if not ini.init('mapif.ini'):
     logger.mprint("Configuration file is missing. Server can't be started !")
     exit(-1)
 # initialize logging module
 logger.mprint("Starting logging module...")
-logger.init_logs()
+logger.init()
+# initialize notification module
+logger.mprint("Starting notification module...")
+notification.init()
 # initialize DB module
-logger.mprint("Starting DB module...")
-db.init_db()
+logger.mprint("Starting database module...")
+db.init()
 # initialise emails module
-emails.init_emails()
+logger.mprint("Starting email module...")
+emails.init()
 # set locale
 locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
 # create our little application :)
