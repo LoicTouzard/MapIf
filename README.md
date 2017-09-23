@@ -39,7 +39,7 @@ Concernant le lancement de l'application deux possibilités :
 Le front est développé en [HTML5](http://www.w3schools.com/html/html5_intro.asp), [CSS3](http://www.w3schools.com/css/css3_intro.asp), [javascript ECMA5](https://developer.mozilla.org/fr/docs/Web/JavaScript/Language_Resources).  
 Le moteur de template utilisé est [Jinja2](http://jinja.pocoo.org/docs/dev/).  
 Le code exploite principalement [jQuery 2.2.3](http://jquery.com/) pour la gestion des évènements et animations, [Leaflet.js](http://leafletjs.com/) pour la gestion de la carte, et [Nominatim d'OpenStreetMap](http://nominatim.openstreetmap.org/) pour la résolution d'adresse.  
-Pour le style il s'agit de [Bootstrap 3.3.6](http://getbootstrap.com/), augmenté du [Bootstrap Material Design](http://fezvrasta.github.io/bootstrap-material-design/).  
+Pour le style il s'agit de [Bootstrap 3.3.6](http://getbootstrap.com/), augmenté du [Bootstrap Material Design](https://cdn.rawgit.com/FezVrasta/bootstrap-material-design/gh-pages-v3/index.html).  
 Le javascript est organisé de la manière suivante :
   * Le code commun à toutes les pages se trouve dans [app.js](src\static\js\app.js)  
   * Le code qui peut etre commun a plusieurs page est organisé par [modules](src\static\js\modules). Ces modules sont des objets qui agissent comme des bibliothèques à fonctions triées par fonctionnalité. Leurs dépendances sont notées en haut des fichiers, si vous en utilisez un veillez à inclure le script des dépendances.
