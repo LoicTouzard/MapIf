@@ -39,18 +39,24 @@ DFLT_TIMEOUT=2 # 2 seconds of default timeout
 #-------------------------------------------------------------------------------
 # get
 #-------------------------------------------------------------------------------
-def get(url, params, timeout=DFLT_TIMEOUT):
+def get(url, params, timeout=DFLT_TIMEOUT, headers=None):
     try:
-        return requests.get(url, params=params, timeout=timeout)
+        if headers is None:
+            return requests.get(url, params=params, timeout=timeout)
+        else:
+            return requests.get(url, params=params, timeout=timeout, headers=headers)
     except Exception as e:
         logger.log_error("request.get(): failed.", e)
     return None
 #-------------------------------------------------------------------------------
 # post
 #-------------------------------------------------------------------------------
-def post(url, data, timeout=DFLT_TIMEOUT):
+def post(url, data, timeout=DFLT_TIMEOUT, headers=None):
     try:
-        return requests.post(url, data=data, timeout=timeout)
+        if headers is None:
+            return requests.post(url, data=data, timeout=timeout)
+        else:
+            return requests.post(url, data=data, timeout=timeout, headers=headers)
     except Exception as e:
         logger.log_error("request.post(): failed.", e)
     return None

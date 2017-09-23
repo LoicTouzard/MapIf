@@ -26,11 +26,11 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
+import os
+import uuid
+import locale
 import hashlib
 import binascii
-import uuid
-import os
-import locale
 import datetime
 from flask import Flask
 from flask import request
@@ -51,6 +51,7 @@ from core.utils import validator
 from core.utils import ini
 from core.utils import logger
 from core.utils import emails
+from core.utils import notification
 from core.utils.wrappers import internal_error_handler
 from core.utils.wrappers import require_connected
 from core.utils.wrappers import require_disconnected
@@ -331,6 +332,14 @@ def account_create():
                 # mise à jour des variables de réponse 
                 err = False
                 content = 'ok'
+                # notify
+                msg = """A new user joined MapIF! 
+*{0} {1}* 
+promo *{2}* 
+*{3}*
+:D
+""".format(firstname, lastname, promo, email)
+                notification.notify_inf(msg)
     return json_response(Response(err, content).json(), status_code=200)
 #-------------------------------------------------------------------------------
 # account_update_names
@@ -454,10 +463,20 @@ def account_update_promo():
 @require_connected()
 def account_delete():
     uid = session['user']['id']
+    msg = """A user left MapIF. 
+*{0} {1}* 
+promo *{2}*
+*{3}* 
+:/""".format(
+        session['user']['firstname'], 
+        session['user']['lastname'], 
+        session['user']['promo'],
+        session['user']['email'])
     db.delete_user(uid)
     session.pop('user', None)
     err = False
     content = "Le compte a été supprimé avec succès."
+    notification.notify_wrn(msg)
     return json_response(Response(err, content).json(), status_code=200)
 #-------------------------------------------------------------------------------
 # locations

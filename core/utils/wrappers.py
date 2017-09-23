@@ -27,6 +27,7 @@
 # IMPORTS
 #===============================================================================
 import time
+import traceback
 from flask_responses import json_response
 from flask import session
 from functools import wraps
@@ -47,15 +48,16 @@ def internal_error_handler(err_code):
                 return f(*args, **kwargs)
             except Exception as e:
                 timestamp = time.strftime('%d%m%H%M%S')
-                desc = 'mapif.{0}() at {1} error: details below.'.format(
+                desc = '`mapif.{0}()` at `{1}` error: details below.'.format(
                     f.__name__, timestamp
                 )
                 logger.log_error(desc, e)
                 code = '{0}.{1}'.format(err_code, timestamp)
-                value = """internal error code: %s
-function: %s
-exception: `%s` cf. traceback in mapif.err.log.
-""" % (code, desc, e)
+                value = """internal error code: `{0}`
+function: {1}
+```
+{2}```
+""".format(code, desc, traceback.format_exc())
                 notification.notify_err(value)
                 resp = Response(has_error=True, code=code, content='')
                 return json_response(resp.json(), status_code=500)

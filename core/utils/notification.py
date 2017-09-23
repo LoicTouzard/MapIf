@@ -26,6 +26,7 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
+import json
 from core.utils import logger
 from core.utils import ini
 from core.utils import request
@@ -34,7 +35,8 @@ from core.utils import request
 #===============================================================================
 SLACK_WEBHOOK = None
 LVL_ERR = 0
-LVL_INF = 1
+LVL_WRN = 1
+LVL_INF = 2
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
@@ -54,36 +56,51 @@ def __notify(lvl, value):
         return
     if lvl is LVL_ERR: 
         title = "An error occurred!"
-        pretext = 'MapIF [ERR]'
+        pretext = ""
         color = '#D00000'
+    elif lvl is LVL_WRN:
+        title = "Don't you smell something ?"
+        pretext = ""
+        color = '#D16800'
     else: 
-        title = "Breaking news !"
-        pretext = 'MapIF [INF]'
+        title = "Breaking news!"
+        pretext = ""
         color = '#00D000'
     # prepare payload
     pld = {
-        "attachments":[
+        "text": "",
+        "attachments": [
             {
                 "fallback": pretext,
                 "pretext": pretext,
                 "color": color,
-                "fields":[
+                "fields": [
                     {
                         "title": title,
                         "value": value,
-                        "short": False
+                        "short": False,
                     }
-                ]
+                ],
+                "mrkdwn_in": [ "fields" ]
             }
         ]
     }
     # send payload
-    request.post(SLACK_WEBHOOK, data=pld, timeout=1)
+    r = request.post(SLACK_WEBHOOK, 
+        timeout=2, 
+        data=json.dumps(pld), 
+        headers={'Content-Type':'application/json'})
+    logger.mprint(r.text)
 #-------------------------------------------------------------------------------
 # notify_err
 #-------------------------------------------------------------------------------
 def notify_err(value):
     __notify(LVL_ERR, value)
+#-------------------------------------------------------------------------------
+# notify_wrn
+#-------------------------------------------------------------------------------
+def notify_wrn(value):
+    __notify(LVL_WRN, value)
 #-------------------------------------------------------------------------------
 # notify_inf 
 #-------------------------------------------------------------------------------
