@@ -28,8 +28,8 @@
 #===============================================================================
 import os
 import traceback
-from src.utils import timer
-from src.utils import ini
+from core.utils import timer
+from core.utils import ini
 #===============================================================================
 # GLOBALS
 #===============================================================================

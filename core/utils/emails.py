@@ -24,17 +24,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #===============================================================================
-# IMPORTS 
+# IMPORTS
 #===============================================================================
 import requests
 import re
 import html
 from flask import escape
 from flask import render_template
-from src.utils import ini
-from src.utils import logger
+from core.utils import ini
+from core.utils import logger
 #===============================================================================
-# GLOBALS 
+# GLOBALS
 #===============================================================================
 # See http://api.elasticemail.com/public/help#Email_Send for documentation
 _APIURL_ = 'https://api.elasticemail.com/v2/email/send'

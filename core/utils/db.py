@@ -48,9 +48,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import exists
 from sqlalchemy.schema import MetaData
 from sqlalchemy.ext.declarative import declarative_base
-from src.utils import nominatim
-from src.utils import ini
-from src.utils import logger
+from core.utils import nominatim
+from core.utils import ini
+from core.utils import logger
 #===============================================================================
 # GLOBALS
 #===============================================================================

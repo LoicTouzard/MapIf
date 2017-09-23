@@ -30,8 +30,8 @@ import time
 from flask_responses import json_response
 from flask import session
 from functools import wraps
-from src.utils.response import Response
-from src.utils import logger
+from core.utils.response import Response
+from core.utils import logger
 #===============================================================================
 # DECORATORS
 #===============================================================================

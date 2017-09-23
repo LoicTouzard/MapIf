@@ -44,15 +44,15 @@ from flask_responses import json_response
 from flask_responses import xml_response
 from flask_responses import auto_response
 from flask_cors import CORS
-from src.utils import db
-from src.utils.response import Response
-from src.utils import validator
-from src.utils import ini
-from src.utils import logger
-from src.utils import emails
-from src.utils.wrappers import internal_error_handler
-from src.utils.wrappers import require_connected
-from src.utils.wrappers import require_disconnected
+from core.utils import db
+from core.utils.response import Response
+from core.utils import validator
+from core.utils import ini
+from core.utils import logger
+from core.utils import emails
+from core.utils.wrappers import internal_error_handler
+from core.utils.wrappers import require_connected
+from core.utils.wrappers import require_disconnected
 #===============================================================================
 # GLOBALS
 #===============================================================================

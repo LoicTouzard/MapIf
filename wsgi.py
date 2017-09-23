@@ -7,5 +7,5 @@
 # purpose:
 #   WSGI script for uWSGI
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-from src.mapif import app
+from core.mapif import app
 

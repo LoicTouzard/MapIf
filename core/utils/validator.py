@@ -29,8 +29,8 @@
 import re
 import requests
 import json
-from src.utils import ini
-from src.utils import logger
+from core.utils import ini
+from core.utils import logger
 #===============================================================================
 # GLOBALS
 #===============================================================================

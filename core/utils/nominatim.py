@@ -5,7 +5,7 @@
 #    date: 2017-09-22
 # authors: paul.dautry, ...
 # purpose:
-#       Defines some functions to interact with Nominatim API 
+#       Defines some functions to interact with Nominatim API
 #       (an OpenStreetMap service)
 # license:
 #    MapIF - Where are INSA de Lyon IF students right now ?
@@ -28,11 +28,11 @@
 # IMPORTS
 #===============================================================================
 import requests
-from urllib.parse import quote
 import json
-from src.utils import logger
+from urllib.parse import quote
+from core.utils import logger
 #===============================================================================
-# GLOBALS 
+# GLOBALS
 #===============================================================================
 _SEARCH_BASE_URL_ = "http://nominatim.openstreetmap.org/search/"
 _SEARCH_PARAMS_ = {

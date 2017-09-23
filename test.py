@@ -8,16 +8,16 @@
 #   Module (incomplete :/) testing
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #===============================================================================
-# IMPORTS 
+# IMPORTS
 #===============================================================================
-from src.utils import db
-from src.utils import ini
-from src.utils import logger
-from src.utils import nominatim
-from src.utils import response
-from src.utils import timer
-from src.utils import validator
-from src import mapif
+from core.utils import db
+from core.utils import ini
+from core.utils import logger
+from core.utils import nominatim
+from core.utils import response
+from core.utils import timer
+from core.utils import validator
+from core import mapif
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
