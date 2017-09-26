@@ -32,54 +32,50 @@ import locale
 import hashlib
 import binascii
 import datetime
-from flask import Flask
-from flask import request
-from flask import session
-from flask import redirect
-from flask import abort
-from flask import render_template
-from flask import flash
-from flask import escape
-from flask_responses import json_response
-from flask_responses import xml_response
-from flask_responses import auto_response
-from flask_cors import CORS
-from core.utils import notification
-from core.utils import db
-from core.utils.response import Response
-from core.utils import validator
-from core.utils import ini
-from core.utils import logger
-from core.utils import emails
-from core.utils import notification
-from core.utils.wrappers import internal_error_handler
-from core.utils.wrappers import require_connected
-from core.utils.wrappers import require_disconnected
+from flask                          import Flask
+from flask                          import request
+from flask                          import session
+from flask                          import redirect
+from flask                          import abort
+from flask                          import render_template
+from flask                          import flash
+from flask                          import escape
+from flask_responses                import json_response
+from flask_responses                import xml_response
+from flask_responses                import auto_response
+from flask_cors                     import CORS
+from core.modules                   import db
+from core.modules                   import validator
+from core.modules                   import ini
+from core.modules                   import logger
+from core.modules                   import emails
+from core.modules.wrappers          import internal_error_handler
+from core.modules.wrappers          import require_connected
+from core.modules.wrappers          import require_disconnected
+from core.classes.response          import Response
+from core.classes.slack_log_handler import SlackLogHandler
 #===============================================================================
 # GLOBALS
 #===============================================================================
-# print current root for debugging
-logger.mprint("Running from {0}".format(os.getcwd()))
-# load config file and exit on error
-logger.mprint("Loading configuration file...")
-if not ini.init('mapif.ini'):
-    logger.mprint("Configuration file is missing. Server can't be started !")
-    exit(-1)
-# initialize logging module
-logger.mprint("Starting logging module...")
+# initialize logger
 logger.init()
-# initialize notification module
-logger.mprint("Starting notification module...")
-notification.init()
-# initialize DB module
-logger.mprint("Starting database module...")
-db.init()
-# initialise emails module
-logger.mprint("Starting email module...")
-emails.init()
-# set locale
-locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
+modlgr = logger.get('mapif.api')
+# print current root for debugging
+modlgr.debug("Running from {0}".format(os.getcwd()))
+# load config file and exit on error
+modlgr.debug("Loading configuration file...")
+if not ini.init('mapif.ini'):
+    modlgr.error("Configuration file is missing. Server can't be started !")
+    exit(1)
+# install SlackLogHandler if needed
+slack_webhook = ini.config('NOTIFICATION', 'slack_webhook', 'MAPIF_SLACK_WEBHOOK')
+if slack_webhook is not None:
+    modlgr.debug("Installing SlackLogHandler...")
+    hdlr = SlackLogHandler(slack_webhook)
+    hdlr.setFormatter(logger.FMTR)
+    logger.add_handler(hdlr)
 # create our little application :)
+modlgr.debug("Creating Flask application...")
 app = Flask(__name__)
 # check Configuration section for more details
 app.config.from_object(__name__)
@@ -87,12 +83,27 @@ app.config.from_object(__name__)
 app.secret_key = ini.config('APP', 'secret_key', default=str(uuid.uuid4()))
 # enable/disable debug
 app.debug = ini.config('APP', 'debug', default=False, boolean=True)
+modlgr.debug("Debugger is {0}".format("enabled." if app.debug else "disabled!"))
+# initialize logging module
 if not app.debug:
-    logger.mprint("Debugger is disabled !")
-else:
-    logger.mprint("Debugger is enabled.")
+    logger.disable_debug()
+# initialize DB module
+modlgr.debug("Init db module...")
+db.init()
+# initialise emails module
+modlgr.debug("Init emails module...")
+emails.init()
+# set locale
+locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
 # allow cross origin requests on this application
-CORS(app, resources={'/': {'origins': '*'}, '/': {'supports_credentials': True}})
+CORS(app, resources={
+    '/': {
+        'origins': '*'
+    }, 
+    '/': {
+        'supports_credentials': True
+    }
+})
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
@@ -207,18 +218,18 @@ def logout():
 @require_disconnected()
 def password_reset():
     email = request.form['email']
-    logger.mprint('Asking for password reset for: {0}'.format(email))
+    modlgr.debug('Asking for password reset for: {0}'.format(email))
     if not db.user_exists(email):
         error = True
         content = "Cette adresse électronique n'est associée à aucun utilisateur."
-        logger.mprint('{0} does not exist'.format(email))
+        modlgr.error('{0} does not exist'.format(email))
         return json_response(Response(error, content).json(), status_code=200)
     token = db.create_or_update_password_reset(email, app.secret_key)
-    logger.mprint("Created/updated user's password reset object with token '{0}'".format(token))
+    modlgr.debug("Created/updated user's password reset object with token '{0}'".format(token))
     reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
     user = db.get_user_by_email(email)
     emails.send_password_reset_mail(email, user.firstname, token)
-    logger.mprint("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
+    modlgr.debug("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
     error = False
     content = "Un lien pour modifier ton mot de passe a été envoyé à cette adresse, il expirera dans 10 minutes."
     return json_response(Response(error, content).json(), status_code=200)
@@ -232,38 +243,38 @@ def password_reset():
 def password_reset_page():
     # Get parameters: email + token (must both be setted)
     if 'token' not in request.args or 'email' not in request.args:
-        logger.mprint("Leaving password reset: no 'token' and 'email'")
+        modlgr.error("Leaving password reset: no 'token' and 'email'")
         return page_not_found(None)
     token = request.args['token']
     email = request.args['email']
     # Find if user exists (must exist)
     if not db.user_exists(email):
-        logger.mprint("Leaving password reset: user does not exist")
+        modlgr.error("Leaving password reset: user does not exist")
         return page_not_found(None)
     user = db.get_user_by_email(email)
     # Find PasswordReset instance from this user with this token exists (must exist)
     password_reset = db.get_password_reset_by_token_and_uid(token, user.id)
     if password_reset is None:
-        logger.mprint("Leaving password reset: PasswordReset instance doesn't exist")
+        modlgr.error("Leaving password reset: PasswordReset instance doesn't exist")
         return page_not_found(None)
     # Test if PasswordReset intance is not used (must not be used)
     if password_reset.used is True:
-        logger.mprint("Leaving password reset: PasswordReset instance has been used already")
+        modlgr.error("Leaving password reset: PasswordReset instance has been used already")
         return page_not_found(None)
     # Test if PasswordReset instance if not too old
     reset_timestamp = password_reset.timestamp
     now_timestamp = datetime.datetime.now()
     delay_minutes = 10
     if (now_timestamp - reset_timestamp) > datetime.timedelta(minutes=delay_minutes):
-        logger.mprint("Leaving password reset: PasswordReset instance is too old ({0} and now is {1})".format(reset_timestamp, now_timestamp))
+        modlgr.error("Leaving password reset: PasswordReset instance is too old ({0} and now is {1})".format(reset_timestamp, now_timestamp))
         return page_not_found("Autorisation expirée (plus de {0} minutes). Redemandes une nouvelle autorisation.".format(delay_minutes))
     # If method is GET, return template
     if request.method == 'GET':
-        logger.mprint("Getting password reset page")
+        modlgr.debug("Getting password reset page")
         return render_template('password-reset.html', reset_form=True)
     # Else if POST, update password of user
     elif request.method == 'POST':
-        logger.mprint("Updating password")
+        modlgr.debug("Updating password")
         if 'password1' not in request.form or 'password2' not in request.form or request.form['password1'] != request.form['password2']:
             return render_template('password-reset.html', reset_form=True, error='Deux fois le même mot de passe on a dit...')
         new_pass = request.form['password1']
@@ -332,14 +343,13 @@ def account_create():
                 # mise à jour des variables de réponse 
                 err = False
                 content = 'ok'
-                # notify
                 msg = """A new user joined MapIF! 
 *{0} {1}* 
 promo *{2}* 
 *{3}*
 :D
 """.format(firstname, lastname, promo, email)
-                notification.notify_inf(msg)
+                modlgr.info(msg)
     return json_response(Response(err, content).json(), status_code=200)
 #-------------------------------------------------------------------------------
 # account_update_names
@@ -476,7 +486,7 @@ promo *{2}*
     session.pop('user', None)
     err = False
     content = "Le compte a été supprimé avec succès."
-    notification.notify_wrn(msg)
+    modlgr.warning(msg)
     return json_response(Response(err, content).json(), status_code=200)
 #-------------------------------------------------------------------------------
 # locations
@@ -597,8 +607,8 @@ def page_not_found(msg):
 #-------------------------------------------------------------------------------
 def run():
     port = 5000
-    logger.mprint("Starting MapIf flask application...")
-    logger.mprint("Launching server on localhost, port {0}".format(port))
+    modlgr.debug("Starting MapIf flask application...")
+    modlgr.debug("Launching server on localhost, port {0}".format(port))
     app.run(host='localhost', port=port)
 #===============================================================================
 # TESTS

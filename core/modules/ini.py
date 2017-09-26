@@ -28,10 +28,12 @@
 #===============================================================================
 import configparser
 import os
+from core.modules import logger
 #===============================================================================
 # GLOBALS 
 #===============================================================================
 _CONFIG_ = None
+modlgr = logger.get('mapif.ini')
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
@@ -45,12 +47,12 @@ def init(filename):
     if not _CONFIG_:
         _CONFIG_ = configparser.ConfigParser()
         if len(_CONFIG_.read(filename, encoding='utf-8')) > 0:
-            print('[mapif.ini](INFO)> Configuration file {0} successfully loaded !'.format(filename))
+            modlgr.debug('Configuration file {0} successfully loaded !'.format(filename))
             ok = True
         else:
-            print("[mapif.ini](ERR)> Configuration file {0} can't be loaded !".format(filename))
+            modlgr.error("Configuration file {0} can't be loaded !".format(filename))
     else:
-        print('[mapif.ini](ERR)> Configuration file has already been loaded !')
+        modlgr.error('Configuration file has already been loaded !')
     return ok
 #-------------------------------------------------------------------------------
 # getenv
@@ -78,19 +80,19 @@ def config(section, option, env_var=None, default=None, boolean=False):
                     else:
                         res = _CONFIG_[section][option]
                 else:
-                    print("[mapif.ini](ERR)>  Missing option {0} in section {1} in configuration file !".format(option, section))
+                    modlgr.error("Missing option {0} in section {1} in configuration file !".format(option, section))
                     if default:
-                        print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
+                        modlgr.error("Using default configuration value: {0}".format(default))
                         res = default
             else:
-                print("[mapif.ini](ERR)> Missing section {0} in configuration file".format(section))
+                modlgr.error("Missing section {0} in configuration file".format(section))
                 if default:
-                    print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
+                    modlgr.debug("Using default configuration value: {0}".format(default))
                     res = default
         else:
-            print("[mapif.ini](ERR)> Configuration file must be loaded to use config(section, option) function ! Call init_config(filename) before !")
+            modlgr.error("Configuration file must be loaded to use config(section, option) function ! Call init_config(filename) before !")
             if default:
-                print("[mapif.ini](INFO)> Using default configuration value: {0}".format(default))
+                modlgr.debug("Using default configuration value: {0}".format(default))
                 res = default
     return res
 #===============================================================================

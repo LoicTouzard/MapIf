@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: timer.py
+#    file: response.py
 #    date: 2017-09-22
 # authors: paul.dautry, ...
 # purpose:
-#       Defines useful time-related functions.
+#       Defines response class which represents a standardized API response 
+#       format.
 # license:
 #    MapIF - Where are INSA de Lyon IF students right now ?
 #    Copyright (C) 2017  Loic Touzard
@@ -26,32 +27,39 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import time
+import json
 #===============================================================================
-# FUNCTIONS 
+# CLASSES 
 #===============================================================================
 #-------------------------------------------------------------------------------
-# get_time
-#   Returns a timestamp in UNIX style
+# Response
 #-------------------------------------------------------------------------------
-def get_time():
-    return time.time()
-#-------------------------------------------------------------------------------
-# get_date
-#   Returns a timestamp formated in a string
-#-------------------------------------------------------------------------------
-def get_date():
-    return str(time.strftime("(%d-%m-%Y %H:%M:%S)"))
-#-------------------------------------------------------------------------------
-# get_diff
-#   Computes a time delta
-#-------------------------------------------------------------------------------
-def get_diff(start_time, end_time):
-    return end_time - start_time
+class Response(object):
+    def __init__(self, has_error = True, content = {}, code=None):
+        super(Response, self).__init__()
+        self.has_error = has_error
+        self.content = content
+        self.code = code
+    #---------------------------------------------------------------------------
+    # json
+    #---------------------------------------------------------------------------
+    def json(self):
+        return {
+            'has_error': self.has_error, 
+            'content': self.content, 
+            'code': self.code
+        }
+    #---------------------------------------------------------------------------
+    # dumps
+    #---------------------------------------------------------------------------
+    def dumps(self, indent=None):
+        return json.dumps(self.json(), indent=indent)
 #===============================================================================
-# TESTS 
-#===============================================================================------------
+# TESTS
+#===============================================================================
 def test():
-    print('TIMER TEST - get_time() returned {0}'.format(get_time()))
-    print('TIMER TEST - get_date() returned {0}'.format(get_date()))
-    print('TIMER TEST - get_diff(10, 35) returned {0}'.format(get_diff(10, 35)))
+    print('NEGATIVE RESPONSE TEST')
+    print(Response(True, 'an error occured !').dumps(indent=4))
+    print('POSITIVE RESPONSE TEST')
+    print(Response(False, 'everything is OK.').dumps(indent=4))
+    

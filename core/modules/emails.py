@@ -28,11 +28,11 @@
 #===============================================================================
 import re
 import html
-from flask import escape
-from flask import render_template
-from core.utils import ini
-from core.utils import logger
-from core.utils import request
+from flask        import escape
+from flask        import render_template
+from core.modules import ini
+from core.modules import logger
+from core.modules import request
 #===============================================================================
 # GLOBALS
 #===============================================================================
@@ -43,6 +43,7 @@ _EMAIL_TEMPLATE_DIR_ = 'src/templates/emails/'
 _EMAIL_ENCODING_ = 'utf-8'
 _SENDER_EMAIL_ = 'noreply@mapif.com'
 _SENDER_NAME_ = 'MapIf'
+modlgr = logger.get('mapif.email')
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
@@ -54,11 +55,11 @@ def init():
     try:
         _APIKEY_ = ini.config('EMAILS', 'elasticmail_apikey', default=None)
         if _APIKEY_ is None or _APIKEY_ == '':
-            logger.mprint('No Email APIKEY found')
+            modlgr.warning('No Email APIKEY found')
         else:
-            logger.mprint('Email APIKEY: {0}'.format(_APIKEY_))
+            modlgr.debug('Email APIKEY: {0}'.format(_APIKEY_))
     except Exception as ex:
-        logger.mprint("Could not load ElasticEmail API KEY")
+        modlgr.exception("Could not load ElasticEmail API KEY")
 #-------------------------------------------------------------------------------
 # send_email
 #-------------------------------------------------------------------------------
@@ -88,9 +89,9 @@ def send_email(to, subject, template, template_params):
     resp_json = response.json()
     # print(resp_json)
     if resp_json['success']:
-        logger.mprint('Sent email successfully to {0}'.format(to))
+        modlgr.debug('Sent email successfully to {0}'.format(to))
     else:
-        logger.log_error(resp_json['error'])
+        modlgr.error(resp_json['error'])
 #-------------------------------------------------------------------------------
 # send_password_reset_mail
 #-------------------------------------------------------------------------------
@@ -105,4 +106,4 @@ def send_password_reset_mail(email, firstname, token):
 # TESTS
 #===============================================================================
 def test():
-    print('EMAILS - TESTS NOT IMPLEMENTED')
+    raise NotImplementedError

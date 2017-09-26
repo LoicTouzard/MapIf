@@ -30,31 +30,25 @@ import re
 import json
 import bcrypt
 import hashlib
-from datetime import datetime
-from sqlalchemy import create_engine
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import Text
-from sqlalchemy import DateTime
-from sqlalchemy import Boolean
-from sqlalchemy import Float
-from sqlalchemy import func
-from sqlalchemy import ForeignKey
-from sqlalchemy import UniqueConstraint
-from sqlalchemy_utils import database_exists
-from sqlalchemy_utils import create_database
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import exists
-from sqlalchemy.schema import MetaData
-from sqlalchemy.ext.declarative import declarative_base
-from core.utils import nominatim
-from core.utils import ini
-from core.utils import logger
+from datetime                           import datetime
+from sqlalchemy                         import create_engine
+from sqlalchemy_utils                   import database_exists
+from sqlalchemy_utils                   import create_database
+from sqlalchemy.orm                     import sessionmaker
+from sqlalchemy.sql                     import exists
+from sqlalchemy.schema                  import MetaData
+from sqlalchemy.ext.declarative         import declarative_base
+from core.classes.model.user            import User
+from core.classes.model.location        import Location
+from core.classes.model.user_location   import UserLocation
+from core.classes.model.password_reset  import PasswordReset
+from core.modules                       import ini
+from core.modules                       import logger
+from core.modules                       import nominatim
 #===============================================================================
 # GLOBALS
 #===============================================================================
-_BASE_ = declarative_base()
+modlgr = logger.get('mapif.db')
 _SESSIONMAKER_DEFAULT_ = None
 META_REASON_ENUM = [
     'no', 
@@ -67,158 +61,6 @@ META_REASON_ENUM = [
 #===============================================================================
 # MODEL OBJECTS
 #===============================================================================
-#-------------------------------------------------------------------------------
-# User
-#-------------------------------------------------------------------------------
-class User(_BASE_):
-    __tablename__ = 'user'
-    __table_args__ = {
-        'useexisting': True, 
-        'sqlite_autoincrement': True # <!> SQLITE <!>
-    }
-    #---------------------------------------------------------------------------
-    # attributes
-    #---------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, nullable=False)
-    firstname = Column(String)
-    lastname = Column(String)
-    email = Column(String, unique=True, nullable=False)
-    pwd = Column(String)
-    promo = Column(Integer)
-    #---------------------------------------------------------------------------
-    # as_dict
-    #---------------------------------------------------------------------------
-    def as_dict(self):
-        return {
-            'firstname': self.firstname,
-            'lastname': self.lastname,
-            'email': self.email,
-            'promo': self.promo
-        }
-    #---------------------------------------------------------------------------
-    # __repr__
-    #---------------------------------------------------------------------------
-    def __repr__(self):
-        return "<User(id='{0}',firstname='{1}',lastname='{2}',email='{3}',promo='{4}')>".format(
-            self.id, self.firstname, self.lastname, self.email, self.promo)
-#-------------------------------------------------------------------------------
-# Location
-#-------------------------------------------------------------------------------
-class Location(_BASE_):
-    __tablename__ = 'location'
-    __table_args__ = {
-            'useexisting': True, 
-            'sqlite_autoincrement': True # <!> SQLITE <!>
-    }
-    #---------------------------------------------------------------------------
-    # attributes
-    #---------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, nullable=False)
-    osm_id = Column(String, unique=True, nullable=False)
-    city = Column(String)
-    country = Column(String)
-    lat = Column(Float)
-    lon = Column(Float)
-    #---------------------------------------------------------------------------
-    # as_dict
-    #---------------------------------------------------------------------------
-    def as_dict(self):
-        return {
-            'osm_id': self.osm_id,
-            'city': self.city,
-            'country': self.country,
-            'lat': self.lat,
-            'lon': self.lon
-        }
-    #---------------------------------------------------------------------------
-    # __repr__
-    #---------------------------------------------------------------------------
-    def __repr__(self):
-        return "<Location(id='{0}',osm_id='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(
-            self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
-#-------------------------------------------------------------------------------
-# UserLocation
-#-------------------------------------------------------------------------------
-class UserLocation(_BASE_):
-    __tablename__ = 'user_location'
-    __table_args__ = (
-        UniqueConstraint('uid', 'timestamp'),
-        {
-            'useexisting': True, 
-            'sqlite_autoincrement': True # <!> SQLITE <!>
-        }
-    )
-    #---------------------------------------------------------------------------
-    # attributes
-    #---------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, nullable=False)
-    uid = Column(Integer, ForeignKey('user.id'))
-    lid = Column(Integer, ForeignKey('location.id'))
-    timestamp = Column(DateTime, default=func.now())
-    meta = Column(Text, default='{}')
-    #---------------------------------------------------------------------------
-    # as_dict
-    #---------------------------------------------------------------------------
-    def as_dict(self):
-        return {
-            'ulid': self.id,
-            'uid': self.uid,
-            'lid': self.lid,
-            'timestamp': self.timestamp,
-            'meta': self.meta # the ugliest thing ever => I don't care.
-        }
-    #---------------------------------------------------------------------------
-    # __repr__
-    #---------------------------------------------------------------------------
-    def __repr__(self):
-        return "<UserLocation(id='{0}', uid='{1}', lid='{2}', timestamp='{3}')>".format(
-            self.id, self.uid, self.lid, self.timestamp)
-#-------------------------------------------------------------------------------
-# PasswordReset
-#-------------------------------------------------------------------------------
-class PasswordReset(_BASE_):
-    __tablename__ = 'password_reset'
-    __table_args__ = {
-        'useexisting': True, 
-        'sqlite_autoincrement': True # <!> SQLITE <!>
-    }
-    #---------------------------------------------------------------------------
-    # attributes
-    #---------------------------------------------------------------------------
-    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    token = Column(Text)
-    timestamp = Column(DateTime, default=func.now())
-    used = Column(Boolean)
-    #---------------------------------------------------------------------------
-    # __repr__
-    #---------------------------------------------------------------------------
-    def __repr__(self):
-        return "<PasswordReset(user='{0}', token='{1}', timestamp='{2}', used='{3}')>".format(
-            self.uid, self.token, self.timestamp, self.used)
-#-------------------------------------------------------------------------------
-# _database_op
-#   DEPRECATED
-#-------------------------------------------------------------------------------
-#def _database_op(dbname, action='create'):
-#    engine = create_engine(_get_complete_database_name(dbname))
-#    if ini.config('DB', 'engine') == 'postgre':
-#        connection = engine.connect()
-#        connection.execute('commit')
-#        try:
-#            if action == 'create':
-#                if not database_exists(engine.url):
-#                    connection.execute('CREATE DATABASE "{0}"'.format(dbname))
-#            elif action == 'drop':
-#                connection.execute('DROP DATABASE "{0}"'.format(dbname))
-#        except Exception as e:
-#            logger.log_error('_database_op error: details below.', e)
-#        connection.close()
-#    else: # default is sqlite
-#        if action == 'create':
-#            if not database_exists(engine.url):
-#                create_database(engine.url)
-#        elif action == 'drop':
-#            remove("database/{0}.sqlite".format(dbname))
 #-------------------------------------------------------------------------------
 # _get_complete_database_name
 #-------------------------------------------------------------------------------
@@ -256,10 +98,10 @@ def init():
     global _SESSIONMAKER_DEFAULT_
     _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
     try:
-        _BASE_.metadata.create_all(engine)
-        logger.mprint("DB module successfully initialized.")
+        declarative_base().metadata.create_all(engine)
+        modlgr.debug("DB module successfully initialized.")
     except Exception as e:
-        logger.log_error('init_db error: details below.', e)
+        modlgr.exception('init_db error!')
 #-------------------------------------------------------------------------------
 # create_user
 #   Creates a user and insert it in the database
@@ -470,7 +312,7 @@ def create_location(osm_id, osm_type):
     session = _get_default_db_session()
     lat, lon, city, country = nominatim.reverse_location_for(osm_id, osm_type)
     if not lat or not lon or not city or not country:
-        logger.log_error('Incomplete location returned by Nominatim (lat={0},lon={1},city={2},country={3})'.format(lat,lon,city,country))
+        modlgr.error('Incomplete location returned by Nominatim (lat={0},lon={1},city={2},country={3})'.format(lat,lon,city,country))
         status = False
     else:
         session.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))       

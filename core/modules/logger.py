@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: validator.py
+#    file: logger.py
 #    date: 2017-09-22
 # authors: paul.dautry, ...
 # purpose:
-#       Defines several functions used for user input validation. 
+#       Logging module relying on Python logging module.   
 # license:
 #    MapIF - Where are INSA de Lyon IF students right now ?
 #    Copyright (C) 2017  Loic Touzard
@@ -26,62 +26,78 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import re
-import json
-from core.utils import ini
-from core.utils import logger
-from core.utils import request
+import os
+import logging
+import logging.handlers as handlers
 #===============================================================================
 # GLOBALS
 #===============================================================================
-_VALIDATORS_ = {
-    'email': re.compile('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
-    'alphanum': re.compile('^\w+$'),
-    'int': re.compile('^\d+$'),
-    'double': re.compile('^\d+(\.\d+)?$'),
-    'phone': re.compile('^(\+\d{2}(\s)?\d|\d{2})(\s)?(\d{2}(\s)?){4}$'),
-    'year': re.compile('^\d{4}$'),
-    'timestamp': re.compile('^\d{4}(-\d{2}){2}$')
-}
+ROOT_LGR = 'mapif'
+# create formatter
+FMT = '(%(asctime)s)[%(name)s:%(levelname)s]: %(message)s'
+FMTR = logging.Formatter(FMT)
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
 #-------------------------------------------------------------------------------
-# validate
-#   (In)Validates data based on its type using regular expressions
+# get
+#   Retrieves logger having given name
 #-------------------------------------------------------------------------------
-def validate(field, vtype=None):
-    if vtype in _VALIDATORS_.keys():
-        return True if _VALIDATORS_[vtype].match(str(field)) else False
-    else:
-        return False
+def get(lgr_name):
+    return logging.getLogger(lgr_name)
 #-------------------------------------------------------------------------------
-# is_empty
-#   Tests if a field is empty
+# init
+#   Initializes logging module, creating missing log files if needed
 #-------------------------------------------------------------------------------
-def is_empty(field):
-    return len(str(field).strip()) == 0
+def init():
+    # set configuration values
+    logs_dir = 'logs/'
+    std_log = 'mapif.log'
+    err_log = 'mapif.err.log'
+    dbg_log = 'mapif.dbg.log'
+    # make missing directories if needed
+    os.makedirs(logs_dir, exist_ok=True)
+    # create & configure handlers
+    # -- std log file handler
+    std_fh = handlers.RotatingFileHandler(os.path.join(logs_dir, std_log),
+        maxBytes=1000*1024, backupCount=2)
+    std_fh.setLevel(logging.INFO) # inf + err + crit
+    std_fh.setFormatter(FMTR)
+    # -- err log file handler
+    err_fh = handlers.RotatingFileHandler(os.path.join(logs_dir, err_log),
+        maxBytes=1000*1024, backupCount=2)
+    err_fh.setLevel(logging.ERROR) # err + crit
+    err_fh.setFormatter(FMTR)
+    # -- dbg log file handler
+    dbg_fh = handlers.RotatingFileHandler(os.path.join(logs_dir, dbg_log),
+        maxBytes=1000*1024, backupCount=2)
+    dbg_fh.setLevel(logging.DEBUG) # dbg + inf + err + crit
+    dbg_fh.setFormatter(FMTR)
+    # -- console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(FMTR)
+    # create & configure mapif logger
+    logr = logging.getLogger(ROOT_LGR)
+    logr.setLevel(logging.DEBUG)
+    logr.addHandler(std_fh)
+    logr.addHandler(err_fh)
+    logr.addHandler(dbg_fh)
+    logr.addHandler(ch)
 #-------------------------------------------------------------------------------
-# check_captcha 
-#   Google ReCaptcha validation process
+# 
 #-------------------------------------------------------------------------------
-def check_captcha(request):
-    payload = {
-        'secret': ini.config('RECAPTCHA','recaptcha_secret_key'),
-        'response': request.form['g-recaptcha-response'],
-        'remoteip': request.remote_addr
-    }
-    resp = request.post('https://www.google.com/recaptcha/api/siteverify', params=payload)
-    data = json.loads(resp.text)
-    if not data['success']:
-        logger.log_error("from validator: {0} may be a bot !".format(request.remote_addr))
-    return data['success']
+def disable_debug():
+    logr = logging.getLogger(ROOT_LGR)
+    logr.setLevel(logging.INFO)
+#-------------------------------------------------------------------------------
+# 
+#-------------------------------------------------------------------------------
+def add_handler(handler):
+    logr = logging.getLogger(ROOT_LGR)
+    logr.addHandler(handler)
 #===============================================================================
-# TESTS 
+# TESTS
 #===============================================================================
 def test():
-    print('VALIDATOR - validate(john.doe@insa-lyon.fr, email) returned {0}'.format(validate('john.doe@insa-lyon.fr', 'email')))
-    print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
-    print('VALIDATOR - validate(doe@hotmail.fr, email) returned {0}'.format(validate('doe@hotmail.fr', 'email')))
-    print('VALIDATOR - validate(john.doe@log, email) returned {0}'.format(validate('john.doe@log', 'email')))
-    print('VALIDATOR - add tests here <!>')
+    print('LOGGER - TESTS NOT IMPLEMENTED')

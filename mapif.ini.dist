@@ -44,31 +44,6 @@ postgre_pass= # ex: 123456 - this is a bad idea
 postgre_host= # your postgre host
 #
 #===============================================================================
-#  Logs configuration
-#===============================================================================
-[LOGGER]
-#
-# Relative path to logs storage directory
-#
-log_dir=logs/
-#
-# Filename for trace log
-#
-std_log=mapif.log
-#
-# Filename for error log
-#
-err_log=mapif.err.log
-#
-# Filename for perf log
-#
-perf_log=mapif.perf.log
-#
-# Enable/Disable perf logs
-#
-log_perf= # (false|true) useless
-#
-#===============================================================================
 #   Email API configuration 
 #===============================================================================
 [EMAILS]

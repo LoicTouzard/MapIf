@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: response.py
-#    date: 2017-09-22
-# authors: paul.dautry, ...
+#    file: password_reset.py
+#    date: 2017-09-26
+#  author: paul.dautry
 # purpose:
-#       Defines response class which represents a standardized API response 
-#       format.
+#   
 # license:
 #    MapIF - Where are INSA de Lyon IF students right now ?
 #    Copyright (C) 2017  Loic Touzard
@@ -27,34 +26,40 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import json
-from core.utils import logger
+from sqlalchemy                     import func
+from sqlalchemy                     import Text
+from sqlalchemy                     import Column
+from sqlalchemy                     import Integer
+from sqlalchemy                     import Boolean
+from sqlalchemy                     import DateTime
+from sqlalchemy                     import ForeignKey
+from sqlalchemy.ext.declarative     import declarative_base
 #===============================================================================
-# CLASSES 
+# GLOBALS / CONFIG
+#===============================================================================
+Base = declarative_base()
+#===============================================================================
+# CLASSES
 #===============================================================================
 #-------------------------------------------------------------------------------
-# Response
+# PasswordReset
 #-------------------------------------------------------------------------------
-class Response:
-    def __init__(self, has_error = True, content = {}, code=None):
-        self.has_error = has_error
-        self.content = content
-        self.code = code
+class PasswordReset(Base):
+    __tablename__ = 'password_reset'
+    __table_args__ = {
+        'useexisting': True, 
+        'sqlite_autoincrement': True # <!> SQLITE <!>
+    }
     #---------------------------------------------------------------------------
-    # json
+    # attributes
     #---------------------------------------------------------------------------
-    def json(self):
-        return {
-            'has_error': self.has_error, 
-            'content': self.content, 
-            'code': self.code
-        }
-#===============================================================================
-# TESTS
-#===============================================================================
-def test():
-    out = 'NEGATIVE RESPONSE TEST\n'+json.dumps(Response(True, 'an error occured !').json(), indent=4)
-    print(out)
-    out = 'POSITIVE RESPONSE TEST\n'+json.dumps(Response(False, 'everything is OK.').json(), indent=4)
-    print(out)
-    
+    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    token = Column(Text)
+    timestamp = Column(DateTime, default=func.now())
+    used = Column(Boolean)
+    #---------------------------------------------------------------------------
+    # __repr__
+    #---------------------------------------------------------------------------
+    def __repr__(self):
+        return "<PasswordReset(user='{0}', token='{1}', timestamp='{2}', used='{3}')>".format(
+            self.uid, self.token, self.timestamp, self.used)

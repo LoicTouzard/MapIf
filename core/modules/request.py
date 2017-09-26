@@ -28,11 +28,12 @@
 # IMPORTS
 #===============================================================================
 import requests
-from core.utils import logger
+from core.modules import logger
 #===============================================================================
 # GLOBALS
 #===============================================================================
 DFLT_TIMEOUT=2 # 2 seconds of default timeout
+modlgr = logger.get('mapif.request')
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
@@ -46,7 +47,7 @@ def get(url, params, timeout=DFLT_TIMEOUT, headers=None):
         else:
             return requests.get(url, params=params, timeout=timeout, headers=headers)
     except Exception as e:
-        logger.log_error("request.get(): failed.", e)
+        modlgr.exception("request.get(): failed.")
     return None
 #-------------------------------------------------------------------------------
 # post
@@ -58,7 +59,7 @@ def post(url, data, timeout=DFLT_TIMEOUT, headers=None):
         else:
             return requests.post(url, data=data, timeout=timeout, headers=headers)
     except Exception as e:
-        logger.log_error("request.post(): failed.", e)
+        modlgr.exception("request.post(): failed.")
     return None
 #===============================================================================
 # TESTS
