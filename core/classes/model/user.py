@@ -26,21 +26,17 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy                     import Column
-from sqlalchemy                     import Integer
-from sqlalchemy                     import String
-from sqlalchemy.ext.declarative     import declarative_base
-#===============================================================================
-# GLOBALS / CONFIG
-#===============================================================================
-Base = declarative_base()
+from sqlalchemy                 import Column
+from sqlalchemy                 import Integer
+from sqlalchemy                 import String
+from core.classes.model.base    import MapifBase
 #===============================================================================
 # CLASSES
 #===============================================================================
 #-------------------------------------------------------------------------------
 # User
 #-------------------------------------------------------------------------------
-class User(Base):
+class User(MapifBase):
     __tablename__ = 'user'
     __table_args__ = {
         'useexisting': True, 
@@ -69,5 +65,9 @@ class User(Base):
     # __repr__
     #---------------------------------------------------------------------------
     def __repr__(self):
-        return "<User(id='{0}',firstname='{1}',lastname='{2}',email='{3}',promo='{4}')>".format(
-            self.id, self.firstname, self.lastname, self.email, self.promo)
+        return """<User(id='{0}',
+    firstname='{1}',
+    lastname='{2}',
+    email='{3}',
+    promo='{4}'
+)>""".format(self.id, self.firstname, self.lastname, self.email, self.promo)

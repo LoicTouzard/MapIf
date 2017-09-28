@@ -78,7 +78,9 @@ def config(section, option, env_var=None, default=None, boolean=False):
                     if boolean:
                         res = _CONFIG_[section].getboolean(option)
                     else:
-                        res = _CONFIG_[section][option]
+                        res = _CONFIG_[section][option].strip()
+                        if len(res) == 0:
+                            res = None
                 else:
                     modlgr.error("Missing option {0} in section {1} in configuration file !".format(option, section))
                     if default:

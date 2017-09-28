@@ -80,3 +80,6 @@ db.sqlite3
 
 #database
 *.sqlite
+
+# logs
+logs/

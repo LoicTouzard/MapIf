@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: password_reset.py
-#    date: 2017-09-26
+#    file: user_preferences.py
+#    date: 2017-09-28
 #  author: paul.dautry
 # purpose:
 #   
@@ -26,22 +26,19 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy              import func
-from sqlalchemy              import Text
-from sqlalchemy              import Column
-from sqlalchemy              import Integer
-from sqlalchemy              import Boolean
-from sqlalchemy              import DateTime
-from sqlalchemy              import ForeignKey
-from core.classes.model.base import MapifBase
+from sqlalchemy                 import Column
+from sqlalchemy                 import Integer
+from sqlalchemy                 import Boolean
+from sqlalchemy                 import ForeignKey
+from core.classes.model.base    import MapifBase
 #===============================================================================
 # CLASSES
 #===============================================================================
 #-------------------------------------------------------------------------------
-# PasswordReset
+# UserPreferences
 #-------------------------------------------------------------------------------
-class PasswordReset(MapifBase):
-    __tablename__ = 'password_reset'
+class UserPreferences(MapifBase):
+    __tablename__ = 'user_preferences'
     __table_args__ = {
         'useexisting': True, 
         'sqlite_autoincrement': True # <!> SQLITE <!>
@@ -49,16 +46,27 @@ class PasswordReset(MapifBase):
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
-    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    token = Column(Text)
-    timestamp = Column(DateTime, default=func.now())
-    used = Column(Boolean)
+    id = Column(Integer, primary_key=True, nullable=False)
+    uid = Column(Integer, ForeignKey('user.id'))
+    # preferences
+    # -- be notified when a new user subscribes to MapIF
+    new_user_notif = Column(Boolean, nullable=False, default=False)
+    # -- be notified if a user arrives close to your location
+    near_user_notif = Column(Boolean, nullable=False, default=False)
+    #---------------------------------------------------------------------------
+    # as_dict
+    #---------------------------------------------------------------------------
+    def as_dict(self):
+        return {
+            'uid': self.uid,
+            'new_user_notif': self.new_user_notif,
+            'near_user_notif': self.near_user_notif
+        }
     #---------------------------------------------------------------------------
     # __repr__
     #---------------------------------------------------------------------------
     def __repr__(self):
-        return """<PasswordReset(uid='{0}', 
-    token='{1}', 
-    timestamp='{2}', 
-    used='{3}'
-)>""".format(self.uid, self.token, self.timestamp, self.used)
+        return """<UserPreferences(id='{0}', uid='{1}', 
+    new_user_notif='{2}', 
+    near_user_notif='{3}'
+)>""".format(self.id, self.uid, self.new_user_notif, self.near_user_notif)

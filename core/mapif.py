@@ -89,10 +89,12 @@ if not app.debug:
     logger.disable_debug()
 # initialize DB module
 modlgr.debug("Init db module...")
-db.init()
+if not db.init():
+    exit(1)
 # initialise emails module
 modlgr.debug("Init emails module...")
-emails.init()
+if not emails.init():
+    exit(1)
 # set locale
 locale.setlocale(locale.LC_ALL, ini.config('APP', 'locale', default='fr_FR.UTF-8'))
 # allow cross origin requests on this application

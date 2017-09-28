@@ -10,13 +10,12 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from core.utils import db
-from core.utils import ini
-from core.utils import logger
-from core.utils import nominatim
-from core.utils import response
-from core.utils import timer
-from core.utils import validator
+from core.modules import ini
+from core.modules import db
+from core.modules import logger
+from core.modules import nominatim
+from core.modules import validator
+from core.classes import response
 from core import mapif
 #===============================================================================
 # FUNCTIONS
@@ -25,8 +24,8 @@ from core import mapif
 # main
 #-------------------------------------------------------------------------------
 def main():
-    db.test()
     ini.test()
+    db.test()
     logger.test()
     nominatim.test()
     response.test()

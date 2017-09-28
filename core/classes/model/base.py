@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: password_reset.py
-#    date: 2017-09-26
+#    file: base.py
+#    date: 2017-09-28
 #  author: paul.dautry
 # purpose:
 #   
@@ -26,39 +26,18 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy              import func
-from sqlalchemy              import Text
-from sqlalchemy              import Column
-from sqlalchemy              import Integer
-from sqlalchemy              import Boolean
-from sqlalchemy              import DateTime
-from sqlalchemy              import ForeignKey
-from core.classes.model.base import MapifBase
+from sqlalchemy.ext.declarative import declarative_base
 #===============================================================================
-# CLASSES
+# GLOBALS / CONFIG
 #===============================================================================
 #-------------------------------------------------------------------------------
-# PasswordReset
+# MapifBase
+#   This instance must be shared between model objects to allow database schema 
+#   automated creation
 #-------------------------------------------------------------------------------
-class PasswordReset(MapifBase):
-    __tablename__ = 'password_reset'
-    __table_args__ = {
-        'useexisting': True, 
-        'sqlite_autoincrement': True # <!> SQLITE <!>
-    }
-    #---------------------------------------------------------------------------
-    # attributes
-    #---------------------------------------------------------------------------
-    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    token = Column(Text)
-    timestamp = Column(DateTime, default=func.now())
-    used = Column(Boolean)
-    #---------------------------------------------------------------------------
-    # __repr__
-    #---------------------------------------------------------------------------
-    def __repr__(self):
-        return """<PasswordReset(uid='{0}', 
-    token='{1}', 
-    timestamp='{2}', 
-    used='{3}'
-)>""".format(self.uid, self.token, self.timestamp, self.used)
+MapifBase = declarative_base()
+
+
+
+
+

@@ -30,21 +30,21 @@ import re
 import json
 import bcrypt
 import hashlib
-from datetime                           import datetime
-from sqlalchemy                         import create_engine
-from sqlalchemy_utils                   import database_exists
-from sqlalchemy_utils                   import create_database
-from sqlalchemy.orm                     import sessionmaker
-from sqlalchemy.sql                     import exists
-from sqlalchemy.schema                  import MetaData
-from sqlalchemy.ext.declarative         import declarative_base
-from core.classes.model.user            import User
-from core.classes.model.location        import Location
-from core.classes.model.user_location   import UserLocation
-from core.classes.model.password_reset  import PasswordReset
-from core.modules                       import ini
-from core.modules                       import logger
-from core.modules                       import nominatim
+from datetime                               import datetime
+from sqlalchemy                             import create_engine
+from sqlalchemy_utils                       import database_exists
+from sqlalchemy_utils                       import create_database
+from sqlalchemy.orm                         import sessionmaker
+from sqlalchemy.sql                         import exists
+from core.classes.model.base                import MapifBase
+from core.classes.model.user                import User
+from core.classes.model.location            import Location
+from core.classes.model.user_location       import UserLocation
+from core.classes.model.password_reset      import PasswordReset
+from core.classes.model.user_preferences    import UserPreferences
+from core.modules                           import ini
+from core.modules                           import logger
+from core.modules                           import nominatim
 #===============================================================================
 # GLOBALS
 #===============================================================================
@@ -98,10 +98,12 @@ def init():
     global _SESSIONMAKER_DEFAULT_
     _SESSIONMAKER_DEFAULT_ = sessionmaker(bind=engine)
     try:
-        declarative_base().metadata.create_all(engine)
+        MapifBase.metadata.create_all(engine)
         modlgr.debug("DB module successfully initialized.")
     except Exception as e:
         modlgr.exception('init_db error!')
+        return False
+    return True
 #-------------------------------------------------------------------------------
 # create_user
 #   Creates a user and insert it in the database

@@ -39,10 +39,8 @@ class SlackLogHandler(logging.Handler):
     # __init__
     #---------------------------------------------------------------------------
     def __init__(self, webhook):
-        # init parent class
         super(SlackLogHandler, self).__init__(logging.INFO)
-        # save slack webhook
-        self.webhook = webhook 
+        self.webhook = webhook
     #---------------------------------------------------------------------------
     # emit
     #---------------------------------------------------------------------------
@@ -89,14 +87,15 @@ class SlackLogHandler(logging.Handler):
                     }
                 ]
             }
-            #print(json.dumps(pld, indent=4))
-            # send payload
-            r = request.post(self.webhook, 
-                timeout=1.5, 
-                data=json.dumps(pld), 
-                headers={
-                    'Content-Type':'application/json'
-                })
+            # /!\ prevent recall if another exception is raised by request.post()
+            if not request.exception_raised():
+                # send payload
+                r = request.post(self.webhook, 
+                    timeout=1.5, 
+                    data=json.dumps(pld), 
+                    headers={
+                        'Content-Type':'application/json'
+                    })
 #===============================================================================
 # TESTS
 #===============================================================================

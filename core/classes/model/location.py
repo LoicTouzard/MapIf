@@ -26,22 +26,18 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy                     import Column
-from sqlalchemy                     import Integer
-from sqlalchemy                     import String
-from sqlalchemy                     import Float
-from sqlalchemy.ext.declarative     import declarative_base
-#===============================================================================
-# GLOBALS / CONFIG
-#===============================================================================
-Base = declarative_base()
+from sqlalchemy              import Column
+from sqlalchemy              import Integer
+from sqlalchemy              import String
+from sqlalchemy              import Float
+from core.classes.model.base import MapifBase
 #===============================================================================
 # CLASSES
 #===============================================================================
 #-------------------------------------------------------------------------------
 # Location
 #-------------------------------------------------------------------------------
-class Location(Base):
+class Location(MapifBase):
     __tablename__ = 'location'
     __table_args__ = {
             'useexisting': True, 
@@ -71,5 +67,9 @@ class Location(Base):
     # __repr__
     #---------------------------------------------------------------------------
     def __repr__(self):
-        return "<Location(id='{0}',osm_id='{1}',city='{2}',country='{3}',lat='{4}',lon='{5}')>".format(
-            self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
+        return """<Location(id='{0}',
+    osm_id='{1}',
+    city='{2}',
+    country='{3}',
+    lat='{4}', lon='{5}'
+)>""".format(self.id, self.osm_id, self.city, self.country, self.lat, self.lon)

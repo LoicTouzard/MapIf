@@ -32,7 +32,8 @@ from core.modules import logger
 #===============================================================================
 # GLOBALS
 #===============================================================================
-DFLT_TIMEOUT=2 # 2 seconds of default timeout
+DFLT_TIMEOUT = 2 # 2 seconds of default timeout
+EXCEPTION_RAISED = False
 modlgr = logger.get('mapif.request')
 #===============================================================================
 # FUNCTIONS
@@ -41,26 +42,39 @@ modlgr = logger.get('mapif.request')
 # get
 #-------------------------------------------------------------------------------
 def get(url, params, timeout=DFLT_TIMEOUT, headers=None):
+    global EXCEPTION_RAISED
     try:
         if headers is None:
             return requests.get(url, params=params, timeout=timeout)
         else:
             return requests.get(url, params=params, timeout=timeout, headers=headers)
     except Exception as e:
+        EXCEPTION_RAISED = True
         modlgr.exception("request.get(): failed.")
     return None
 #-------------------------------------------------------------------------------
 # post
 #-------------------------------------------------------------------------------
 def post(url, data, timeout=DFLT_TIMEOUT, headers=None):
+    global EXCEPTION_RAISED
     try:
         if headers is None:
             return requests.post(url, data=data, timeout=timeout)
         else:
             return requests.post(url, data=data, timeout=timeout, headers=headers)
     except Exception as e:
+        EXCEPTION_RAISED = True
         modlgr.exception("request.post(): failed.")
     return None
+#-------------------------------------------------------------------------------
+# exception_raised
+#-------------------------------------------------------------------------------
+def exception_raised():
+    global EXCEPTION_RAISED
+    if EXCEPTION_RAISED:
+        EXCEPTION_RAISED = False
+        return True
+    return False
 #===============================================================================
 # TESTS
 #===============================================================================

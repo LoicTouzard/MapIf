@@ -60,6 +60,8 @@ def init():
             modlgr.debug('Email APIKEY: {0}'.format(_APIKEY_))
     except Exception as ex:
         modlgr.exception("Could not load ElasticEmail API KEY")
+        return False
+    return True
 #-------------------------------------------------------------------------------
 # send_email
 #-------------------------------------------------------------------------------
