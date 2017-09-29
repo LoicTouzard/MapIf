@@ -39,10 +39,13 @@ from core.classes.model.base    import MapifBase
 #-------------------------------------------------------------------------------
 class UserPreferences(MapifBase):
     __tablename__ = 'user_preferences'
-    __table_args__ = {
-        'useexisting': True, 
-        'sqlite_autoincrement': True # <!> SQLITE <!>
-    }
+    __table_args__ = (
+        UniqueConstraint('uid'), # only one record per user
+        {
+            'useexisting': True, 
+            'sqlite_autoincrement': True # <!> SQLITE <!>
+        }
+    )
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
