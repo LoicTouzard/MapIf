@@ -156,7 +156,7 @@ var AjaxModule = {
                 UtilsModule.logger(json);
                 if(!json.has_error){
                     //refresh en etant connecté au server
-                    location.reload(true);
+                    location.replace(SETTINGS.PROTOCOL + "://" + SETTINGS.SERVER_ADDR);
                 }
             },
             error: function(resp, statut, erreur){
