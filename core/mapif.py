@@ -176,7 +176,7 @@ def root():
 # profile
 #   This is profile view of the current user.
 #-------------------------------------------------------------------------------
-@app.route('/profil', methods=['GET'])
+@app.route('/profile', methods=['GET'])
 @internal_error_handler('PR0F1LK0')
 @require_connected()
 def profile():
