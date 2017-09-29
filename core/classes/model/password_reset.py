@@ -26,14 +26,20 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy              import func
-from sqlalchemy              import Text
-from sqlalchemy              import Column
-from sqlalchemy              import Integer
-from sqlalchemy              import Boolean
-from sqlalchemy              import DateTime
-from sqlalchemy              import ForeignKey
-from core.classes.model.base import MapifBase
+from sqlalchemy                 import func
+from sqlalchemy                 import Text
+from sqlalchemy                 import Column
+from sqlalchemy                 import Integer
+from sqlalchemy                 import Boolean
+from sqlalchemy                 import DateTime
+from sqlalchemy                 import ForeignKey
+from core.classes.model.base    import MapifBase
+from core.classes.model.session import session
+from core.modules               import logger
+#===============================================================================
+# GLOBALS
+#===============================================================================
+modlgr = logger.get('mapif.password_reset')
 #===============================================================================
 # CLASSES
 #===============================================================================
@@ -62,3 +68,81 @@ class PasswordReset(MapifBase):
     timestamp='{2}', 
     used='{3}'
 )>""".format(self.uid, self.token, self.timestamp, self.used)
+#-------------------------------------------------------------------------------
+# PasswordResetCRUD
+#-------------------------------------------------------------------------------
+class PasswordResetCRUD:
+    ATTRIBUTES = [
+        'uid',
+        'token',
+        'timestamp',
+        'used'
+    ]
+    #---------------------------------------------------------------------------
+    # __apply_filters
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def __apply_filters(q, **kwargs):
+        for key, val in kwargs.items():
+            if val is not None:
+                if key == 'uid': 
+                    q = q.filter(PasswordReset.uid == val)
+                elif key == 'token':
+                    q = q.filter(PasswordReset.token == val)
+                elif key == 'timestamp':
+                    q = q.filter(PasswordReset.timestamp == val)
+                elif key == 'used':
+                    q = q.filter(PasswordReset.used == val)
+                else:
+                    modlgr.warning('retrieve() argument "{0}" will be ignored.'.format(
+                        key))
+        return q
+    #---------------------------------------------------------------------------
+    # create 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def create(uid, token, timestamp, used):
+        s = session()
+        s.add(PasswordReset(uid=uid, token=token, timestamp=timestamp, used=used))
+        s.commit()
+        s.close()
+    #---------------------------------------------------------------------------
+    # retrieve 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def retrieve(**kwargs):
+        s = session()
+        q = s.query(PasswordReset)
+        q = PasswordResetCRUD.__apply_filters(q, **kwargs)
+        return (s, q)
+    #---------------------------------------------------------------------------
+    # update
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def update(uid, **kwargs):
+        state = False
+        s = session()
+        pwrst = s.query(PasswordReset).filter(PasswordReset.uid == uid).one_or_none()
+        if pwrst is not None:
+            for key, val in kwargs.items():
+                if val is not None and key in PasswordResetCRUD.ATTRIBUTES:
+                    if key == 'uid':
+                        modlgr.warning('update() cannot update uid.')
+                        continue
+                    setattr(pwrst, key, val)
+            s.add(pwrst)
+            s.commit()
+            state = True
+        s.close()
+        return state
+    #---------------------------------------------------------------------------
+    # delete 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def delete(**kwargs):
+        s = session()
+        q = s.query(PasswordReset)
+        q = PasswordResetCRUD.__apply_filters(q, **kwargs)
+        q.delete()
+        s.commit()
+        s.close()

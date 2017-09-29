@@ -31,6 +31,12 @@ from sqlalchemy                 import Integer
 from sqlalchemy                 import Boolean
 from sqlalchemy                 import ForeignKey
 from core.classes.model.base    import MapifBase
+from core.classes.model.session import session
+from core.modules               import logger
+#===============================================================================
+# GLOBALS
+#===============================================================================
+modlgr = logger.get('mapif.user_preferences')
 #===============================================================================
 # CLASSES
 #===============================================================================
@@ -39,18 +45,14 @@ from core.classes.model.base    import MapifBase
 #-------------------------------------------------------------------------------
 class UserPreferences(MapifBase):
     __tablename__ = 'user_preferences'
-    __table_args__ = (
-        UniqueConstraint('uid'), # only one record per user
-        {
-            'useexisting': True, 
-            'sqlite_autoincrement': True # <!> SQLITE <!>
-        }
-    )
+    __table_args__ = {
+        'useexisting': True, 
+        'sqlite_autoincrement': True # <!> SQLITE <!>
+    }
     #---------------------------------------------------------------------------
     # attributes
     #---------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, nullable=False)
-    uid = Column(Integer, ForeignKey('user.id'))
+    uid = Column(Integer, ForeignKey('user.id'), primary_key=True)
     # preferences
     # -- be notified when a new user subscribes to MapIF
     new_user_notif = Column(Boolean, nullable=False, default=False)
@@ -73,3 +75,80 @@ class UserPreferences(MapifBase):
     new_user_notif='{2}', 
     near_user_notif='{3}'
 )>""".format(self.id, self.uid, self.new_user_notif, self.near_user_notif)
+#-------------------------------------------------------------------------------
+# UserPreferencesCRUD
+#-------------------------------------------------------------------------------
+class UserPreferencesCRUD:
+    ATTRIBUTES = [
+        'uid',
+        'new_user_notif',
+        'near_user_notif'
+    ]
+    #---------------------------------------------------------------------------
+    # __apply_filters
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def __apply_filters(q, **kwargs):
+        for key, val in kwargs.items():
+            if val is not None:
+                if key == 'uid': 
+                    q = q.filter(UserPreferences.uid == val)
+                elif key == 'new_user_notif':
+                    q = q.filter(UserPreferences.new_user_notif == val)
+                elif key == 'near_user_notif':
+                    q = q.filter(UserPreferences.near_user_notif == val)
+                else:
+                    modlgr.warning('retrieve() argument "{0}" will be ignored.'.format(
+                        key))
+        return q
+    #---------------------------------------------------------------------------
+    # create 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def create(uid, new_user_notif, near_user_notif):
+        s = session()
+        s.add(UserPreferences(uid=uid, 
+            new_user_notif=new_user_notif, 
+            near_user_notif=near_user_notif))
+        s.commit()
+        s.close()
+    #---------------------------------------------------------------------------
+    # retrieve 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def retrieve(**kwargs):
+        s = session()
+        q = s.query(UserPreferences)
+        q = UserPreferencesCRUD.__apply_filters(q, **kwargs)
+        return (s, q)
+    #---------------------------------------------------------------------------
+    # update
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def update(uid, **kwargs):
+        state = False
+        s = session()
+        pref = s.query(UserPreferences).filter(UserPreferences.uid == uid).one_or_none()
+        if pref is not None:
+            for key, val in kwargs.items():
+                if val is not None and key in UserPreferencesCRUD.ATTRIBUTES:
+                    if key == 'uid':
+                        modlgr.warning('update() cannot update uid.')
+                        continue
+                    setattr(pref, key, val)
+            s.add(pref)
+            s.commit()
+            state = True
+        s.close()
+        return state
+    #---------------------------------------------------------------------------
+    # delete 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def delete(**kwargs):
+        s = session()
+        q = s.query(UserPreferences)
+        q = UserPreferencesCRUD.__apply_filters(q, **kwargs)
+        q.delete()
+        s.commit()
+        s.close()

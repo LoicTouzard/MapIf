@@ -114,7 +114,7 @@ CORS(app, resources={
 #   set user in session
 #-------------------------------------------------------------------------------
 def _load_user(session, email, sha_pwd):
-    usr = db.get_user(email, sha_pwd)
+    usr = db.retrieve_user_email_pwd(email, sha_pwd)
     if usr:
         session['user'] = {
             'id': usr.id,
@@ -128,7 +128,7 @@ def _load_user(session, email, sha_pwd):
 #   update user information in session
 #-------------------------------------------------------------------------------
 def _update_user(session, uid):
-    usr = db.get_user_by_id(uid)
+    usr = db.retrieve_user_by_id(uid)
     if usr:
         session['user'] = {
             'id': usr.id,
@@ -147,8 +147,8 @@ def _check_connected(session):
 # _hash_pwd
 #   hash given password using SHA-256 algorithm from hashlib
 #-------------------------------------------------------------------------------
-def _hash_pwd(pwd_clear):
-    return hashlib.sha256(pwd_clear.encode()).hexdigest()
+def _hash_pwd(plain_pwd):
+    return hashlib.sha256(plain_pwd.encode()).hexdigest()
 #===============================================================================
 # FLASK ROUTES
 #===============================================================================
@@ -167,10 +167,10 @@ def beforeRequest():
 @app.route('/', methods=['GET'])
 @internal_error_handler('R00TK0')
 def root():
-    locations = db.get_locations_with_users()
+    locations = db.retrieve_locations_with_users()
     user_locations = None
     if _check_connected(session):
-        user_locations = db.get_user_locations(session['user']['id'])
+        user_locations = db.retrieve_user_locations(session['user']['id'])
     return render_template('map.html', locations=locations, user_locations=user_locations, active="map") # users=users)
 #-------------------------------------------------------------------------------
 # profile
@@ -180,7 +180,7 @@ def root():
 @internal_error_handler('PR0F1LK0')
 @require_connected()
 def profile():
-    user_locations = db.get_user_locations(session['user']['id'])
+    user_locations = db.retrieve_user_locations(session['user']['id'])
     return render_template('profile.html', user_locations=user_locations, active='profile') # users=users)
 #-------------------------------------------------------------------------------
 # login
@@ -229,7 +229,7 @@ def password_reset():
     token = db.create_or_update_password_reset(email, app.secret_key)
     modlgr.debug("Created/updated user's password reset object with token '{0}'".format(token))
     reset_link = "{0}password-reset?token={1}&email={2}".format(request.url_root, token, email)
-    user = db.get_user_by_email(email)
+    user = db.retrieve_user_by_email(email)
     emails.send_password_reset_mail(email, user.firstname, token)
     modlgr.debug("Process finished sending mail to {0} with link '{1}'".format(email, reset_link))
     error = False
@@ -253,9 +253,9 @@ def password_reset_page():
     if not db.user_exists(email):
         modlgr.error("Leaving password reset: user does not exist")
         return page_not_found(None)
-    user = db.get_user_by_email(email)
+    user = db.retrieve_user_by_email(email)
     # Find PasswordReset instance from this user with this token exists (must exist)
-    password_reset = db.get_password_reset_by_token_and_uid(token, user.id)
+    password_reset = db.retrieve_password_reset(token, user.id)
     if password_reset is None:
         modlgr.error("Leaving password reset: PasswordReset instance doesn't exist")
         return page_not_found(None)
@@ -282,7 +282,7 @@ def password_reset_page():
         new_pass = request.form['password1']
         hashed_pass = _hash_pwd(new_pass)
         if db.update_user(user.id, pwd=hashed_pass):
-            db.set_password_reset_used(password_reset)
+            db.set_password_reset_used(user.id)
             return render_template('password-reset.html', reset_form=False)
         else:
             return render_template('password-reset.html', reset_form=True, error='A merde, y a eu une couille.')
@@ -295,7 +295,7 @@ def password_reset_page():
 @require_connected()
 def search_users():
     filters = request.form['filters']
-    content = db.get_users(filters)
+    content = db.search_users(filters)
     return json_response(Response(False, content).json(), status_code=200)
 #-------------------------------------------------------------------------------
 # account_create
@@ -503,7 +503,7 @@ def locations():
     content = "Une erreur s'est produite, l'identifiant de l'utilisateur passé en paramètre n'est pas valide."
     if not validator.validate(uid, 'int'):
         uid = int(uid)
-        locations = db.get_user_locations(uid)
+        locations = db.retrieve_user_locations(uid)
         content = "Une erreur s'est produite, aucune localisation n'a été trouvée pour cet utilisateur."
         if locations:
             err = False

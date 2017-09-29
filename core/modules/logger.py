@@ -34,7 +34,7 @@ import logging.handlers as handlers
 #===============================================================================
 ROOT_LGR = 'mapif'
 # create formatter
-FMT = '(%(asctime)s)[%(name)s:%(levelname)s]: %(message)s'
+FMT = '(%(asctime)s)[%(levelname)s|%(name)s]: %(message)s'
 FMTR = logging.Formatter(FMT)
 #===============================================================================
 # FUNCTIONS

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -!- encoding:utf8 -!-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#    file: base.py
-#    date: 2017-09-28
+#    file: session.py
+#    date: 2017-09-29
 #  author: paul.dautry
 # purpose:
 #   
@@ -26,13 +26,18 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 #===============================================================================
 # GLOBALS / CONFIG
 #===============================================================================
 #-------------------------------------------------------------------------------
-# MapifBase
-#   This instance must be shared between model objects to allow database schema 
-#   automated creation
+# MapifSession
+#   Is the global session instance to be configured when calling init() from the
+#   db module.
 #-------------------------------------------------------------------------------
-MapifBase = declarative_base()
+MapifSession = sessionmaker()
+#===============================================================================
+# FUNCTIONS
+#===============================================================================
+def session():
+    return MapifSession()

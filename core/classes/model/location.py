@@ -26,11 +26,17 @@
 #===============================================================================
 # IMPORTS
 #===============================================================================
-from sqlalchemy              import Column
-from sqlalchemy              import Integer
-from sqlalchemy              import String
-from sqlalchemy              import Float
-from core.classes.model.base import MapifBase
+from sqlalchemy                 import Column
+from sqlalchemy                 import Integer
+from sqlalchemy                 import String
+from sqlalchemy                 import Float
+from core.classes.model.base    import MapifBase
+from core.classes.model.session import session
+from core.modules               import logger
+#===============================================================================
+# GLOBALS
+#===============================================================================
+modlgr = logger.get('mapif.location')
 #===============================================================================
 # CLASSES
 #===============================================================================
@@ -73,3 +79,86 @@ class Location(MapifBase):
     country='{3}',
     lat='{4}', lon='{5}'
 )>""".format(self.id, self.osm_id, self.city, self.country, self.lat, self.lon)
+#-------------------------------------------------------------------------------
+# LocationCRUD
+#-------------------------------------------------------------------------------
+class LocationCRUD:
+    ATTRIBUTES = [
+        'osm_id',
+        'city',
+        'country',
+        'lat',
+        'lon'
+    ]
+    #---------------------------------------------------------------------------
+    # __apply_filters
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def __apply_filters(q, **kwargs):
+        for key, val in kwargs.items():
+            if val is not None:
+                if key == 'lid': 
+                    q = q.filter(Location.id == val)
+                elif key == 'osm_id':
+                    q = q.filter(Location.osm_id == val)
+                elif key == 'city':
+                    q = q.filter(Location.city == val)
+                elif key == 'country':
+                    q = q.filter(Location.country == val)
+                elif key == 'lat':
+                    q = q.filter(Location.lat == val)
+                elif key == 'lon':
+                    q = q.filter(Location.lon == val)
+                else:
+                    modlgr.warning('retrieve() argument "{0}" will be ignored.'.format(
+                        key))
+        return q
+    #---------------------------------------------------------------------------
+    # create 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def create(osm_id, city, country, lat, lon):
+        s = session()
+        s.add(Location(osm_id=osm_id, city=city, country=country, lat=lat, lon=lon))
+        s.commit()
+        s.close()
+    #---------------------------------------------------------------------------
+    # retrieve 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def retrieve(**kwargs):
+        s = session()
+        q = s.query(Location)
+        q = LocationCRUD.__apply_filters(q, **kwargs)
+        return (s, q)
+    #---------------------------------------------------------------------------
+    # update
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def update(lid, **kwargs):
+        state = False
+        s = session()
+        loc = s.query(Location).filter(Location.id == lid).one_or_none()
+        if loc is not None:
+            for key, val in kwargs.items():
+                if val is not None and key in LocationCRUD.ATTRIBUTES:
+                    if key == 'id':
+                        modlgr.warning('update() cannot update id.')
+                        continue
+                    setattr(loc, key, val)
+            s.add(loc)
+            s.commit()
+            state = True
+        s.close()
+        return state
+    #---------------------------------------------------------------------------
+    # delete 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def delete(**kwargs):
+        s = session()
+        q = s.query(Location)
+        q = LocationCRUD.__apply_filters(q, **kwargs)
+        q.delete()
+        s.commit()
+        s.close()

@@ -35,6 +35,12 @@ from sqlalchemy                 import DateTime
 from sqlalchemy                 import ForeignKey
 from sqlalchemy                 import UniqueConstraint
 from core.classes.model.base    import MapifBase
+from core.classes.model.session import session
+from core.modules               import logger
+#===============================================================================
+# GLOBALS
+#===============================================================================
+modlgr = logger.get('mapif.user_location')
 #===============================================================================
 # CLASSES
 #===============================================================================
@@ -77,3 +83,88 @@ class UserLocation(MapifBase):
     timestamp='{3}',
     meta='{4}'
 )>""".format(self.id, self.uid, self.lid, self.timestamp, self.meta)
+#-------------------------------------------------------------------------------
+# UserLocationCRUD
+#-------------------------------------------------------------------------------
+class UserLocationCRUD:
+    ATTRIBUTES = [
+        'ulid',
+        'uid',
+        'lid',
+        'timestamp',
+        'meta'
+    ]
+    #---------------------------------------------------------------------------
+    # __apply_filters
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def __apply_filters(q, **kwargs):
+        for key, val in kwargs.items():
+            if val is not None:
+                if key == 'ulid': 
+                    q = q.filter(UserLocation.id == val)
+                elif key == 'uid':
+                    q = q.filter(UserLocation.uid == val)
+                elif key == 'lid':
+                    q = q.filter(UserLocation.lid == val)
+                elif key == 'timestamp':
+                    q = q.filter(UserLocation.timestamp == val)
+                elif key == 'meta':
+                    q = q.filter(UserLocation.meta == val)
+                else:
+                    modlgr.warning('retrieve() argument "{0}" will be ignored.'.format(
+                        key))
+        return q
+    #---------------------------------------------------------------------------
+    # create 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def create(uid, lid, timestamp, meta):
+        s = session()
+        s.add(UserLocation(uid=uid, lid=lid, timestamp=timestamp, meta=meta)) 
+        s.commit()
+        s.close()
+    #---------------------------------------------------------------------------
+    # retrieve 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def retrieve(**kwargs):
+        s = session()
+        q = s.query(UserLocation)
+        q = UserLocationCRUD.__apply_filters(q, **kwargs)
+        return (s, q)
+    #---------------------------------------------------------------------------
+    # update
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def update(uid, ulid, **kwargs):
+        state = False
+        s = session()
+        # SEC-NOTE: test ulid and uid, even if uid is a foreign key, to prevent a 
+        #           user updating a record of another user.
+        uloc = s.query(UserLocation).filter(
+            UserLocation.id == ulid,
+            UserLocation.uid == uid).one_or_none()
+        if uloc is not None:
+            for key, val in kwargs.items():
+                if val is not None and key in UserLocationCRUD.ATTRIBUTES:
+                    if key == 'id':
+                        modlgr.warning('update() cannot update id.')
+                        continue
+                    setattr(uloc, key, val)
+            s.add(uloc)
+            s.commit()
+            state = True
+        s.close()
+        return state
+    #---------------------------------------------------------------------------
+    # delete 
+    #---------------------------------------------------------------------------
+    @staticmethod
+    def delete(**kwargs):
+        s = session()
+        q = s.query(UserLocation)
+        q = UserLocationCRUD.__apply_filters(q, **kwargs)
+        q.delete()
+        s.commit()
+        s.close()

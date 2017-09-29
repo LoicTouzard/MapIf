@@ -77,6 +77,19 @@ def check_captcha(request):
     if not data['success']:
         modlgr.error("from validator: {0} might be a bot !".format(request.remote_addr))
     return data['success']
+#-------------------------------------------------------------------------------
+# normalize_filter
+#   Treat filter content to create a valid SQL filter string
+#-------------------------------------------------------------------------------
+def normalize_filter(search_filter):
+    if search_filter is not None:
+        # remove forbidden characters
+        search_filter = re.sub('[^*a-zA-Z0-9]', '', search_filter)
+        # replace special characters
+        search_filter = search_filter.replace('*', '%')
+    else:
+        search_filter = '%'
+    return search_filter
 #===============================================================================
 # TESTS 
 #===============================================================================
