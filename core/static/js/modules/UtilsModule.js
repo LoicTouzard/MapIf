@@ -37,7 +37,14 @@ var UtilsModule = {
 
 	toTitleCase : function(str)
 	{
-	    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	  return str.replace(/\w\S*/g, function (word) {
+      if (['de', 'du', 'von'].indexOf(word) !== -1 ||
+          ['d\'', 'd’'].indexOf(word.slice(0, 2)) !== -1) {
+        return word;
+      } else {
+        return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+      }
+    });
 	},
 
 	toggleArrow : function(icon){
