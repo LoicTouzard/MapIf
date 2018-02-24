@@ -1,0 +1,11 @@
+[Unit]
+Description=MapIF UWSGI autostart
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uwsgi --ini /home/mapif/www/MapIf/wsgi.ini
+ExecReload=/usr/local/bin/uwsgi --reload /tmp/mapif.pid
+ExecStop=/usr/local/bin/uwsgi --stop /tmp/mapif.pid
+
+[Install]
+WantedBy=multi-user.target
