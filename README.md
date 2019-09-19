@@ -50,5 +50,5 @@ Pour la compatibilité, tout n'a pas été testé, mais cela fonctionne correcte
 ## Contributeurs / Remerciements
 
 Projet à l'initiative de [Nicolas Bonfante](https://github.com/niosega).  
-Réalisation par [Loïc Touzard](https://github.com/LoicTouzard) (Responsable Front), Paul Dautry (Responsable Back) et [Kévin Bulmé](https://github.com/KevinBulme).  
+Réalisation par [Loïc Touzard](https://github.com/LoicTouzard) (Responsable Front), [Koromodako](https://github.com/koromodako) (Responsable Back) et [Kévin Bulmé](https://github.com/KevinBulme).  
 Remerciements aux contributeurs [Lisa Courant](https://github.com/lisacourant) pour le logo, [Mohamed Haidara](https://github.com/haidaraM/) et [David Wobrock](https://github.com/David-Wobrock).  
